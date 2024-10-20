@@ -1,0 +1,13 @@
+- platform: group
+  name: mobile_app_parents
+  unique_id: mobile_app_parents
+  services:
+  - service: mobile_app_floris_pixel_6_pro
+  - service: mobile_app_steffis_pixel_6a
+- platform: group
+  name: mobile_app_all
+  unique_id: mobile_app_all
+  services:
+    - service: mobile_app_floris_pixel_4a
+    - service: mobile_app_steffis_pixel_6a
+    - service: mobile_app_pixel_tablet

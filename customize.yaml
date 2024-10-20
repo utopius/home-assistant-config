@@ -1,0 +1,99 @@
+media_player.denon_avr_x1300w:
+  friendly_name: Denon AVR-X1300W
+  icon: mdi:audio-video
+media_player.denon_avr_x1600h:
+  friendly_name: Denon AVR-X1600H
+  icon: mdi:audio-video
+media_player.denon_avr_x1600h_2:
+  friendly_name: Denon AVR-X1600H Zone2
+  icon: mdi:audio-video
+media_player.denon_avr_x1600h_3:
+  friendly_name: Denon AVR-X1600H HEOS
+
+sensor.wattwaechter_main_total_in:
+  unit_of_measurement: "kWh"
+  device_class: energy
+  state_class: total_increasing
+sensor.wattwaechter_main_total_out:
+  unit_of_measurement: "kWh"
+  device_class: energy
+  state_class: total_increasing
+sensor.wattwaechter_main_power_current:
+  unit_of_measurement: "W"
+  device_class: energy
+  state_class: measurement
+sensor.wattwaechter_main_power_p1:
+  unit_of_measurement: "W"
+  device_class: energy
+  state_class: measurement
+sensor.wattwaechter_main_power_p2:
+  unit_of_measurement: "W"
+  device_class: energy
+  state_class: measurement
+sensor.wattwaechter_main_power_p3:
+  unit_of_measurement: "W"
+  device_class: energy
+  state_class: measurement
+
+sensor.wattwaechter_8665_total_in:
+  unit_of_measurement: "kWh"
+  device_class: energy
+  state_class: total_increasing
+sensor.wattwaechter_8665_total_out:
+  unit_of_measurement: "kWh"
+  device_class: energy
+  state_class: total_increasing
+sensor.wattwaechter_8665_power_current:
+  unit_of_measurement: "W"
+  device_class: energy
+  state_class: measurement
+
+sensor.wattwaechter_8666_total_in:
+  unit_of_measurement: "kWh"
+  device_class: energy
+  state_class: total_increasing
+sensor.wattwaechter_8666_total_out:
+  unit_of_measurement: "kWh"
+  device_class: energy
+  state_class: total_increasing
+sensor.wattwaechter_8666_power_current:
+  unit_of_measurement: "W"
+  device_class: energy
+  state_class: measurement
+
+sensor.bitshakesmr_lguh50_mwh_count:
+  unit_of_measurement: "MWh"
+  device_class: energy
+  state_class: total_increasing
+sensor.bitshakesmr_lguh50_mwh_count_year:
+  unit_of_measurement: "MWh"
+  device_class: energy
+  state_class: total
+sensor.bitshakesmr_lguh50_flow_duration:
+  unit_of_measurement: "h"
+  device_class: duration
+  state_class: total
+sensor.bitshakesmr_lguh50_volume_flow:
+  unit_of_measurement: "m³"
+  device_class: volume
+  state_class: total
+sensor.bitshakesmr_lguh50_volume_flow_year:
+  unit_of_measurement: "m³"
+  device_class: volume
+  state_class: total
+sensor.bitshakesmr_lguh50_m3h_max_throughput:
+  unit_of_measurement: "m³/h"
+  device_class: volume
+  state_class: total
+sensor.bitshakesmr_lguh50_operating_hours:
+  unit_of_measurement: "h"
+  device_class: duration
+  state_class: total
+sensor.bitshakesmr_lguh50_error_hours:
+  unit_of_measurement: "h"
+  device_class: duration
+  state_class: total
+sensor.bitshakesmr_lguh50_error_hours_year:
+  unit_of_measurement: "h"
+  device_class: duration
+  state_class: total

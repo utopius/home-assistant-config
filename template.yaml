@@ -1,0 +1,61 @@
+- sensor:
+    - name: "heat meter total"
+      unique_id: 0639d954-edef-4598-9a77-aac3c4f5d098
+      icon: "mdi:counter"
+      unit_of_measurement: "kWh"
+      device_class: energy
+      state_class: total_increasing
+      state: >
+        {{ states('sensor.bitshakesmr_lguh50_mwh_count') | float(0)  * 1000 }}
+      availability: >
+        {{ states('sensor.bitshakesmr_lguh50_mwh_count') | float(0) * 1000 > 2000 }}
+- sensor:
+    - name: "heat meter total last year"
+      unique_id: dbdcd95e-169e-4dbd-9022-c314e1017d60
+      icon: "mdi:counter"
+      unit_of_measurement: "kWh"
+      device_class: energy
+      state_class: total_increasing
+      state: >
+        {{ states('sensor.bitshakesmr_lguh50_mwh_count_year') | float(0)  * 1000 }}
+      availability: >
+        {{ states('sensor.bitshakesmr_lguh50_mwh_count_year') | float(0) * 1000 > 2000 }}
+- sensor:
+    - name: "heat consumption (year)"
+      unique_id: 4c3f6a9d-c145-41da-8dc0-e178cc43e287
+      icon: "mdi:counter"
+      unit_of_measurement: "kWh"
+      device_class: energy
+      state_class: total
+      state: >
+        {% set current = states('sensor.bitshakesmr_lguh50_mwh_count') | float * 1000 %}
+        {% set last_year = states('sensor.bitshakesmr_lguh50_mwh_count_year') | float  * 1000 %}
+        {{ current - last_year }}
+      availability: >
+        {% set current = states('sensor.bitshakesmr_lguh50_mwh_count') %}
+        {% set last_year = states('sensor.bitshakesmr_lguh50_mwh_count_year') %}
+        {{ is_number(current) and is_number(last_year)}}
+
+- sensor:
+    - name: "8665 current solar power"
+      unique_id: 977d09b2-a837-472a-81de-e2ca11de6056
+      icon: "mdi:solar-power"
+      unit_of_measurement: "W"
+      device_class: power
+      state_class: measurement
+      state: >
+        {{ states('sensor.wattwaechter_8665_power_current') | int | abs }}
+      availability: >
+        {{ states('sensor.wattwaechter_8665_power_current') != 'unavailable' }}
+
+- sensor:
+    - name: "8666 current solar power"
+      unique_id: d04507f7-6579-4cf8-85f2-bb8064d6c96e
+      icon: "mdi:solar-power"
+      unit_of_measurement: "W"
+      device_class: power
+      state_class: measurement
+      state: >
+        {{ states('sensor.wattwaechter_8666_power_current') | int | abs }}
+      availability: >
+        {{ states('sensor.wattwaechter_8666_power_current') != 'unavailable' }}

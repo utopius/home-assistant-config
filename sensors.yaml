@@ -1,0 +1,37 @@
+- platform: snmp
+  name: snmp_ups_battery_percentage
+  host: 192.168.200.64
+  baseoid: 1.3.6.1.4.1.3808.1.1.1.2.2.1.0
+  community: public
+  unit_of_measurement: "%"
+
+- platform: snmp
+  name: snmp_ups_battery_runtime_remaining
+  host: 192.168.200.64
+  baseoid: 1.3.6.1.4.1.3808.1.1.1.2.2.4.0
+  community: public
+  unit_of_measurement: "minutes"
+  value_template: "{{((value | int) / 6000) | int}}"
+# Not necessary if the load in percent is always wrong we cannot calculate anything
+#- platform: snmp
+#  name: snmp_ups_ident_loadpower
+#  host:  192.168.200.64
+#  baseoid: 1.3.6.1.4.1.3808.1.1.1.1.2.7.0
+#  community: public
+
+# The usp always reports 24 which is simply wrong :/
+#- platform: snmp
+#  name: snmp_ups_output_load
+#  host:  192.168.200.64
+#  baseoid: 1.3.6.1.4.1.3808.1.1.1.4.2.3.0
+#  community: public
+#  unit_of_measurement: 'percent'
+
+#- platform: template
+#  sensors:
+#    snmp_ups_output_watts:
+#        unit_of_measurement: 'watt'
+#        value_template: >-
+#          {% set t = states('sensor.snmp_ups_ident_loadpower') | float %}
+#          {% set u = states('sensor.snmp_ups_output_load') | float %}
+#          {{ t * (u / 100) }}

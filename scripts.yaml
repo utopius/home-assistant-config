@@ -1,0 +1,391 @@
+play_swr1_livingroom:
+  alias: Play SWR 1 (Wohnzimmer)
+  sequence:
+  - service: media_player.turn_on
+    data: {}
+    target:
+      entity_id: media_player.denon_avr_x1600h
+  - service: media_player.play_media
+    entity_id: media_player.chromecast_audio_livingroom
+    data:
+      entity_id: media_player.chromecast_audio_livingroom
+      media_content_id: https://liveradio.swr.de/sw282p3/swr1bw/play.mp3
+      media_content_type: audio/mp4
+  - service: media_player.select_source
+    entity_id: media_player.denon_avr_x1600h
+    data:
+      source: CCA
+  mode: single
+play_swr3_livingroom:
+  alias: Play SWR 3 (Wohnzimmer)
+  sequence:
+  - service: media_player.turn_on
+    entity_id: media_player.denon_avr_x1600h
+  - service: media_player.play_media
+    entity_id: media_player.chromecast_audio_livingroom
+    data:
+      entity_id: media_player.chromecast_audio_livingroom
+      media_content_id: https://swr-swr3-live.cast.addradio.de/swr/swr3/live/mp3/128/stream.mp3
+      media_content_type: audio/mp4
+  - service: media_player.select_source
+    entity_id: media_player.denon_avr_x1600h
+    data:
+      source: CCA
+  mode: restart
+play_swr1_office:
+  alias: Play SWR 1 (Büro)
+  sequence:
+  - service: media_player.turn_on
+    data: {}
+    target:
+      device_id: d28856530e3446df9497b6a7252beb7c
+    enabled: true
+  - wait_template: '{{ is_state(''media_player.denon_avr_x1300w'', ''on'') }}'
+    timeout: 00:02:00
+    continue_on_timeout: false
+    enabled: false
+  - service: media_player.select_source
+    data:
+      source: Favorites Station1
+    enabled: false
+    target:
+      entity_id: media_player.denon_avr_x1300w
+  - service: media_player.play_media
+    data:
+      media_content_id: https://liveradio.swr.de/sw282p3/swr1bw/play.mp3
+      media_content_type: audio/mp4
+    target:
+      device_id: d28856530e3446df9497b6a7252beb7c
+    enabled: false
+  - service: media_player.play_media
+    target:
+      entity_id: media_player.denon_avr_x1300w
+    data:
+      media_content_id: Station1
+      media_content_type: ''
+    metadata: {}
+    enabled: false
+  - service: media_player.play_media
+    target:
+      entity_id: media_player.denon_avr_x1300w
+    data:
+      media_content_id: media_player.denon_avr_x1300w
+      media_content_type: /goform/formiPhoneAppDirect.xml?ZMFAVORITES
+    metadata: {}
+    enabled: false
+  mode: restart
+play_swr3_office:
+  alias: Play SWR 3 (Büro)
+  sequence:
+  - service: media_player.turn_on
+    entity_id: media_player.denon_avr_x1300w
+  - service: media_player.play_media
+    entity_id: media_player.chromecast_audio_workspace
+    data:
+      entity_id: media_player.chromecast_audio_workspace
+      media_content_id: https://swr-swr3-live.cast.addradio.de/swr/swr3/live/mp3/128/stream.mp3
+      media_content_type: audio/mp4
+  - service: media_player.select_source
+    entity_id: media_player.denon_avr_x1300w
+    data:
+      source: Cast
+play_swr1_all:
+  alias: Play SWR 1 (Überall)
+  sequence:
+  - service: switch.turn_on
+    entity_id: switch.fritz_dect_200_buro_anlage
+  - wait_template: '{{ is_state(''media_player.denon_avr_x1300w'', ''on'') }}'
+    timeout: 00:01:00
+    continue_on_timeout: false
+  - service: media_player.turn_on
+    entity_id: media_player.denon_avr_x1600h_2
+  - service: media_player.turn_on
+    entity_id: media_player.denon_avr_x1300w
+  - service: media_player.play_media
+    entity_id: media_player.chromecast_audio_all
+    data:
+      entity_id: media_player.chromecast_audio_all
+      media_content_id: http://swr-swr1-bw.cast.addradio.de/swr/swr1/bw/mp3/128/stream.mp3
+      media_content_type: audio/mp4
+  - service: media_player.select_source
+    entity_id: media_player.denon_avr_x1600h_2
+    data:
+      source: CCA
+  - service: media_player.select_source
+    entity_id: media_player.denon_avr_x1300w
+    data:
+      source: Cast
+play_swr3_all:
+  alias: Play SWR 3 (Überall)
+  sequence:
+  - service: switch.turn_on
+    entity_id: switch.fritz_dect_200_buro_anlage
+  - wait_template: '{{ is_state(''media_player.denon_avr_x1300w'', ''on'') }}'
+    timeout: 00:01:00
+    continue_on_timeout: false
+  - service: media_player.turn_on
+    entity_id: media_player.denon_avr_x1600h_2
+  - service: media_player.turn_on
+    entity_id: media_player.denon_avr_x1300w
+  - service: media_player.play_media
+    entity_id: media_player.chromecast_audio_all
+    data:
+      entity_id: media_player.chromecast_audio_all
+      media_content_id: https://swr-swr3-live.cast.addradio.de/swr/swr3/live/mp3/128/stream.mp3
+      media_content_type: audio/mp4
+  - service: media_player.select_source
+    entity_id: media_player.denon_avr_x1600h_2
+    data:
+      source: CCA
+  - service: media_player.select_source
+    entity_id: media_player.denon_avr_x1300w
+    data:
+      source: Cast
+play_swr_1_wohnzimmer_heos:
+  alias: Play SWR 1 (Wohnzimmer) (Heos)
+  sequence:
+  - service: media_player.turn_on
+    data: {}
+    target:
+      entity_id: media_player.denon_avr_x1600h
+  - service: media_player.select_source
+    data:
+      source: HEOS Music
+    target:
+      device_id: c6a4ebb5a4a641fd3785747d27c5edb8
+  - service: media_player.play_media
+    data:
+      media_content_id: https://liveradio.swr.de/sw282p3/swr1bw/
+      media_content_type: url
+      enqueue: play
+    target:
+      entity_id: media_player.denon_avr_x1600h_3
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 2
+      milliseconds: 0
+    enabled: false
+  - service: media_player.turn_off
+    data: {}
+    target:
+      entity_id: media_player.denon_avr_x1600h_2
+    enabled: false
+  mode: single
+play_swr_1_wohnzimmer_heos_favorite:
+  alias: Play SWR 1 (Wohnzimmer) (Heos) (favorite)
+  sequence:
+  - service: media_player.turn_on
+    data: {}
+    target:
+      entity_id: media_player.denon_avr_x1600h
+    enabled: false
+  - service: media_player.select_source
+    data:
+      source: HEOS Music
+    target:
+      device_id: c6a4ebb5a4a641fd3785747d27c5edb8
+  - service: media_player.play_media
+    data:
+      media_content_id: '1'
+      media_content_type: favorite
+    target:
+      entity_id: media_player.denon_avr_x1600h_3
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 2
+      milliseconds: 0
+  - service: media_player.turn_off
+    data: {}
+    target:
+      entity_id: media_player.denon_avr_x1600h_2
+  mode: single
+heizung_profil_1:
+  alias: Heizung - Profil 1
+  sequence:
+  - device_id: 65bc1ba5879bb5f77ee26846de6c7121
+    domain: climate
+    entity_id: climate.raumthermostat_bad
+    type: set_preset_mode
+    preset_mode: Profile 1
+  mode: single
+  icon: mdi:thermostat-auto
+wohnzimmer_sud_zu:
+  alias: Wohnzimmer Süd zu
+  sequence:
+  - action: cover.set_cover_position
+    metadata: {}
+    data:
+      position: 10
+    target:
+      entity_id: cover.ja1_sudseite_rollo_wohnzimmer_sud_hmipw_drbl4_00165d899fbad2_ch2
+  description: ''
+  icon: mdi:window-shutter
+wohnzimmer_sud_auf:
+  alias: Wohnzimmer Süd auf
+  sequence:
+  - action: cover.open_cover
+    target:
+      entity_id: cover.ja1_sudseite_rollo_wohnzimmer_sud_hmipw_drbl4_00165d899fbad2_ch2
+    data: {}
+  description: ''
+  icon: mdi:window-shutter-open
+wohnzimmer_sud_halb:
+  alias: Wohnzimmer Süd halb
+  sequence:
+  - action: cover.set_cover_position
+    metadata: {}
+    data:
+      position: 60
+    target:
+      entity_id: cover.ja1_sudseite_rollo_wohnzimmer_sud_hmipw_drbl4_00165d899fbad2_ch2
+  description: ''
+  icon: mdi:window-shutter-alert
+schlafzimmer_auf:
+  alias: Schlafzimmer auf
+  sequence:
+  - action: cover.open_cover
+    target:
+      entity_id:
+      - cover.ja1_sudseite_rollo_schlafzimmer_hmipw_drbl4_00165d899fbad2_ch6
+    data: {}
+  description: ''
+  icon: mdi:window-shutter-open
+schlafzimmer_halb:
+  alias: Schlafzimmer halb
+  sequence:
+  - action: cover.set_cover_position
+    metadata: {}
+    data:
+      position: 60
+    target:
+      entity_id: cover.ja1_sudseite_rollo_schlafzimmer_hmipw_drbl4_00165d899fbad2_ch6
+  description: ''
+  icon: mdi:window-shutter-alert
+schlafzimmer_zu:
+  alias: Schlafzimmer zu
+  sequence:
+  - action: cover.set_cover_position
+    metadata: {}
+    data:
+      position: 20
+    target:
+      entity_id:
+      - cover.ja1_sudseite_rollo_schlafzimmer_hmipw_drbl4_00165d899fbad2_ch6
+  description: ''
+  icon: mdi:window-shutter
+esszimmer_sud_auf:
+  alias: Esszimmer Süd auf
+  sequence:
+  - action: cover.open_cover
+    data: {}
+    target:
+      entity_id: cover.ja3_westseite_rollo_esszimmer_sud_1_hmipw_drbl4_00165d899fbabc_ch10
+  description: ''
+  icon: mdi:window-shutter-open
+esszimmer_sud_halb:
+  alias: Esszimmer Süd halb
+  sequence:
+  - action: cover.set_cover_position
+    metadata: {}
+    data:
+      position: 60
+    target:
+      entity_id: cover.ja3_westseite_rollo_esszimmer_sud_1_hmipw_drbl4_00165d899fbabc_ch10
+  description: ''
+  icon: mdi:window-shutter-alert
+esszimmer_sud_zu:
+  alias: Esszimmer Süd zu
+  sequence:
+  - action: cover.set_cover_position
+    metadata: {}
+    data:
+      position: 10
+    target:
+      entity_id: cover.ja3_westseite_rollo_esszimmer_sud_1_hmipw_drbl4_00165d899fbabc_ch10
+  description: ''
+  icon: mdi:window-shutter
+esszimmer_nord_zu:
+  alias: Esszimmer Nord zu
+  sequence:
+  - action: cover.set_cover_position
+    metadata: {}
+    data:
+      position: 10
+    target:
+      entity_id: cover.ja4_rollo_esszimmer_nord_hmipw_drbl4_00165d899fba5d_ch2
+  description: ''
+  icon: mdi:window-shutter
+esszimmer_nord_auf:
+  alias: Esszimmer Nord auf
+  sequence:
+  - action: cover.open_cover
+    data: {}
+    target:
+      entity_id:
+      - cover.ja4_rollo_esszimmer_nord_hmipw_drbl4_00165d899fba5d_ch2
+  description: ''
+  icon: mdi:window-shutter-open
+esszimmer_nord_halb:
+  alias: Esszimmer Nord halb
+  sequence:
+  - action: cover.set_cover_position
+    metadata: {}
+    data:
+      position: 60
+    target:
+      entity_id:
+      - cover.ja4_rollo_esszimmer_nord_hmipw_drbl4_00165d899fba5d_ch2
+  description: ''
+  icon: mdi:window-shutter-alert
+arbeiten_nord_auf:
+  alias: Arbeiten Nord auf
+  sequence:
+  - action: cover.open_cover
+    data: {}
+    target:
+      entity_id: cover.ja2_nordseite_rollo_arbeiten_nord
+  description: ''
+  icon: mdi:window-shutter-open
+arbeiten_nord_zu:
+  alias: Arbeiten Nord zu
+  sequence:
+  - action: cover.set_cover_position
+    metadata: {}
+    data:
+      position: 10
+    target:
+      entity_id: cover.ja2_nordseite_rollo_arbeiten_nord
+  description: ''
+  icon: mdi:window-shutter
+kika_einschalten:
+  alias: KiKa einschalten
+  sequence:
+  - if:
+    - condition: device
+      type: is_off
+      device_id: b1aad560567ef5fc5950e49338e6f0f6
+      entity_id: 0e9b7ea26efe45a3d2970ccaeaa6f742
+      domain: remote
+    then:
+    - type: turn_on
+      device_id: b1aad560567ef5fc5950e49338e6f0f6
+      entity_id: 0e9b7ea26efe45a3d2970ccaeaa6f742
+      domain: remote
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 6
+        milliseconds: 0
+    alias: TV einschalten & warten
+  - action: media_player.play_media
+    metadata: {}
+    data:
+      media_content_id: '0010'
+      media_content_type: channel
+    target:
+      entity_id: media_player.fernseher_wohnzimmer
+    alias: Auf KiKa umschalten
+  description: ''
+  icon: mdi:youtube-tv

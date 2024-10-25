@@ -1,0 +1,2778 @@
+- id: '1659517183752'
+  alias: Wohnzimmer - Musik
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 9eeebd47305e95fa37f0eabdb2c9cb3e
+    event_type: homematic.keypress
+    address: 00171BE9A55EFC
+    device_type: HmIPW-DRI32
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 7
+  - platform: device
+    domain: homematicip_local
+    device_id: 9eeebd47305e95fa37f0eabdb2c9cb3e
+    event_type: homematic.keypress
+    address: 00171BE9A55EFC
+    device_type: HmIPW-DRI32
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 15
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: device
+        device_id: c6a4ebb5a4a641fd3785747d27c5edb8
+        domain: media_player
+        entity_id: 25a06173a1b93ba7c121f9abaa6f187d
+        type: is_playing
+      sequence:
+      - service: media_player.turn_off
+        data: {}
+        target:
+          entity_id: media_player.denon_avr_x1600h
+    default:
+    - service: media_player.turn_on
+      data: {}
+      target:
+        entity_id: media_player.denon_avr_x1600h
+      enabled: true
+    - service: media_player.select_source
+      target:
+        entity_id: media_player.denon_avr_x1600h
+      data:
+        source: HEOS Music
+    - service: scene.turn_on
+      target:
+        entity_id: scene.wohnzimmer_radio
+      metadata: {}
+    enabled: true
+  mode: single
+- id: '1662396089596'
+  alias: Flur - No motion detected
+  description: Turns off lights 2mins after last detection
+  triggers:
+  - entity_id:
+    - binary_sensor.flur_og_bewegungsmelder
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 15
+    trigger: state
+  conditions: []
+  actions:
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.flur
+  mode: single
+- id: '1662401124477'
+  alias: Wohnzimmer - Fernseher entspannt
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 4ba43cd500f2673f89095282320d80ec
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00221BE98E5CF0
+    type: press_short
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: 1e69e9104032e72c31282d8e949872b2
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00221F298AC6C8
+    type: press_short
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: f1f02c71acc19289b91ea894ea236a7a
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00221F298AC56D
+    type: press_short
+    subtype: 2
+  condition: []
+  action:
+  - if:
+    - condition: device
+      type: is_on
+      device_id: 15aef982b4f27551f0524cbe7be08fb4
+      entity_id: light.wohnzimmer_deckenleuchten
+      domain: light
+    then:
+    - type: turn_off
+      device_id: 15aef982b4f27551f0524cbe7be08fb4
+      entity_id: light.wohnzimmer_deckenleuchten
+      domain: light
+  - service: scene.turn_on
+    target:
+      entity_id: scene.wohnzimmer_fernseher_entspannen
+    metadata: {}
+  mode: single
+- id: '1662401790444'
+  alias: Flur - Taster
+  description: ''
+  triggers:
+  - domain: homematicip_local
+    device_id: 9eeebd47305e95fa37f0eabdb2c9cb3e
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00171BE9A55EFC
+    type: press_short
+    subtype: 1
+    trigger: device
+  - domain: homematicip_local
+    device_id: 9eeebd47305e95fa37f0eabdb2c9cb3e
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00171BE9A55EFC
+    type: press_short
+    subtype: 17
+    trigger: device
+  - domain: homematicip_local
+    device_id: 9a1416ef2da50c04ef807ba3bbeed432
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00205D89AFFE9C
+    type: press_short
+    subtype: 1
+    trigger: device
+  - domain: homematicip_local
+    device_id: c4f86b9accbd762ff9f9b20c5902e192
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00205D89AFFB5B
+    type: press_short
+    subtype: 1
+    trigger: device
+  - domain: homematicip_local
+    device_id: fca65a90724e2e16c1ab0213b3d70339
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00205D89AFFE9A
+    type: press_short
+    subtype: 1
+    trigger: device
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.flur
+        state: 'on'
+      sequence:
+      - action: light.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.flur
+    default:
+    - action: light.turn_on
+      metadata: {}
+      data:
+        transition: 1
+      target:
+        entity_id: light.flur
+    - delay:
+        hours: 0
+        minutes: 2
+        seconds: 0
+        milliseconds: 0
+    - action: light.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.flur
+  mode: restart
+- id: '1663097198560'
+  alias: Arbeitszimmer - Kamera-tauglich
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 82c052e8ab2f83607771bd47f37c9746
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00221F298AC569
+    type: press_short
+    subtype: 2
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 54585fa67486305d553ce5a98ef74fd1
+    entity_id: light.arbeitszimmer_west
+    domain: light
+  - type: turn_on
+    device_id: cc69371a042f866882ad1300123c787b
+    entity_id: light.arbeitszimmer_schreibtisch
+    domain: light
+  mode: single
+- id: '1663097343800'
+  alias: Arbeitszimmer Licht - Natürlich / aus
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 82c052e8ab2f83607771bd47f37c9746
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00221F298AC569
+    type: press_short
+    subtype: 1
+  condition: []
+  action:
+  - type: turn_off
+    device_id: bbab2551cc984485834db0a3cfcda4fa
+    entity_id: light.arbeitszimmer
+    domain: light
+  - choose:
+    - conditions:
+      - condition: device
+        type: is_on
+        device_id: bbab2551cc984485834db0a3cfcda4fa
+        entity_id: light.arbeitszimmer
+        domain: light
+      sequence:
+      - type: turn_off
+        device_id: bbab2551cc984485834db0a3cfcda4fa
+        entity_id: light.arbeitszimmer
+        domain: light
+    default:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.arbeitszimmer_naturliches_licht
+      metadata: {}
+  mode: single
+- id: '1663347481751'
+  alias: Esszimmer Licht - Natürlich / aus
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: b5b61a7ae18d844e0fe85d7440d1d3e9
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00221F298AC73D
+    type: press_short
+    subtype: 1
+  - platform: device
+    domain: homematicip_local
+    device_id: cd70ffebaba452be01f1503d11ca5296
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00221F298AC74E
+    type: press_short
+    subtype: 1
+  - platform: device
+    domain: homematicip_local
+    device_id: fa70440636449c4e5e1e3219f1c7f5c5
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00221F298AC55A
+    type: press_short
+    subtype: 1
+  - platform: device
+    domain: homematicip_local
+    device_id: 4b7699285e5ba0bbffcb4c997216de89
+    event_type: homematic.keypress
+    address: 00221F298AC563
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 1
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: device
+        type: is_on
+        device_id: 390ea22693f721fa2c710a8c9f5edbc7
+        entity_id: light.esszimmer
+        domain: light
+      sequence:
+      - type: turn_off
+        device_id: 390ea22693f721fa2c710a8c9f5edbc7
+        entity_id: light.esszimmer
+        domain: light
+    default:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.esszimmer_naturliches_licht
+      metadata: {}
+  mode: single
+- id: '1664093162219'
+  alias: Flur - Motion detected
+  description: Turns on lights
+  triggers:
+  - entity_id:
+    - binary_sensor.flur_og_bewegungsmelder
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+    trigger: state
+  conditions:
+  - condition: or
+    conditions:
+    - condition: numeric_state
+      entity_id: sensor.flur_helligkeit
+      below: 50
+  actions:
+  - choose:
+    - conditions:
+      - condition: time
+        after: '22:00:00'
+      sequence:
+      - action: scene.turn_on
+        metadata: {}
+        target:
+          entity_id: scene.flur_gedimmt
+        data:
+          transition: 1.5
+    - conditions:
+      - condition: time
+        after: 07:00:00
+      sequence:
+      - action: scene.turn_on
+        metadata: {}
+        target:
+          entity_id: scene.flur_hell
+        data:
+          transition: 1.5
+    default:
+    - action: scene.turn_on
+      metadata: {}
+      target:
+        entity_id: scene.flur_nachtlicht
+      data:
+        transition: 0.5
+  mode: single
+- id: '1664261537840'
+  alias: Arbeitszimmer Licht - Entspannt
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 82c052e8ab2f83607771bd47f37c9746
+    event_type: homematic.keypress
+    address: 00221F298AC569
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 2
+  condition: []
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.arbeitszimmer_entspannen
+    metadata: {}
+  mode: single
+- id: '1665484723956'
+  alias: EG Flur - Motion detected
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 6aa61813fe3628b3e12a7cf249ac3e76
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00171BE9A55D94
+    type: press_long
+    subtype: 31
+    enabled: true
+  condition: []
+  action:
+  - data: {}
+    target:
+      entity_id:
+      - input_boolean.eg_flur_bwm_motion_detected
+    action: input_boolean.turn_on
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - data: {}
+    target:
+      entity_id: input_boolean.eg_flur_bwm_motion_detected
+    action: input_boolean.turn_off
+  mode: restart
+- id: '1665863551593'
+  alias: Küche - Deckenleuchte
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: d073336019f161ff5324cc66a72e7308
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00221F298AC562
+    type: press_short
+    subtype: 1
+  - platform: device
+    domain: homematicip_local
+    device_id: 77c40b093e6f70c4020d05f0bc923435
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00221F298AC73E
+    type: press_short
+    subtype: 1
+  - platform: device
+    domain: homematicip_local
+    device_id: 88d1ac514a6d13267243bd902005cd4e
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00221F298AC602
+    type: press_short
+    subtype: 1
+  condition: []
+  action:
+  - type: toggle
+    device_id: b4a559faab3bde26ce4c7823d5053777
+    entity_id: light.hue_white_lamp_1
+    domain: light
+  mode: single
+- id: '1665873414546'
+  alias: Wohnzimmer Licht - Natürlich / aus
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 4ba43cd500f2673f89095282320d80ec
+    event_type: homematic.keypress
+    address: 00221BE98E5CF0
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 1
+  - platform: device
+    domain: homematicip_local
+    device_id: f1f02c71acc19289b91ea894ea236a7a
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00221F298AC56D
+    type: press_short
+    subtype: 1
+  - platform: device
+    domain: homematicip_local
+    device_id: 1e69e9104032e72c31282d8e949872b2
+    event_type: homematic.keypress
+    interface_id: ccu.herbel.net-HmIP-RF
+    address: 00221F298AC6C8
+    type: press_short
+    subtype: 1
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: device
+        type: is_on
+        device_id: fcea5ff3511610acfae796204ff567ec
+        entity_id: 98ef8115dd032a2287c3c7cf181d907c
+        domain: light
+      sequence:
+      - type: turn_off
+        device_id: fcea5ff3511610acfae796204ff567ec
+        entity_id: 98ef8115dd032a2287c3c7cf181d907c
+        domain: light
+    default:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.wohnzimmer_deckenleuchten_naturliches_licht
+      metadata: {}
+  mode: single
+- id: '1666705800399'
+  alias: EG Flur - Turn off lights
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_boolean.eg_flur_bwm_motion_detected
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+    from: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.eg_flur_bwm_is_enabled
+    state: 'on'
+    enabled: false
+  - condition: and
+    conditions:
+    - condition: state
+      entity_id: input_boolean.eg_flur_bwm_is_enabled
+      state: 'on'
+    - condition: state
+      entity_id: input_boolean.eg_flur_bwm_motion_detected
+      state: 'off'
+  action:
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 10
+      milliseconds: 0
+  - condition: state
+    entity_id: input_boolean.eg_flur_bwm_motion_detected
+    state: 'off'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+  - type: turn_off
+    device_id: 24fade4b6c93cb3df9a582b4bfb32890
+    entity_id: switch.a3_flur_ug_licht_hmipw_drs8_00161d89937c60_ch26
+    domain: switch
+    enabled: true
+  mode: restart
+- id: '1666706812707'
+  alias: EG Flur - Turn on lights
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_boolean.eg_flur_bwm_motion_detected
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+  condition:
+  - condition: state
+    entity_id: input_boolean.eg_flur_bwm_is_enabled
+    state: 'on'
+  - condition: or
+    conditions:
+    - condition: numeric_state
+      entity_id: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+      below: 18000
+    - condition: sun
+      before: sunrise
+      after: sunset
+      before_offset: -01:00:00
+  action:
+  - type: turn_on
+    device_id: 24fade4b6c93cb3df9a582b4bfb32890
+    entity_id: switch.a3_flur_ug_licht_hmipw_drs8_00161d89937c60_ch26
+    domain: switch
+    enabled: true
+  mode: restart
+- id: '1668797662862'
+  alias: Küche - Motion detected
+  description: ''
+  trigger:
+  - type: motion
+    platform: device
+    device_id: ac49fc1db875487f07217198bcbaa97f
+    entity_id: binary_sensor.hmip_smi55_2_00319d899ed9fa_motion
+    domain: binary_sensor
+    enabled: false
+  - platform: state
+    entity_id:
+    - binary_sensor.hmip_smi55_2_00319d899ed9fa_motion
+    to: 'on'
+  condition: []
+  action:
+  - condition: device
+    type: is_off
+    device_id: 40bc345c8e04e8e901e31ef6101938cc
+    entity_id: light.kuche
+    domain: light
+    enabled: false
+  - type: turn_on
+    device_id: b4a559faab3bde26ce4c7823d5053777
+    entity_id: light.hue_white_lamp_1
+    domain: light
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 20
+      milliseconds: 0
+  - type: turn_off
+    device_id: b4a559faab3bde26ce4c7823d5053777
+    entity_id: light.hue_white_lamp_1
+    domain: light
+  mode: single
+- id: '1669559663936'
+  alias: Wohnzimmer Licht - Entspannen
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 4ba43cd500f2673f89095282320d80ec
+    event_type: homematic.keypress
+    address: 00221BE98E5CF0
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: f1f02c71acc19289b91ea894ea236a7a
+    event_type: homematic.keypress
+    address: 00221F298AC56D
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: 1e69e9104032e72c31282d8e949872b2
+    event_type: homematic.keypress
+    address: 00221F298AC6C8
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 2
+  condition: []
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.wohnzimmer_deckenleuchten_entspannen
+    metadata: {}
+  mode: single
+- id: '1670859978779'
+  alias: Bad - Fenster schließen
+  description: ''
+  trigger:
+  - type: temperature
+    platform: device
+    device_id: b9aa4d3b079f9cfa0b3bbdb536ecb3c4
+    entity_id: sensor.bad_raumthermostat_actual_temperature
+    domain: sensor
+    below: 20
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+  condition:
+  - condition: time
+    before: '23:00:00'
+    after: 06:00:00
+  action:
+  - service: notify.mobile_app_all
+    data:
+      message: Badfenster offen?
+      title: Bad < 19 °C
+    enabled: false
+  - service: notify.mobile_app_floris_pixel_6_pro
+    data:
+      message: Badfenster offen?
+      title: 'Badfenster schließen '
+  - service: notify.mobile_app_steffis_pixel_6a
+    data:
+      message: Badfenster offen?
+      title: 'Badfenster schließen '
+  mode: single
+- id: '1678387942900'
+  alias: Schlafzimmer Licht - Natürlich / aus
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 83a4b711aba7b28f26eb3ecc1d40df94
+    event_type: homematic.keypress
+    address: 00221F298AC751
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 1
+  - platform: device
+    domain: homematicip_local
+    device_id: b63ffd8f0e89afcc3fe9dc00a7a117de
+    event_type: homematic.keypress
+    address: 00221F298AC601
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 1
+  - platform: device
+    domain: homematicip_local
+    device_id: accb356036759fb2951ff00662ab9c3a
+    event_type: homematic.keypress
+    address: 00221F298AC597
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 1
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: device
+        type: is_on
+        device_id: e01565a88d178dcb02fa00549e67c00c
+        entity_id: light.hue_color_lamp_1_2
+        domain: light
+      sequence:
+      - type: turn_off
+        device_id: e01565a88d178dcb02fa00549e67c00c
+        entity_id: light.hue_color_lamp_1_2
+        domain: light
+    default:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.schlafzimmer_naturliches_licht
+      metadata: {}
+  mode: single
+- id: '1678388674380'
+  alias: Schlafzimmer Licht - Natürlich
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 83a4b711aba7b28f26eb3ecc1d40df94
+    event_type: homematic.keypress
+    address: 00221F298AC751
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 1
+  - platform: device
+    domain: homematicip_local
+    device_id: b63ffd8f0e89afcc3fe9dc00a7a117de
+    event_type: homematic.keypress
+    address: 00221F298AC601
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 1
+  - platform: device
+    domain: homematicip_local
+    device_id: accb356036759fb2951ff00662ab9c3a
+    event_type: homematic.keypress
+    address: 00221F298AC597
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 1
+  condition: []
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.schlafzimmer_naturliches_licht
+    metadata: {}
+  mode: single
+- id: '1701858280574'
+  alias: Kind 1 Licht - Natürlich / aus
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: fda1b84e07e6fab405566eb2a61be5f4
+    event_type: homematic.keypress
+    address: 00221F298AC744
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 1
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: device
+        type: is_on
+        device_id: 72bf9716bc6d88db82c9979390743728
+        entity_id: a5246bdb59afb5c573a354a9891d096a
+        domain: light
+      sequence:
+      - type: turn_off
+        device_id: 72bf9716bc6d88db82c9979390743728
+        entity_id: a5246bdb59afb5c573a354a9891d096a
+        domain: light
+    default:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.kind_1_naturliches_licht
+      metadata: {}
+  mode: single
+- id: '1701858341643'
+  alias: Kind 2 Licht - Natürlich / aus
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: f2a330337d10e17c0fc48de364878bca
+    event_type: homematic.keypress
+    address: 00221F298AC763
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 1
+  - platform: device
+    domain: homematicip_local
+    device_id: 5a650573bf7462815f6dcf950e4107d1
+    event_type: homematic.keypress
+    address: 00019D89977611
+    device_type: HMIP-WRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 1
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: device
+        type: is_on
+        device_id: f37611c7c9abeae1daf034bb57b12db6
+        entity_id: cb8b1a03b1c71ce8247bdae19df2bf70
+        domain: light
+      sequence:
+      - type: turn_off
+        device_id: f37611c7c9abeae1daf034bb57b12db6
+        entity_id: cb8b1a03b1c71ce8247bdae19df2bf70
+        domain: light
+    default:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.kind_2_naturliches_licht
+      metadata: {}
+  mode: single
+- id: '1701858452385'
+  alias: Kind 1 Licht - Entspannen
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: fda1b84e07e6fab405566eb2a61be5f4
+    event_type: homematic.keypress
+    address: 00221F298AC744
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 2
+  condition: []
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.kind_1_entspannen
+    metadata: {}
+  mode: single
+- id: '1701858481299'
+  alias: Kind 2 Licht - Entspannen
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: f2a330337d10e17c0fc48de364878bca
+    event_type: homematic.keypress
+    address: 00221F298AC763
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: 5a650573bf7462815f6dcf950e4107d1
+    event_type: homematic.keypress
+    address: 00019D89977611
+    device_type: HMIP-WRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 2
+  condition: []
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.kind_2_entspannen
+    metadata: {}
+  mode: single
+- id: '1701858679561'
+  alias: Kind 1 Licht - Lesen
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: fda1b84e07e6fab405566eb2a61be5f4
+    event_type: homematic.keypress
+    address: 00221F298AC744
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+  condition: []
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.kind_1_lesen
+    metadata: {}
+  mode: single
+- id: '1701858733015'
+  alias: Kind 2 Licht - Lesen
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: f2a330337d10e17c0fc48de364878bca
+    event_type: homematic.keypress
+    address: 00221F298AC763
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: 5a650573bf7462815f6dcf950e4107d1
+    event_type: homematic.keypress
+    address: 00019D89977611
+    device_type: HMIP-WRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+  condition: []
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.kind_2_lesen
+    metadata: {}
+  mode: single
+- id: '1701858828710'
+  alias: Kind 1 Licht - Natürlich
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: fda1b84e07e6fab405566eb2a61be5f4
+    event_type: homematic.keypress
+    address: 00221F298AC744
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 1
+  condition: []
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.kind_1_naturliches_licht
+    metadata: {}
+  mode: single
+- id: '1701858859297'
+  alias: Kind 2 Licht - Natürlich
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: f2a330337d10e17c0fc48de364878bca
+    event_type: homematic.keypress
+    address: 00221F298AC763
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 1
+  - platform: device
+    domain: homematicip_local
+    device_id: 5a650573bf7462815f6dcf950e4107d1
+    event_type: homematic.keypress
+    address: 00019D89977611
+    device_type: HMIP-WRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 1
+  condition: []
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.kind_2_naturliches_licht
+    metadata: {}
+  mode: single
+- id: '1701859047372'
+  alias: Schlafzimmer Licht - Lesen
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 83a4b711aba7b28f26eb3ecc1d40df94
+    event_type: homematic.keypress
+    address: 00221F298AC751
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: b63ffd8f0e89afcc3fe9dc00a7a117de
+    event_type: homematic.keypress
+    address: 00221F298AC601
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: accb356036759fb2951ff00662ab9c3a
+    event_type: homematic.keypress
+    address: 00221F298AC597
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+  condition: []
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.schlafzimmer_lesen
+    metadata: {}
+  mode: single
+- id: '1701859074748'
+  alias: Schlafzimmer Licht - Entspannen
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 83a4b711aba7b28f26eb3ecc1d40df94
+    event_type: homematic.keypress
+    address: 00221F298AC751
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: b63ffd8f0e89afcc3fe9dc00a7a117de
+    event_type: homematic.keypress
+    address: 00221F298AC601
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: accb356036759fb2951ff00662ab9c3a
+    event_type: homematic.keypress
+    address: 00221F298AC597
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 2
+  condition: []
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.schlafzimmer_entspannen
+    metadata: {}
+  mode: single
+- id: '1701859291208'
+  alias: Arbeitszimmer Licht - Lesen
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 82c052e8ab2f83607771bd47f37c9746
+    event_type: homematic.keypress
+    address: 00221F298AC569
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+  condition: []
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.arbeitszimmer_lesen
+    metadata: {}
+  mode: single
+- id: '1701859328949'
+  alias: Arbeitszimmer Licht - Natürlich
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 82c052e8ab2f83607771bd47f37c9746
+    event_type: homematic.keypress
+    address: 00221F298AC569
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 1
+  condition: []
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.arbeitszimmer_naturliches_licht
+    metadata: {}
+  mode: single
+- id: '1701859939698'
+  alias: Wohnzimmer Licht - Lesen
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 4ba43cd500f2673f89095282320d80ec
+    event_type: homematic.keypress
+    address: 00221BE98E5CF0
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: f1f02c71acc19289b91ea894ea236a7a
+    event_type: homematic.keypress
+    address: 00221F298AC56D
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: 1e69e9104032e72c31282d8e949872b2
+    event_type: homematic.keypress
+    address: 00221F298AC6C8
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+  condition: []
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.wohnzimmer_deckenleuchten_lesen
+    metadata: {}
+  mode: single
+- id: '1701860051361'
+  alias: Wohnzimmer Licht - Natürlich
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 4ba43cd500f2673f89095282320d80ec
+    event_type: homematic.keypress
+    address: 00221BE98E5CF0
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 1
+  - platform: device
+    domain: homematicip_local
+    device_id: f1f02c71acc19289b91ea894ea236a7a
+    event_type: homematic.keypress
+    address: 00221F298AC56D
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 1
+  - platform: device
+    domain: homematicip_local
+    device_id: 1e69e9104032e72c31282d8e949872b2
+    event_type: homematic.keypress
+    address: 00221F298AC6C8
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 1
+  condition: []
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.wohnzimmer_deckenleuchten_naturliches_licht
+    metadata: {}
+  mode: single
+- id: '1701860200535'
+  alias: Esszimmer Licht - Natürlich
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: b5b61a7ae18d844e0fe85d7440d1d3e9
+    event_type: homematic.keypress
+    address: 00221F298AC73D
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 1
+  - platform: device
+    domain: homematicip_local
+    device_id: cd70ffebaba452be01f1503d11ca5296
+    event_type: homematic.keypress
+    address: 00221F298AC74E
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 1
+  - platform: device
+    domain: homematicip_local
+    device_id: fa70440636449c4e5e1e3219f1c7f5c5
+    event_type: homematic.keypress
+    address: 00221F298AC55A
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 1
+  - platform: device
+    domain: homematicip_local
+    device_id: 4b7699285e5ba0bbffcb4c997216de89
+    event_type: homematic.keypress
+    address: 00221F298AC563
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 1
+  condition: []
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.esszimmer_naturliches_licht
+    metadata: {}
+  mode: single
+- id: '1701860234271'
+  alias: Esszimmer Licht - Lesen
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: b5b61a7ae18d844e0fe85d7440d1d3e9
+    event_type: homematic.keypress
+    address: 00221F298AC73D
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: cd70ffebaba452be01f1503d11ca5296
+    event_type: homematic.keypress
+    address: 00221F298AC74E
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: fa70440636449c4e5e1e3219f1c7f5c5
+    event_type: homematic.keypress
+    address: 00221F298AC55A
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: 4b7699285e5ba0bbffcb4c997216de89
+    event_type: homematic.keypress
+    address: 00221F298AC563
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+  condition: []
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.esszimmer_lesen
+    metadata: {}
+  mode: single
+- id: '1701860267416'
+  alias: Esszimmer Licht - Entspannen
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: b5b61a7ae18d844e0fe85d7440d1d3e9
+    event_type: homematic.keypress
+    address: 00221F298AC73D
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: cd70ffebaba452be01f1503d11ca5296
+    event_type: homematic.keypress
+    address: 00221F298AC74E
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: fa70440636449c4e5e1e3219f1c7f5c5
+    event_type: homematic.keypress
+    address: 00221F298AC55A
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: 4b7699285e5ba0bbffcb4c997216de89
+    event_type: homematic.keypress
+    address: 00221F298AC563
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 2
+  condition: []
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: scene.esszimmer_entspannen
+    metadata: {}
+  mode: single
+- id: '1701861626597'
+  alias: Esszimmer Musik
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 9eeebd47305e95fa37f0eabdb2c9cb3e
+    event_type: homematic.keypress
+    address: 00171BE9A55EFC
+    device_type: HmIPW-DRI32
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 23
+  - platform: device
+    domain: homematicip_local
+    device_id: 9eeebd47305e95fa37f0eabdb2c9cb3e
+    event_type: homematic.keypress
+    address: 00171BE9A55EFC
+    device_type: HmIPW-DRI32
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 27
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: device
+        device_id: c6a4ebb5a4a641fd3785747d27c5edb8
+        domain: media_player
+        entity_id: d327bde224c9443e9004a8caabb96caf
+        type: is_on
+      sequence:
+      - service: media_player.turn_off
+        data: {}
+        target:
+          entity_id:
+          - media_player.denon_avr_x1600h_2
+    default:
+    - service: media_player.turn_on
+      data: {}
+      target:
+        entity_id: media_player.denon_avr_x1600h_2
+    - service: scene.turn_on
+      target:
+        entity_id: scene.esszimmer_swr1
+      metadata: {}
+  mode: single
+- id: '1702664967422'
+  alias: Bad Radio an/aus
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 46ccc40ff65ad4c3b857f684631a9187
+    event_type: homematic.keypress
+    address: 00221F298AC61C
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 1
+  condition: []
+  action:
+  - if:
+    - condition: device
+      device_id: 9471c553cebd9e0999878b0536156635
+      domain: media_player
+      entity_id: 91a04772bccb8bcbeca74744e84984fd
+      type: is_playing
+    then:
+    - service: media_player.turn_off
+      target:
+        device_id: 9471c553cebd9e0999878b0536156635
+      data: {}
+    else:
+    - service: media_player.turn_on
+      target:
+        device_id: 9471c553cebd9e0999878b0536156635
+      data: {}
+  mode: single
+- id: '1702665481107'
+  alias: Bad Radio aus wenn Licht aus
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - light.a1_bad_deckenleuchte_1_a1_ch2
+    - light.a1_bad_deckenleuchte_2_a1_ch6
+    from: 'on'
+    to: 'off'
+  condition: []
+  action:
+  - if:
+    - condition: and
+      conditions:
+      - condition: device
+        type: is_off
+        device_id: c1ff62b87afce76488931a17d5bb1790
+        entity_id: 519308813e9ddacc305b4303619ecb60
+        domain: switch
+      - condition: device
+        type: is_off
+        device_id: c1ff62b87afce76488931a17d5bb1790
+        entity_id: 606fbc2be4f490ce90c6614b104b03a7
+        domain: switch
+    then:
+    - service: media_player.turn_off
+      target:
+        device_id: 9471c553cebd9e0999878b0536156635
+      data: {}
+    else: []
+  mode: single
+- id: '1702935502624'
+  alias: Haustür verriegeln
+  description: ''
+  trigger:
+  - platform: time
+    at: '23:00:00'
+  condition: []
+  action:
+  - device_id: 50cf2105fe9b900f7b0c6ecf6818cbcf
+    domain: lock
+    entity_id: 806b329c6b57dc53cd85c092d5bea544
+    type: lock
+  mode: single
+- id: '1702935541728'
+  alias: Haustür entriegeln
+  description: ''
+  trigger:
+  - platform: time
+    at: 05:30:00
+  condition: []
+  action:
+  - device_id: 50cf2105fe9b900f7b0c6ecf6818cbcf
+    domain: lock
+    entity_id: 806b329c6b57dc53cd85c092d5bea544
+    type: unlock
+  mode: single
+- id: '1706262837505'
+  alias: NFC Tag Door ist gescannt
+  description: ''
+  triggers:
+  - tag_id: 89c18de9-4648-45cf-9cf4-da76e2172e0b
+    device_id:
+    - 1dd62e34470dbcd6515393d0493e6bc2
+    - 6581f485ce443d57cc3775f766d2f28c
+    trigger: tag
+  - tag_id: 69ec0056-12e8-490d-93fd-98c008e033cd
+    trigger: tag
+  - domain: homematicip_local
+    device_id: cfb88c8a0be4d6cc493fa7857b65b8a7
+    event_type: homematic.keypress
+    address: 0009DF298D16A1
+    model: HmIP-KRCK
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_release
+    subtype: 1
+    trigger: device
+  conditions: []
+  actions:
+  - device_id: 50cf2105fe9b900f7b0c6ecf6818cbcf
+    domain: lock
+    entity_id: 806b329c6b57dc53cd85c092d5bea544
+    type: open
+  - device_id: 1316d4c8a44cde8d1f32f8f1b6652c4b
+    domain: lock
+    entity_id: 59c306be90627703bcf1aa652faecbab
+    type: open
+  mode: single
+- id: '1709462672756'
+  alias: EG WC Fenster geöffnet
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: 0f9b2574d7bf5cd79919579611189d46
+    entity_id: ab90893d862ff8bbbc152090552e51cf
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+  condition: []
+  action:
+  - service: notify.mobile_app_floris_pixel_6_pro
+    metadata: {}
+    data:
+      title: EG WC Fenster geöffnet
+      message: Das WC Fenster im Erdgeschoss ist geöffnet
+      data:
+        tag: eg-wc-window-open
+  - service: notify.mobile_app_steffis_pixel_6a
+    data:
+      message: Das WC Fenster im Erdgeschoss ist geöffnet
+      title: EG WC Fenster geöffnet
+      data:
+        tag: eg-wc-window-open
+  mode: single
+- id: '1711626026964'
+  alias: EG WC Fenster schließen
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: 0f9b2574d7bf5cd79919579611189d46
+    entity_id: ab90893d862ff8bbbc152090552e51cf
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+  condition: []
+  action:
+  - service: notify.mobile_app_floris_pixel_6_pro
+    metadata: {}
+    data:
+      title: EG WC Fenster schließen
+      message: Das WC Fenster im Erdgeschoss bitte wieder schließen
+      data:
+        tag: eg-wc-window-open
+  - service: notify.mobile_app_steffis_pixel_6a
+    data:
+      message: Das WC Fenster im Erdgeschoss bitte wieder schließen
+      title: EG WC Fenster schließen
+      data:
+        tag: eg-wc-window-open
+  mode: single
+- id: '1711627846701'
+  alias: EG WC Fenster geschlossen
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: 0f9b2574d7bf5cd79919579611189d46
+    entity_id: ab90893d862ff8bbbc152090552e51cf
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+  condition: []
+  action:
+  - service: notify.mobile_app_floris_pixel_6_pro
+    metadata: {}
+    data:
+      message: clear_notification
+      data:
+        tag: eg-wc-window-open
+  - service: notify.mobile_app_steffis_pixel_6a
+    data:
+      message: clear_notification
+      data:
+        tag: eg-wc-window-open
+  mode: single
+- id: '1716814647998'
+  alias: Wohnbereich - Licht natürlich / aus
+  description: ''
+  trigger: []
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: device
+        type: is_on
+        device_id: 19cdd2767e5a2f286b1f5ebba6fbcf14
+        entity_id: db98c08dd948cdba2dc2b265fee9dccc
+        domain: light
+      sequence:
+      - type: turn_off
+        device_id: 19cdd2767e5a2f286b1f5ebba6fbcf14
+        entity_id: db98c08dd948cdba2dc2b265fee9dccc
+        domain: light
+    default:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.wohnbereich_naturliches_licht
+      metadata: {}
+  mode: single
+- id: '1719902588303'
+  alias: EG Windfang - Motion Detected
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 6aa61813fe3628b3e12a7cf249ac3e76
+    event_type: homematic.keypress
+    address: 00171BE9A55D94
+    device_type: HmIPW-DRI32
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long
+    subtype: 32
+  condition: []
+  action:
+  - data: {}
+    target:
+      entity_id:
+      - input_boolean.eg_windfang_bwm_motion_detected
+    action: input_boolean.turn_on
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - data: {}
+    target:
+      entity_id:
+      - input_boolean.eg_windfang_bwm_motion_detected
+    action: input_boolean.turn_off
+  mode: restart
+- id: '1724526244310'
+  alias: Außenbeleuchtung Terrasse Nord
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 9eeebd47305e95fa37f0eabdb2c9cb3e
+    event_type: homematic.keypress
+    address: 00171BE9A55EFC
+    device_type: HmIPW-DRI32
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 29
+  condition: []
+  action:
+  - type: toggle
+    device_id: 296a4afc92ac462ed25fa1bf69602835
+    entity_id: 0a0ef584a87fb5114edfeef8a2bcf29c
+    domain: light
+  mode: single
+- id: '1724526335378'
+  alias: Außenbeleuchtung Terrasse Süd
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 6aa61813fe3628b3e12a7cf249ac3e76
+    event_type: homematic.keypress
+    address: 00171BE9A55D94
+    device_type: HmIPW-DRI32
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 5
+  condition: []
+  action:
+  - type: toggle
+    device_id: 4a56865504802d6e8487cdd31fc525a9
+    entity_id: d2c14a5cb1b2eaa6b9ea60785c1f1e5a
+    domain: light
+  mode: single
+- id: '1724526445114'
+  alias: Außenbeleuchtung Garten Nord
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 6aa61813fe3628b3e12a7cf249ac3e76
+    event_type: homematic.keypress
+    address: 00171BE9A55D94
+    device_type: HmIPW-DRI32
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 19
+  condition: []
+  action:
+  - type: toggle
+    device_id: 626977a8a4298271bcf83e4a1ab4b19c
+    entity_id: 4b4c8bc041053f24bac95f133c334304
+    domain: light
+  mode: single
+- id: '1724696333393'
+  alias: Büro - Receiver
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: b16ae91bb889ea09b3399a3769c30f30
+    event_type: homematic.keypress
+    address: 00171BE9A55B1A
+    device_type: HmIPW-DRI32
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 19
+  - platform: device
+    domain: homematicip_local
+    device_id: b16ae91bb889ea09b3399a3769c30f30
+    event_type: homematic.keypress
+    address: 00171BE9A55B1A
+    device_type: HmIPW-DRI32
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 20
+    enabled: false
+  condition: []
+  action:
+  - action: media_player.toggle
+    metadata: {}
+    data: {}
+    target:
+      entity_id: media_player.denon_avr_x1300w
+  mode: single
+- id: '1724696581186'
+  alias: Arbeitszimmer - Ventilator
+  description: ''
+  triggers:
+  - domain: homematicip_local
+    device_id: b16ae91bb889ea09b3399a3769c30f30
+    event_type: homematic.keypress
+    address: 00171BE9A55B1A
+    device_type: HmIPW-DRI32
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 23
+    trigger: device
+  conditions: []
+  actions:
+  - action: fan.toggle
+    target:
+      entity_id:
+      - fan.arbeitszimmer_ventilator
+    data: {}
+  mode: single
+- id: '1724941599841'
+  alias: Rollo Arbeiten Nord
+  description: ''
+  trigger:
+  - platform: time_pattern
+    minutes: /5
+  - platform: state
+    entity_id:
+    - input_boolean.autorollo_arbeiten
+    - input_boolean.shutter_ventilate_study_north
+  condition:
+  - condition: state
+    entity_id: input_boolean.autorollo_arbeiten
+    state: 'on'
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
+      - condition: state
+        entity_id: input_boolean.shutter_ventilate_study_north
+        state: 'off'
+        alias: Außer Lüften ist aktiv
+      sequence:
+      - action: cover.set_cover_position
+        data:
+          position: 10
+        target:
+          entity_id:
+          - cover.ja2_nordseite_rollo_arbeiten_nord
+        enabled: true
+      alias: 'Nachts schließen '
+    - conditions:
+      - condition: and
+        conditions:
+        - condition: sun
+          before: sunset
+          after: sunrise
+        - condition: time
+          after: 08:00:00
+          before: '19:15:00'
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: weather.home
+            state: cloudy
+            enabled: false
+        alias: Tagsüber
+      - condition: state
+        entity_id: input_boolean.shutter_ventilate_study_north
+        state: 'off'
+        alias: Außer Lüften ist aktiv
+      - alias: Sonnenstand und Lichtintensität
+        condition: and
+        conditions:
+        - condition: numeric_state
+          entity_id: sun.sun
+          attribute: azimuth
+          above: 250
+        - condition: numeric_state
+          entity_id: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+          above: 20000
+          enabled: false
+        - condition: numeric_state
+          entity_id: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
+          above: 30000
+          enabled: false
+        - condition: numeric_state
+          entity_id: sun.sun
+          attribute: elevation
+          above: 12
+      - alias: Temperatur und Vorhersage
+        condition: and
+        conditions:
+        - condition: numeric_state
+          entity_id: sensor.hmip_stho_000edd89b688b4_actual_temperature
+          above: 18
+          enabled: true
+        - condition: numeric_state
+          entity_id: sensor.hmip_stho_000edd89b682a2_actual_temperature
+          above: 18
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: weather.home
+            state: cloudy
+            enabled: true
+          - condition: state
+            entity_id: weather.home
+            state: fog
+          - condition: state
+            entity_id: weather.home
+            state: lightning-rainy
+          - condition: state
+            entity_id: weather.home
+            state: lightning
+          - condition: state
+            entity_id: weather.home
+            state: rainy
+          - condition: state
+            entity_id: weather.home
+            state: pouring
+          - condition: state
+            entity_id: weather.home
+            state: snowy-rainy
+          - condition: state
+            entity_id: weather.home
+            state: hail
+      sequence:
+      - action: cover.set_cover_position
+        metadata: {}
+        data:
+          position: 15
+        target:
+          entity_id:
+          - cover.ja2_nordseite_rollo_arbeiten_nord
+      alias: Tags beschatten
+    - conditions:
+      - condition: time
+        after: input_datetime.rollladen_nicht_offnen_bevor
+      - condition: sun
+        before: sunset
+        after: sunrise
+      - condition: state
+        entity_id: binary_sensor.auto_open_shutters
+        state: 'on'
+      sequence:
+      - action: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - cover.ja2_nordseite_rollo_arbeiten_nord
+      alias: Tags öffnen
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.shutter_ventilate_study_north
+        state: 'on'
+      sequence:
+      - action: cover.set_cover_position
+        metadata: {}
+        data:
+          position: 50
+        target:
+          entity_id: cover.ja2_nordseite_rollo_arbeiten_nord
+      alias: Lüften
+  mode: single
+- id: '1724946891512'
+  alias: Rollo Esszimmer Nord
+  description: ''
+  trigger:
+  - platform: time_pattern
+    minutes: /5
+  - platform: state
+    entity_id:
+    - binary_sensor.e4_ch10
+    to: 'off'
+    from: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+  - platform: state
+    entity_id:
+    - input_boolean.autorollo_esszimmer
+  condition:
+  - condition: state
+    entity_id: input_boolean.autorollo_esszimmer
+    state: 'on'
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
+      - condition: state
+        entity_id: binary_sensor.e4_ch10
+        state: 'off'
+      sequence:
+      - action: cover.set_cover_position
+        data:
+          position: 20
+        enabled: true
+        target:
+          entity_id: cover.ja4_rollo_esszimmer_nord_hmipw_drbl4_00165d899fba5d_ch2
+      alias: Nachts
+    - conditions:
+      - condition: and
+        conditions:
+        - condition: sun
+          before: sunset
+          after: sunrise
+        - condition: time
+          after: 08:00:00
+          before: '19:15:00'
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: weather.home
+            state: cloudy
+            enabled: false
+        alias: Tagsüber
+      - alias: Temperatur und Vorhersage
+        condition: and
+        conditions:
+        - condition: numeric_state
+          entity_id: sensor.hmip_stho_000edd89b688b4_actual_temperature
+          above: 18
+          enabled: true
+        - condition: numeric_state
+          entity_id: sensor.hmip_stho_000edd89b682a2_actual_temperature
+          above: 18
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: weather.home
+            state: cloudy
+            enabled: true
+          - condition: state
+            entity_id: weather.home
+            state: fog
+          - condition: state
+            entity_id: weather.home
+            state: lightning-rainy
+          - condition: state
+            entity_id: weather.home
+            state: lightning
+          - condition: state
+            entity_id: weather.home
+            state: rainy
+          - condition: state
+            entity_id: weather.home
+            state: pouring
+          - condition: state
+            entity_id: weather.home
+            state: snowy-rainy
+          - condition: state
+            entity_id: weather.home
+            state: hail
+      - alias: Sonnenstand und Lichtintensität
+        condition: and
+        conditions:
+        - condition: numeric_state
+          entity_id: sun.sun
+          attribute: azimuth
+          above: 255
+        - condition: numeric_state
+          entity_id: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+          above: 20000
+          enabled: false
+        - condition: numeric_state
+          entity_id: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
+          above: 30000
+          enabled: false
+        - condition: numeric_state
+          entity_id: sun.sun
+          attribute: elevation
+          above: 15
+      - condition: state
+        entity_id: binary_sensor.e4_ch10
+        state: 'off'
+      sequence:
+      - action: cover.set_cover_position
+        metadata: {}
+        data:
+          position: 20
+        target:
+          entity_id:
+          - cover.ja4_rollo_esszimmer_nord_hmipw_drbl4_00165d899fba5d_ch2
+      alias: Tags beschatten
+    - conditions:
+      - condition: state
+        entity_id: sun.sun
+        state: above_horizon
+      - condition: time
+        after: input_datetime.rollladen_nicht_offnen_bevor
+      sequence:
+      - action: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.ja4_rollo_esszimmer_nord_hmipw_drbl4_00165d899fba5d_ch2
+      alias: 'Tags öffnen '
+  mode: single
+- id: '1725130342873'
+  alias: Rollo Bad
+  description: ''
+  trigger:
+  - platform: time_pattern
+    minutes: /5
+  condition:
+  - condition: and
+    conditions:
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: weather.home
+        state: cloudy
+        enabled: false
+    - condition: state
+      entity_id: input_boolean.autorollo_esszimmer
+      state: 'on'
+      enabled: false
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
+      sequence:
+      - action: cover.set_cover_position
+        data:
+          position: 10
+        enabled: true
+        target:
+          entity_id:
+          - cover.ja2_nordseite_rollo_bad_hmipw_drbl4_00165d899fbab0_ch14
+      alias: Nachts
+    - conditions:
+      - condition: and
+        conditions:
+        - condition: sun
+          before: sunset
+          after: sunrise
+        - condition: time
+          after: 08:00:00
+          before: '19:15:00'
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: weather.home
+            state: cloudy
+            enabled: false
+        alias: Tagsüber
+      - alias: Sonnenstand und Lichtintensität
+        condition: and
+        conditions:
+        - condition: numeric_state
+          entity_id: sun.sun
+          attribute: azimuth
+          above: 260
+        - condition: numeric_state
+          entity_id: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+          above: 20000
+          enabled: false
+        - condition: numeric_state
+          entity_id: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
+          above: 30000
+          enabled: false
+        - condition: numeric_state
+          entity_id: sun.sun
+          attribute: elevation
+          above: 16
+      - alias: Temperatur und Vorhersage
+        condition: and
+        conditions:
+        - condition: numeric_state
+          entity_id: sensor.hmip_stho_000edd89b682a2_humidity
+          above: 16
+          enabled: true
+      sequence:
+      - action: cover.set_cover_position
+        metadata: {}
+        data:
+          position: 20
+        target:
+          entity_id: cover.ja2_nordseite_rollo_bad_hmipw_drbl4_00165d899fbab0_ch14
+        enabled: false
+      alias: Tagsüber beschatten
+    - conditions:
+      - condition: state
+        entity_id: sun.sun
+        state: above_horizon
+      sequence:
+      - action: cover.open_cover
+        target:
+          entity_id: cover.ja2_nordseite_rollo_bad_hmipw_drbl4_00165d899fbab0_ch14
+        data: {}
+      alias: 'Tagsüber öffnen '
+  mode: single
+- id: '1725130504682'
+  alias: Rollo Küche
+  description: ''
+  trigger:
+  - platform: time_pattern
+    minutes: /5
+  - platform: state
+    entity_id:
+    - input_boolean.autorollo_kuche
+  condition:
+  - condition: and
+    conditions:
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: weather.home
+        state: cloudy
+        enabled: false
+    - condition: state
+      entity_id: input_boolean.autorollo_esszimmer
+      state: 'on'
+      enabled: false
+    - condition: state
+      entity_id: input_boolean.autorollo_kuche
+      state: 'on'
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
+      sequence:
+      - action: cover.set_cover_position
+        data:
+          position: 20
+        enabled: true
+        target:
+          entity_id: cover.ja4_rollo_kuche_hmipw_drbl4_00165d899fba5d_ch6
+      alias: Nachts
+    - conditions:
+      - condition: and
+        conditions:
+        - condition: sun
+          before: sunset
+          after: sunrise
+        - condition: time
+          after: 08:00:00
+          before: '19:15:00'
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: weather.home
+            state: cloudy
+            enabled: false
+        alias: Tagsüber
+      - alias: Sonnenstand und Lichtintensität
+        condition: and
+        conditions:
+        - condition: numeric_state
+          entity_id: sun.sun
+          attribute: azimuth
+          above: 255
+        - condition: numeric_state
+          entity_id: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+          above: 20000
+          enabled: false
+        - condition: numeric_state
+          entity_id: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
+          above: 30000
+          enabled: false
+        - condition: numeric_state
+          entity_id: sun.sun
+          attribute: elevation
+          above: 12
+      - alias: Temperatur und Vorhersage
+        condition: and
+        conditions:
+        - condition: numeric_state
+          entity_id: sensor.hmip_stho_000edd89b688b4_actual_temperature
+          above: 18
+          enabled: true
+        - condition: numeric_state
+          entity_id: sensor.hmip_stho_000edd89b682a2_actual_temperature
+          above: 18
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: weather.home
+            state: cloudy
+            enabled: true
+          - condition: state
+            entity_id: weather.home
+            state: fog
+          - condition: state
+            entity_id: weather.home
+            state: lightning-rainy
+          - condition: state
+            entity_id: weather.home
+            state: lightning
+          - condition: state
+            entity_id: weather.home
+            state: rainy
+          - condition: state
+            entity_id: weather.home
+            state: pouring
+          - condition: state
+            entity_id: weather.home
+            state: snowy-rainy
+          - condition: state
+            entity_id: weather.home
+            state: hail
+      sequence:
+      - action: cover.set_cover_position
+        metadata: {}
+        data:
+          position: 20
+        target:
+          entity_id: cover.ja4_rollo_kuche_hmipw_drbl4_00165d899fba5d_ch6
+      alias: Tagsüber beschatten
+    - conditions:
+      - condition: state
+        entity_id: sun.sun
+        state: above_horizon
+      sequence:
+      - action: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - cover.ja4_rollo_kuche_hmipw_drbl4_00165d899fba5d_ch6
+      alias: 'Tagsüber öffnen '
+  mode: single
+- id: '1725130682053'
+  alias: Rollo HWR
+  description: ''
+  trigger:
+  - platform: time_pattern
+    minutes: /5
+  condition:
+  - condition: and
+    conditions:
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: weather.home
+        state: cloudy
+        enabled: false
+    - condition: state
+      entity_id: input_boolean.autorollo_esszimmer
+      state: 'on'
+      enabled: false
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
+      sequence:
+      - action: cover.set_cover_position
+        data:
+          position: 20
+        enabled: true
+        target:
+          entity_id: cover.ja4_rollo_hwr_hmipw_drbl4_00165d899fba5d_ch10
+      alias: Nachts
+    - conditions:
+      - condition: and
+        conditions:
+        - condition: sun
+          before: sunset
+          after: sunrise
+        - condition: time
+          after: 08:00:00
+          before: '19:15:00'
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: weather.home
+            state: cloudy
+            enabled: false
+        alias: Tagsüber
+      - alias: Sonnenstand und Lichtintensität
+        condition: and
+        conditions:
+        - condition: numeric_state
+          entity_id: sun.sun
+          attribute: azimuth
+          above: 264
+        - condition: numeric_state
+          entity_id: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+          above: 20000
+          enabled: false
+        - condition: numeric_state
+          entity_id: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
+          above: 30000
+          enabled: false
+        - condition: numeric_state
+          entity_id: sun.sun
+          attribute: elevation
+          above: 16
+      - alias: Temperatur und Vorhersage
+        condition: and
+        conditions:
+        - condition: numeric_state
+          entity_id: sensor.hmip_stho_000edd89b688b4_actual_temperature
+          above: 18
+          enabled: true
+        - condition: numeric_state
+          entity_id: sensor.hmip_stho_000edd89b682a2_actual_temperature
+          above: 18
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: weather.home
+            state: cloudy
+            enabled: true
+          - condition: state
+            entity_id: weather.home
+            state: fog
+          - condition: state
+            entity_id: weather.home
+            state: lightning-rainy
+          - condition: state
+            entity_id: weather.home
+            state: lightning
+          - condition: state
+            entity_id: weather.home
+            state: rainy
+          - condition: state
+            entity_id: weather.home
+            state: pouring
+          - condition: state
+            entity_id: weather.home
+            state: snowy-rainy
+          - condition: state
+            entity_id: weather.home
+            state: hail
+      sequence:
+      - action: cover.set_cover_position
+        metadata: {}
+        data:
+          position: 20
+        target:
+          entity_id: cover.ja4_rollo_hwr_hmipw_drbl4_00165d899fba5d_ch10
+      alias: Tagsüber beschatten
+    - conditions:
+      - condition: state
+        entity_id: sun.sun
+        state: above_horizon
+      sequence:
+      - action: cover.open_cover
+        metadata: {}
+        data: {}
+        target:
+          entity_id: cover.ja4_rollo_hwr_hmipw_drbl4_00165d899fba5d_ch10
+      alias: 'Tagsüber öffnen '
+  mode: single
+- id: '1726395757612'
+  alias: EG Windfang - Turn off lights
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_boolean.eg_windfang_bwm_motion_detected
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+    from: 'on'
+  condition:
+  - condition: and
+    conditions:
+    - condition: state
+      entity_id: input_boolean.eg_flur_bwm_is_enabled
+      state: 'on'
+    - condition: state
+      entity_id: input_boolean.eg_windfang_bwm_motion_detected
+      state: 'off'
+      enabled: true
+  action:
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 10
+      milliseconds: 0
+  - condition: state
+    state: 'off'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+    entity_id: input_boolean.eg_windfang_bwm_motion_detected
+  - type: turn_off
+    device_id: 24fade4b6c93cb3df9a582b4bfb32890
+    entity_id: 5ba6ee0364728dccbdfb7b7b2a5bd577
+    domain: switch
+  mode: restart
+- id: '1726395868651'
+  alias: EG Windfang - Turn on lights
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_boolean.eg_windfang_bwm_motion_detected
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+  condition:
+  - condition: state
+    state: 'on'
+    entity_id: input_boolean.eg_windfang_bwm_is_enabled
+  - condition: or
+    conditions:
+    - condition: numeric_state
+      entity_id: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+      below: 11000
+    - condition: sun
+      before: sunrise
+      after: sunset
+      before_offset: -01:00:00
+    enabled: true
+  action:
+  - type: turn_on
+    device_id: 24fade4b6c93cb3df9a582b4bfb32890
+    entity_id: 5ba6ee0364728dccbdfb7b7b2a5bd577
+    domain: switch
+  mode: restart
+- id: '1727276133480'
+  alias: Küche - Spots
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: d073336019f161ff5324cc66a72e7308
+    event_type: homematic.keypress
+    address: 00221F298AC562
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+  - platform: device
+    domain: homematicip_local
+    device_id: 77c40b093e6f70c4020d05f0bc923435
+    event_type: homematic.keypress
+    address: 00221F298AC73E
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+  condition: []
+  action:
+  - type: toggle
+    device_id: 24fade4b6c93cb3df9a582b4bfb32890
+    entity_id: 4f250db7136126b853a3c841c03b1843
+    domain: switch
+  mode: single
+- id: '1727276468952'
+  alias: HWR - Licht
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 6aa61813fe3628b3e12a7cf249ac3e76
+    event_type: homematic.keypress
+    address: 00171BE9A55D94
+    device_type: HmIPW-DRI32
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 20
+  - platform: device
+    domain: homematicip_local
+    device_id: 6aa61813fe3628b3e12a7cf249ac3e76
+    event_type: homematic.keypress
+    address: 00171BE9A55D94
+    device_type: HmIPW-DRI32
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 13
+  condition: []
+  action:
+  - type: toggle
+    device_id: 87ff71bdae408c39573ae7141cf663ce
+    entity_id: e83d88a1a53e0251c07f0ced910aff52
+    domain: switch
+  mode: single
+- id: '1727276794961'
+  alias: Bad - Spots
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 46ccc40ff65ad4c3b857f684631a9187
+    event_type: homematic.keypress
+    address: 00221F298AC61C
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 1
+  condition: []
+  action:
+  - type: toggle
+    device_id: c1ff62b87afce76488931a17d5bb1790
+    entity_id: 795428f22ed15a89440a26b370361ae2
+    domain: light
+  mode: single
+- id: '1727276841236'
+  alias: Bad - Dusche
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 46ccc40ff65ad4c3b857f684631a9187
+    event_type: homematic.keypress
+    address: 00221F298AC61C
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+  condition: []
+  action:
+  - type: toggle
+    device_id: c1ff62b87afce76488931a17d5bb1790
+    entity_id: 0b2a1ff6a806321b3ee421028c54970d
+    domain: light
+  mode: single
+- id: '1727277958702'
+  alias: Bad Heizkörper
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - climate.bad_raumthermostat
+    attribute: preset_mode
+    to: boost
+    id: Taste
+  - platform: state
+    entity_id:
+    - switch.a5_steckdosen_bad_handtuchheizkorper_hmipw_drs4_0015dd89aaf591_ch2
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 45
+      seconds: 0
+    id: Einschaltdauer erreicht
+  - platform: homeassistant
+    event: start
+    id: Restart
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - Taste
+      sequence:
+      - action: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: switch.a5_steckdosen_bad_handtuchheizkorper_hmipw_drs4_0015dd89aaf591_ch2
+    - conditions:
+      - condition: trigger
+        id:
+        - Einschaltdauer erreicht
+        - Restart
+        enabled: false
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id:
+          - switch.a5_steckdosen_bad_handtuchheizkorper_hmipw_drs4_0015dd89aaf591_ch2
+        data: {}
+  mode: single
+- id: '1727282524522'
+  alias: Küche - Spots Arbeitsplatte
+  description: ''
+  trigger:
+  - platform: device
+    domain: homematicip_local
+    device_id: 88d1ac514a6d13267243bd902005cd4e
+    event_type: homematic.keypress
+    address: 00221F298AC602
+    device_type: HmIPW-BRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+  condition: []
+  action:
+  - type: toggle
+    device_id: 24fade4b6c93cb3df9a582b4bfb32890
+    entity_id: 802851f7b746c4fc807d273d805f5426
+    domain: switch
+  mode: single
+- id: '1727868598346'
+  alias: Rollladen Marius
+  description: ''
+  use_blueprint:
+    path: shutter_automation.yaml
+    input:
+      cover_entity: cover.ja1_sudseite_rollo_kind_2_hmipw_drbl4_00165d899fbad2_ch10
+      light_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
+      is_enabled_input: input_boolean.autorollo_kind2
+      closed_position: 0
+      shade_position: 24
+      shade_light_position: 50
+      min_azimuth: 100
+      max_azimuth: 210
+      light_sensor_average: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+- id: '1727869150271'
+  alias: Rollladen Luisa
+  description: ''
+  use_blueprint:
+    path: shutter_automation.yaml
+    input:
+      cover_entity: cover.ja1_sudseite_rollo_kind_1_hmipw_drbl4_00165d899fbad2_ch14
+      light_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
+      is_enabled_input: input_boolean.autorollo_kind1
+      closed_position: 0
+      shade_position: 50
+      shade_light_position: 20
+      min_azimuth: 90
+      max_azimuth: 215
+      light_sensor_average: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+- id: '1728243290605'
+  alias: Rollladen Schlafzimmer
+  description: ''
+  use_blueprint:
+    path: shutter_automation.yaml
+    input:
+      cover_entity: cover.ja1_sudseite_rollo_schlafzimmer_hmipw_drbl4_00165d899fbad2_ch6
+      light_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
+      is_enabled_input: input_boolean.autorollo_schlafen
+      min_azimuth: 105
+      max_azimuth: 210
+      position_closed: 20
+      position_shade: 22
+      light_sensor_average: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+- id: '1728244054431'
+  alias: Rollladen Wohnzimmer Süd
+  description: ''
+  use_blueprint:
+    path: shutter_automation.yaml
+    input:
+      min_azimuth: 90
+      max_azimuth: 230
+      cover_entity: cover.ja1_sudseite_rollo_wohnzimmer_sud_hmipw_drbl4_00165d899fbad2_ch2
+      light_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
+      is_enabled_input: input_boolean.autorollo_wohnzimmer
+      position_closed: 20
+      position_shade: 20
+      light_sensor_average: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+- id: '1729020748250'
+  alias: Marius Türöffner
+  description: ''
+  triggers:
+  - domain: homematicip_local
+    device_id: cfb88c8a0be4d6cc493fa7857b65b8a7
+    event_type: homematic.keypress
+    address: 0009DF298D16A1
+    model: HmIP-KRCK
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_release
+    subtype: 1
+    trigger: device
+  conditions: []
+  actions:
+  - device_id: 50cf2105fe9b900f7b0c6ecf6818cbcf
+    domain: lock
+    entity_id: 806b329c6b57dc53cd85c092d5bea544
+    type: open
+  - device_id: 1316d4c8a44cde8d1f32f8f1b6652c4b
+    domain: lock
+    entity_id: 59c306be90627703bcf1aa652faecbab
+    type: open
+  - action: notify.mobile_app_parents
+    metadata: {}
+    data:
+      message: Marius ist Zuhause und hat gerade die Tür geöffnet.
+      title: Marius ist Zuhause
+      data:
+        notification_icon: mdi:door-open
+        car_ui: true
+    enabled: true
+  - action: notify.mobile_app_parents
+    metadata: {}
+    data:
+      title: Marius ist Zuhause
+      data:
+        media_stream: alarm_stream
+        tts_text: Marius ist Zuhause und hat die Tür geöffnet.
+      message: TTS
+    enabled: false
+  mode: single
+- id: '1729355987942'
+  alias: Abstellraum - Licht
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.hmip_spi_000c1d898d642e_anwesenheit
+  conditions: []
+  actions:
+  - if:
+    - type: is_present
+      condition: device
+      device_id: 078562985dba0ce32fd2e9e428b6cbb9
+      entity_id: 317bb2b669b0c5c43ea4e4f66f961404
+      domain: binary_sensor
+    then:
+    - action: light.turn_on
+      metadata: {}
+      data: {}
+      target:
+        device_id: cb2da313efcea7f2670a416cb17d7a4e
+    else:
+    - action: light.turn_off
+      metadata: {}
+      data: {}
+      target:
+        device_id: cb2da313efcea7f2670a416cb17d7a4e
+  mode: single
+- id: '1729541557810'
+  alias: Fernseher Strom aus
+  description: ''
+  triggers:
+  - trigger: numeric_state
+    entity_id:
+    - sensor.hmip_psm_0001dd89972f41_leistung
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+    below: 30
+  - trigger: state
+    entity_id:
+    - media_player.fernseher_wohnzimmer
+    to: 'off'
+    from: 'on'
+  conditions:
+  - condition: time
+    after: '23:30:00'
+    before: 06:00:00
+  - condition: device
+    type: is_off
+    device_id: b2648487dc345c14c32b5b426736ddca
+    entity_id: 4563bcadcec8b2d677d0f378db543941
+    domain: remote
+  actions:
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.hmip_psm_0001dd89972f41
+  mode: single

@@ -1,0 +1,205 @@
+blueprint:
+  name: Cover automation
+  description: Open, close and shade automatically
+  domain: automation
+  input:
+    cover_entity:
+      name: Cover
+      selector:
+        entity:
+          filter:
+            domain: cover
+    light_sensor:
+      name: Lichtsensor
+      selector:
+        entity:
+          filter:
+            domain: sensor
+            device_class: illuminance
+    light_sensor_average:
+      name: Lichtsensor Ø
+      selector:
+        entity:
+          filter:
+            domain: sensor
+            device_class: illuminance
+    is_enabled_input:
+      name: Auto on/off
+      selector:
+        entity:
+          filter:
+            domain: input_boolean
+    position_closed:
+      name: Position geschlossen
+      default: 0
+      selector:
+        number:
+          max: 100
+          min: 0
+    position_shade:
+      name: Position beschatten
+      default: 20
+      selector:
+        number:
+          max: 100
+          min: 0
+    position_shade_light:
+      name: Position leicht beschatten
+      default: 50
+      selector:
+        number:
+          max: 100
+          min: 0
+    min_azimuth:
+      name: Minimum azimuth
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 360
+    max_azimuth:
+      name: Maximum azimuth
+      default: 360
+      selector:
+        number:
+          min: 0
+          max: 360
+
+triggers:
+  - trigger: time_pattern
+    minutes: /5
+  - trigger: state
+    entity_id:
+      - !input is_enabled_input
+condition:
+  - condition: state
+    entity_id: !input is_enabled_input
+    state: "on"
+action:
+  - choose:
+      - alias: Nachts schließen
+        conditions:
+          - condition: or
+            conditions:
+              - condition: time
+                after: "19:30:00"
+                before: "07:00:00"
+              - condition: state
+                entity_id: sun.sun
+                state: below_horizon
+        sequence:
+          - action: cover.set_cover_position
+            data:
+              position: !input position_closed
+            target:
+              entity_id: !input cover_entity
+      - alias: Tags beschatten
+        conditions:
+          - alias: Tagsüber
+            condition: and
+            conditions:
+              - condition: sun
+                before: sunset
+                after: sunrise
+              - condition: time
+                after: "08:00:00"
+                before: "19:15:00"
+          - alias: Sonnenstand und Lichtintensität
+            condition: and
+            conditions:
+              - condition: numeric_state
+                entity_id: sun.sun
+                attribute: azimuth
+                above: !input min_azimuth
+                below: !input max_azimuth
+        sequence:
+          choose:
+            - alias: Bewölkt oder schlecht
+              conditions:
+                - condition: and
+                  conditions:
+                    # https://openweathermap.org/weather-conditions
+                    # More than 50% clouds or bad weather
+                    - condition: not
+                      conditions:
+                        - condition: numeric_state
+                          entity_id: sensor.home_weather_code
+                          above: 800
+                          below: 803
+                    - condition: numeric_state
+                      entity_id: !input light_sensor_average
+                      above: input_number.beschattungsschwelle_bewolkt_durchschnitt
+                    - condition: numeric_state
+                      entity_id: !input light_sensor
+                      above: input_number.beschattungsschwelle_bewolkt
+              sequence:
+                - action: cover.set_cover_position
+                  metadata: {}
+                  data:
+                    position: !input position_shade_light
+                  target:
+                    entity_id: !input cover_entity
+            - alias: Sonnenschein
+              conditions:
+                  # https://openweathermap.org/weather-conditions
+                  # Clear, max 50% clouds
+                  - condition: numeric_state
+                    entity_id: sensor.home_weather_code
+                    above: 799
+                    below: 803
+                  - condition: numeric_state
+                    entity_id: !input light_sensor_average
+                    above: input_number.beschattungsschwelle_durchschnitt
+                  - condition: numeric_state
+                    entity_id: !input light_sensor
+                    above: input_number.beschattungsschwelle
+              sequence:
+                  alias: Sonnenschein
+                  if:
+                    - alias: Beschattung halb
+                      condition: numeric_state
+                      entity_id: sensor.hmip_stho_000edd89b688b4_actual_temperature
+                      above: input_number.autoshade_lower_bound
+                      below: input_number.autoshade_medium_upper_bound
+                  then:
+                    - action: cover.set_cover_position
+                      metadata: {}
+                      data:
+                        position: !input position_shade_light
+                      target:
+                        entity_id: !input cover_entity
+                  else:
+                    - alias: Beschattung
+                      condition: and
+                      conditions:
+                      - condition: numeric_state
+                        entity_id: sensor.hmip_stho_000edd89b688b4_actual_temperature
+                        above: input_number.autoshade_lower_bound
+                      - condition: numeric_state
+                        entity_id: sensor.hmip_stho_000edd89b688b4_actual_temperature
+                        above: input_number.autoshade_medium_upper_bound
+                    - action: cover.set_cover_position
+                      metadata: {}
+                      data:
+                        position: !input position_shade
+                      target:
+                        entity_id: !input cover_entity
+          default:
+          - alias: Beschattung aufheben
+            sequence:
+              - action: cover.open_cover
+                metadata: {}
+                data: {}
+                target:
+                  entity_id: !input cover_entity
+      - alias: Tags öffnen
+        conditions:
+          - condition: time
+            after: input_datetime.rollladen_nicht_offnen_bevor
+        sequence:
+          - action: cover.open_cover
+            metadata: {}
+            data: {}
+            target:
+              entity_id: !input cover_entity
+mode: single

@@ -1,0 +1,14 @@
+thermostats_upper:
+  name: 'Wohnbereich oben'
+  entities:
+    - climate.arbeitszimmer_raumthermostat
+    - climate.raumthermostat_kind_1
+    - climate.raumthermostat_kind_2
+    - climate.raumthermostat_wohnzimmer
+
+thermostats_lower:
+  name: 'Wohnbereich unten'
+  entities:
+    - climate.raumthermostat_esszimmer
+    - climate.raumthermostat_kuche
+    - climate.raumthermostat_hwr

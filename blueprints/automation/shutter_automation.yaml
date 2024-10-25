@@ -145,7 +145,7 @@ action:
                   # Clear, max 50% clouds
                   - condition: numeric_state
                     entity_id: sensor.home_weather_code
-                    above: 800
+                    above: 799
                     below: 803
                   - condition: numeric_state
                     entity_id: !input light_sensor_average

@@ -2743,3 +2743,36 @@
       target:
         device_id: cb2da313efcea7f2670a416cb17d7a4e
   mode: single
+- id: '1729541557810'
+  alias: Fernseher Strom aus
+  description: ''
+  triggers:
+  - trigger: numeric_state
+    entity_id:
+    - sensor.hmip_psm_0001dd89972f41_leistung
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+    below: 30
+  - trigger: state
+    entity_id:
+    - media_player.fernseher_wohnzimmer
+    to: 'off'
+    from: 'on'
+  conditions:
+  - condition: time
+    after: '23:30:00'
+    before: 06:00:00
+  - condition: device
+    type: is_off
+    device_id: b2648487dc345c14c32b5b426736ddca
+    entity_id: 4563bcadcec8b2d677d0f378db543941
+    domain: remote
+  actions:
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.hmip_psm_0001dd89972f41
+  mode: single

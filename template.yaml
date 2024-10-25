@@ -34,8 +34,23 @@
       availability: >
         {% set current = states('sensor.bitshakesmr_lguh50_mwh_count') %}
         {% set last_year = states('sensor.bitshakesmr_lguh50_mwh_count_year') %}
-        {{ is_number(current) and is_number(last_year)}}
-
+        {{ current != 'unavailable' and is_number(current) and last_year != 'unavailable' and is_number(last_year)}}
+- trigger:
+  - trigger: time_pattern
+    minutes: /1
+  sensor:
+    - name: "heat consumption daily average (year)"
+      unique_id: 2acc4031-2210-4383-a3d2-0c9b1610dbfb
+      unit_of_measurement: "kWh"
+      device_class: energy
+      state_class: total
+      state: >
+        {% set days = int(now().strftime('%j')) %}
+        {% set heat_since_year_start = float(states('sensor.heat_consumption_year')) %}
+        {{ heat_since_year_start / days }}
+      availability: >
+        {% set current = states('sensor.heat_consumption_year') %}
+        {{ current != 'unavailable' and is_number(current) }}
 - sensor:
     - name: "8665 current solar power"
       unique_id: 977d09b2-a837-472a-81de-e2ca11de6056

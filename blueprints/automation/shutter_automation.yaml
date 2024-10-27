@@ -67,7 +67,7 @@ blueprint:
 
 triggers:
   - trigger: time_pattern
-    minutes: /5
+    minutes: /4
   - trigger: state
     entity_id:
       - !input is_enabled_input

@@ -1,13 +1,13 @@
 - platform: group
   name: mobile_app_parents
-  unique_id: mobile_app_parents
+  unique_id: 9ab8c33e-eacd-4fbf-9878-ae5c6cbe154f
   services:
-  - service: mobile_app_floris_pixel_6_pro
-  - service: mobile_app_steffis_pixel_6a
+    - service: mobile_app_floris_pixel_6_pro
+    - service: mobile_app_steffis_pixel_6a
 - platform: group
   name: mobile_app_all
-  unique_id: mobile_app_all
+  unique_id: 3a2f9ae3-0da8-4368-bfd5-4e6d281af678
   services:
-    - service: mobile_app_floris_pixel_4a
+    - service: mobile_app_floris_pixel_6_pro
     - service: mobile_app_steffis_pixel_6a
     - service: mobile_app_pixel_tablet

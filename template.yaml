@@ -21,23 +21,23 @@
       availability: >
         {{ states('sensor.bitshakesmr_lguh50_mwh_count_year') | float(0) * 1000 > 2000 }}
 - sensor:
-    - name: "heat consumption (year)"
+    - name: "heat consumption current year"
       unique_id: 4c3f6a9d-c145-41da-8dc0-e178cc43e287
       icon: "mdi:counter"
       unit_of_measurement: "kWh"
       device_class: energy
       state_class: total
       state: >
-        {% set current = states('sensor.bitshakesmr_lguh50_mwh_count') | float * 1000 %}
-        {% set last_year = states('sensor.bitshakesmr_lguh50_mwh_count_year') | float  * 1000 %}
-        {{ current - last_year }}
+        {% set current = states('sensor.heat_meter_total') | float %}
+        {% set last_year = states('sensor.heat_meter_total_last_year') | float %}
+        {{ current - last_year | float(2) }}
       availability: >
-        {% set current = states('sensor.bitshakesmr_lguh50_mwh_count') %}
-        {% set last_year = states('sensor.bitshakesmr_lguh50_mwh_count_year') %}
-        {{ current != 'unavailable' and is_number(current) and last_year != 'unavailable' and is_number(last_year)}}
+        {% set current = states('sensor.heat_meter_total') %}
+        {% set last_year = states('sensor.heat_meter_total_last_year') %}
+        {{ current != 'unavailable' and is_number(current) and float(current) > 0 and last_year != 'unavailable' and is_number(last_year) and float(last_year) > 0 and (float(current) - float(last_year) > 0) }}
 - trigger:
-  - trigger: time_pattern
-    minutes: /1
+    - trigger: time_pattern
+      minutes: /1
   sensor:
     - name: "heat consumption daily average (year)"
       unique_id: 2acc4031-2210-4383-a3d2-0c9b1610dbfb
@@ -46,11 +46,15 @@
       state_class: total
       state: >
         {% set days = int(now().strftime('%j')) %}
-        {% set heat_since_year_start = float(states('sensor.heat_consumption_year')) %}
-        {{ heat_since_year_start / days }}
+        {% set days_until_yesterday = days - 1 %}
+        {% set heat_since_year_start = states('sensor.heat_consumption_current_year') | float %}
+        {% set change_today = states('sensor.heat_meter_daily_usage') | float %}
+        {% set heat_until_yesterday = heat_since_year_start - change_today %}
+        {{ heat_until_yesterday / days_until_yesterday }}
       availability: >
-        {% set current = states('sensor.heat_consumption_year') %}
-        {{ current != 'unavailable' and is_number(current) }}
+        {% set current = states('sensor.heat_consumption_current_year') %}
+        {% set change = states('sensor.heat_meter_daily_usage') %}
+        {{ current != 'unavailable' and is_number(current) and change != 'unavailable' and is_number(change) }}
 - sensor:
     - name: "8665 current solar power"
       unique_id: 977d09b2-a837-472a-81de-e2ca11de6056

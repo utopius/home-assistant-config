@@ -644,9 +644,8 @@
 - id: '1670859978779'
   alias: Bad - Fenster schließen
   description: ''
-  trigger:
+  triggers:
   - type: temperature
-    platform: device
     device_id: b9aa4d3b079f9cfa0b3bbdb536ecb3c4
     entity_id: sensor.bad_raumthermostat_actual_temperature
     domain: sensor
@@ -655,24 +654,41 @@
       hours: 0
       minutes: 1
       seconds: 0
-  condition:
+    trigger: device
+  - trigger: state
+    entity_id:
+    - binary_sensor.hmip_swdo_2_00365f299b20c5
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
+  - type: humidity
+    device_id: b9aa4d3b079f9cfa0b3bbdb536ecb3c4
+    entity_id: a678b01b210901ebc32b53362d5ea6ea
+    domain: sensor
+    trigger: device
+    below: 60
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+  conditions:
   - condition: time
     before: '23:00:00'
     after: 06:00:00
-  action:
-  - service: notify.mobile_app_all
-    data:
-      message: Badfenster offen?
-      title: Bad < 19 °C
     enabled: false
-  - service: notify.mobile_app_floris_pixel_6_pro
-    data:
-      message: Badfenster offen?
-      title: 'Badfenster schließen '
-  - service: notify.mobile_app_steffis_pixel_6a
-    data:
-      message: Badfenster offen?
-      title: 'Badfenster schließen '
+  - condition: state
+    entity_id: binary_sensor.hmip_swdo_2_00365f299b20c5
+    state: 'on'
+  actions:
+  - data:
+      message: Das Badfenster ist noch offen ({{ states('sensor.bad_raumthermostat_actual_temperature',
+        with_unit=True) }} | {{ states('sensor.bad_raumthermostat_humidity', with_unit=True)
+        }})
+      title: Badfenster vergessen?
+    enabled: true
+    action: notify.mobile_app_all
   mode: single
 - id: '1678387942900'
   alias: Schlafzimmer Licht - Natürlich / aus

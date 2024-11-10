@@ -1,100 +1,222 @@
+# Inspired by and parts taken over from [Cover Control Automation (CCA)](https://github.com/hvorragend/ha-blueprints)
+
 blueprint:
-  name: Cover automation
-  description: Open, close and shade automatically
+  name: "Cover automation"
+  description: "Open, close and shade automatically"
   domain: automation
   input:
     cover_entity:
-      name: Cover
+      name: "Cover"
+      description: "The cover to automate."
       selector:
         entity:
           filter:
             domain: cover
-    light_sensor:
-      name: Lichtsensor
+
+    contact_sensor:
+      name: "Contact sensor"
+      description: "(Optional) A contact sensor to trigger a ventilate position if opened  (e.g. door or window sensor)."
+      default:
       selector:
         entity:
           filter:
-            domain: sensor
-            device_class: illuminance
-    light_sensor_average:
-      name: Lichtsensor Ø
-      selector:
-        entity:
-          filter:
-            domain: sensor
-            device_class: illuminance
-    is_enabled_input:
-      name: Auto on/off
-      selector:
-        entity:
-          filter:
-            domain: input_boolean
-    position_closed:
-      name: Position geschlossen
-      default: 0
-      selector:
-        number:
-          max: 100
-          min: 0
-    position_shade:
-      name: Position beschatten
-      default: 20
-      selector:
-        number:
-          max: 100
-          min: 0
-    position_shade_light:
-      name: Position leicht beschatten
-      default: 50
-      selector:
-        number:
-          max: 100
-          min: 0
-    min_azimuth:
-      name: Minimum azimuth
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 360
-    max_azimuth:
-      name: Maximum azimuth
-      default: 360
-      selector:
-        number:
-          min: 0
-          max: 360
+            domain:
+              - binary_sensor
+              - input_boolean
+
+    illuminance_section:
+      name: "Illuminance Configuration"
+      description: "Illuminance sensor selection and configuration"
+      icon: mdi:window-shutter-settings
+      collapsed: true
+      input:
+        light_sensor:
+          name: Illumination
+          selector:
+            entity:
+              filter:
+                domain: sensor
+                device_class: illuminance
+
+        light_sensor_average:
+          name: Illumination Ø
+          selector:
+            entity:
+              filter:
+                domain: sensor
+                device_class: illuminance
+
+    position_section:
+      name: "Position Configuration"
+      description: "Control the various positions of the shutter."
+      icon: mdi:window-shutter-settings
+      collapsed: true
+      input:
+        position_closed:
+          name: "Closed position"
+          description: "Cover position to use as 'closed'."
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 100
+
+        position_shade:
+          name: "Shade position"
+          description: "Cover position to use for shading."
+          default: 20
+          selector:
+            number:
+              min: 0
+              max: 100
+
+        position_ventilation:
+          name: "Ventilation position"
+          description: "Cover position to use for ventilation."
+          default: 20
+          selector:
+            number:
+              min: 0
+              max: 100
+
+        position_shade_light:
+          name: "Light shade positition"
+          description: "Cover position to use for shading when it's not totally sunny."
+          default: 50
+          selector:
+            number:
+              min: 0
+              max: 100
+
+    sun_section:
+      name: "Sun Elevation Settings"
+      description: "Sun elevation settings controlling auto-shading"
+      icon: mdi:weather-sunny
+      collapsed: true
+      input:
+        min_azimuth:
+          name: "Minimum azimuth"
+          description: "Minimum azimuth of the sun when shading is necessary."
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 360
+
+        max_azimuth:
+          name: "Maximum azimuth"
+          description: "Maximum azimuth of the sun over which shading becomes unnecessary."
+          default: 360
+          selector:
+            number:
+              min: 0
+              max: 360
+
+    feature_section:
+      name: "Automation Options"
+      description: "Core automation configuration"
+      icon: mdi:window-shutter-cog
+      collapsed: true
+      input:
+
+        is_enabled_input:
+          name: "Auto on/off"
+          description: "Input boolean to act as switch to disable cover automation."
+          selector:
+            entity:
+              filter:
+                domain: input_boolean
+
+        auto_options:
+          name: "Automation Options"
+          description: "Stuff"
+          default:
+            [
+              auto_up_enabled,
+              auto_down_enabled,
+              auto_shading_enabled,
+            ]
+          selector:
+            select:
+              options:
+                - label: "🔼 - Enable generic automatic opening of the day in the morning"
+                  value: "auto_up_enabled"
+                - label: "🔻 - Enable generic automatic daily closing at the end of the day"
+                  value: "auto_down_enabled"
+                - label: "💨 - Enable ventilation mode"
+                  value: "auto_ventilate_enabled"
+                - label: "🥵 - Enable automatic sun protection / sunshade control (helper required)"
+                  value: "auto_shading_enabled"
+              multiple: true
+              sort: false
+              custom_value: false
+              mode: list
+
+trigger_variables:
+  auto_options: !input auto_options
+
+  contact_sensor: !input contact_sensor
+
+  is_up_enabled: "{{ 'auto_up_enabled' in auto_options }}"
+  is_down_enabled: "{{ 'auto_down_enabled' in auto_options }}"
+  is_ventilation_enabled: "{{ 'auto_ventilate_enabled' in auto_options }}"
+  is_shading_enabled: "{{ 'auto_shading_enabled' in auto_options }}"
 
 triggers:
+
   - trigger: time_pattern
-    minutes: /4
+    minutes: /5
+
   - trigger: state
     entity_id:
       - !input is_enabled_input
+
+  - platform: template
+    value_template: "{{ is_state(contact_sensor, ['false', 'off']) }}"
+    enabled: "{{ is_ventilation_enabled and contact_sensor != [] }}"
+    id: "tid_contact_opened_off"
+    for:
+      seconds: 5 #!input contact_delay_trigger
+  - platform: template
+    value_template: "{{ is_state(contact_sensor, ['true', 'on']) }}"
+    enabled: "{{ is_ventilation_enabled and contact_sensor != [] }}"
+    id: "tid_contact_opened_on"
+    for:
+      seconds: 5 #!input contact_delay_trigger
+
 condition:
   - condition: state
     entity_id: !input is_enabled_input
     state: "on"
 action:
   - choose:
-      - alias: Nachts schließen
+      - alias: "Nachts schließen"
         conditions:
+          - "{{ is_down_enabled }}"
           - condition: or
             conditions:
-              - condition: time
-                after: "19:30:00"
-                before: "07:00:00"
-              - condition: state
-                entity_id: sun.sun
-                state: below_horizon
+            - condition: time
+              after: "19:30:00"
+              before: "07:00:00"
+            - condition: state
+              entity_id: sun.sun
+              state: below_horizon
+          - condition: or
+            conditions:
+              - condition: and
+                conditions:
+                  - "{{ contact_sensor != [] }}"
+                  - "{{ is_state(contact_sensor, ['false', 'off']) }}"
+              - "{{ contact_sensor == None }}"
         sequence:
           - action: cover.set_cover_position
             data:
               position: !input position_closed
             target:
               entity_id: !input cover_entity
-      - alias: Tags beschatten
+      - alias: "Tags beschatten"
         conditions:
+          - "{{ is_shading_enabled }}"
           - alias: Tagsüber
             condition: and
             conditions:
@@ -116,22 +238,20 @@ action:
           choose:
             - alias: Bewölkt oder schlecht
               conditions:
-                - condition: and
+                # https://openweathermap.org/weather-conditions
+                # More than 50% clouds or bad weather
+                - condition: not
                   conditions:
-                    # https://openweathermap.org/weather-conditions
-                    # More than 50% clouds or bad weather
-                    - condition: not
-                      conditions:
-                        - condition: numeric_state
-                          entity_id: sensor.home_weather_code
-                          above: 800
-                          below: 803
                     - condition: numeric_state
-                      entity_id: !input light_sensor_average
-                      above: input_number.beschattungsschwelle_bewolkt_durchschnitt
-                    - condition: numeric_state
-                      entity_id: !input light_sensor
-                      above: input_number.beschattungsschwelle_bewolkt
+                      entity_id: sensor.home_weather_code
+                      above: 800
+                      below: 803
+                - condition: numeric_state
+                  entity_id: !input light_sensor_average
+                  above: input_number.beschattungsschwelle_bewolkt_durchschnitt
+                - condition: numeric_state
+                  entity_id: !input light_sensor
+                  above: input_number.beschattungsschwelle_bewolkt
               sequence:
                 - action: cover.set_cover_position
                   metadata: {}
@@ -192,14 +312,31 @@ action:
                 data: {}
                 target:
                   entity_id: !input cover_entity
-      - alias: Tags öffnen
+      - alias: "Tags öffnen"
         conditions:
+          - "{{ is_up_enabled }}"
           - condition: time
             after: input_datetime.rollladen_nicht_offnen_bevor
+          - condition: state
+            entity_id: sun.sun
+            state: above_horizon
         sequence:
           - action: cover.open_cover
             metadata: {}
             data: {}
+            target:
+              entity_id: !input cover_entity
+
+      - alias: "Lüften"
+        conditions:
+          - condition: trigger
+            id: tid_contact_opened_on
+          - "{{ is_ventilation_enabled }}"
+        sequence:
+          - action: cover.set_cover_position
+            metadata: {}
+            data:
+              position: !input position_ventilation
             target:
               entity_id: !input cover_entity
 mode: single

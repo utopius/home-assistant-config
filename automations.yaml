@@ -2563,54 +2563,6 @@
     entity_id: 0b2a1ff6a806321b3ee421028c54970d
     domain: light
   mode: single
-- id: '1727277958702'
-  alias: Bad Heizkörper
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - climate.bad_raumthermostat
-    attribute: preset_mode
-    to: boost
-    id: Taste
-  - platform: state
-    entity_id:
-    - switch.a5_steckdosen_bad_handtuchheizkorper_hmipw_drs4_0015dd89aaf591_ch2
-    to: 'on'
-    for:
-      hours: 0
-      minutes: 45
-      seconds: 0
-    id: Einschaltdauer erreicht
-  - platform: homeassistant
-    event: start
-    id: Restart
-  condition: []
-  action:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id:
-        - Taste
-      sequence:
-      - action: switch.turn_on
-        metadata: {}
-        data: {}
-        target:
-          entity_id: switch.a5_steckdosen_bad_handtuchheizkorper_hmipw_drs4_0015dd89aaf591_ch2
-    - conditions:
-      - condition: trigger
-        id:
-        - Einschaltdauer erreicht
-        - Restart
-        enabled: false
-      sequence:
-      - action: switch.turn_off
-        target:
-          entity_id:
-          - switch.a5_steckdosen_bad_handtuchheizkorper_hmipw_drs4_0015dd89aaf591_ch2
-        data: {}
-  mode: single
 - id: '1727282524522'
   alias: Küche - Spots Arbeitsplatte
   description: ''
@@ -2792,3 +2744,38 @@
     target:
       entity_id: switch.hmip_psm_0001dd89972f41
   mode: single
+- id: '1731249713051'
+  alias: Rollladen Esszimmer Nord
+  description: ''
+  use_blueprint:
+    path: shutter_automation.yaml
+    input:
+      cover_entity: cover.ja4_rollo_esszimmer_nord_hmipw_drbl4_00165d899fba5d_ch2
+      light_sensor: sensor.hmip_slo_000d60c9a674e3_beleuchtungsstarke
+      light_sensor_average: sensor.hmip_slo_000d60c9a674e3_durchschnittliche_beleuchtungsstarke
+      is_enabled_input: input_boolean.autorollo_arbeiten
+      position_closed: 20
+      min_azimuth: 255
+      max_azimuth: 300
+      contact_sensor: binary_sensor.e4_ch10
+      options:
+      - auto_ventilate_enabled
+- id: '1731253701677'
+  alias: Rollladen Arbeiten Nord
+  description: ''
+  use_blueprint:
+    path: shutter_automation.yaml
+    input:
+      cover_entity: cover.ja2_nordseite_rollo_arbeiten_nord
+      contact_sensor: binary_sensor.arbeitszimmer_nord_offnung
+      light_sensor: sensor.hmip_slo_000d60c9a674e3_beleuchtungsstarke
+      light_sensor_average: sensor.hmip_slo_000d60c9a674e3_durchschnittliche_beleuchtungsstarke
+      is_enabled_input: input_boolean.autorollo_arbeiten
+      position_closed: 0
+      position_shade: 15
+      min_azimuth: 250
+      max_azimuth: 300
+      options:
+      - auto_ventilate_enabled
+      auto_options:
+      - auto_ventilate_enabled

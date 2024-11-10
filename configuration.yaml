@@ -30,13 +30,15 @@ script: !include scripts.yaml
 sensor: !include sensors.yaml
 switch: !include switches.yaml
 template: !include template.yaml
+utility_meter: !include utility_meters.yaml
 
 logger:
   default: info
-  # logs:
-  #   homeassistant.helpers.script: debug
-  #   homeassistant.components.homematic: debug
-  #   pyhomematic: debug
+  logs:
+    #   homeassistant.helpers.script: debug
+    #   homeassistant.components.homematic: debug
+    #   pyhomematic: debug
+    homeassistant.components.utility_meter_: debug
 
 # Text to speech
 tts:

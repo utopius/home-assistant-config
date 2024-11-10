@@ -1,0 +1,18 @@
+heat_consumption_daily:
+    unique_id: 6b92a419-aeab-43a3-a2e9-653a6be1735a
+    source: sensor.heat_meter_total
+    name: Wärmemenge (Tag)
+    cycle: daily
+    periodically_resetting: True
+heat_consumption_monthly:
+    unique_id: 7bf3f0f9-a71c-4045-b4c6-a1ab582e0845
+    source: sensor.heat_meter_total
+    name: Wärmemenge (Monat)
+    cycle: monthly
+    periodically_resetting: True
+heat_consumption_yearly:
+    unique_id: 74c2553f-ffef-4735-84a9-c55439410cee
+    source: sensor.heat_meter_total
+    name: Wärmemenge (Jahr)
+    cycle: yearly
+    periodically_resetting: True

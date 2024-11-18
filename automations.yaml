@@ -2779,3 +2779,41 @@
       - auto_ventilate_enabled
       auto_options:
       - auto_ventilate_enabled
+- id: '1731847289123'
+  alias: Schlafzimmerfenster
+  description: ''
+  triggers:
+  - type: humidity
+    device_id: f2f032388454729b767161a7cef665de
+    entity_id: bda6bd27ff80ce86e19f9d19a78690df
+    domain: sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+    below: 18
+  - type: humidity
+    device_id: f2f032388454729b767161a7cef665de
+    entity_id: bda6bd27ff80ce86e19f9d19a78690df
+    domain: sensor
+    trigger: device
+    below: 55
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+    enabled: false
+  conditions:
+  - condition: time
+    after: 00:07:00
+    before: 00:22:00
+  actions:
+  - data:
+      message: Das Schlafzimmerfenster ist noch offen ({{ states('sensor.raumthermostat_schlafzimmer_actual_temperature',
+        with_unit=True) }} | {{ states('sensor.raumthermostat_schlafzimmer_humidity',
+        with_unit=True) }})
+      title: Schlafzimmerfenster vergessen?
+    enabled: true
+    action: notify.mobile_app_all
+  mode: single

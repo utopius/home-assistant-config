@@ -1,0 +1,15 @@
+- id: '1727868598346'
+  alias: Rollladen Marius
+  description: ''
+  use_blueprint:
+    path: shutter_automation.yaml
+    input:
+      cover_entity: cover.ja1_sudseite_rollo_kind_2_hmipw_drbl4_00165d899fbad2_ch10
+      light_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
+      is_enabled_input: input_boolean.autorollo_kind2
+      closed_position: 0
+      shade_position: 24
+      shade_light_position: 50
+      min_azimuth: 100
+      max_azimuth: 210
+      light_sensor_average: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke

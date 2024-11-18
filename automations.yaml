@@ -1954,8 +1954,8 @@
       cover_entity: cover.ja1_sudseite_rollo_kind_2_hmipw_drbl4_00165d899fbad2_ch10
       light_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
       is_enabled_input: input_boolean.autorollo_kind2
-      closed_position: 0
-      shade_position: 24
+      position_closed: 0
+      position_shade: 24
       shade_light_position: 50
       min_azimuth: 100
       max_azimuth: 210
@@ -1969,8 +1969,8 @@
       cover_entity: cover.ja1_sudseite_rollo_kind_1_hmipw_drbl4_00165d899fbad2_ch14
       light_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
       is_enabled_input: input_boolean.autorollo_kind1
-      closed_position: 0
-      shade_position: 50
+      position_closed: 0
+      position_shade: 50
       shade_light_position: 20
       min_azimuth: 90
       max_azimuth: 215

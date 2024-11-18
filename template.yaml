@@ -49,7 +49,7 @@
         {% set average = states('sensor.heat_consumption_current_year_daily_average') | float %}
         {{ average * 365 }}
       availability: >
-        {% set average = states('sensor.heat_consumption_current_year_daily_average') | float %}
+        {% set average = states('sensor.heat_consumption_current_year_daily_average') %}
         {{ average not in ['unknown', 'unavailable'] and is_number(average) }}
 
 

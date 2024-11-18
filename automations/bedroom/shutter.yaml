@@ -1,0 +1,14 @@
+- id: '1728243290605'
+  alias: Rollladen Schlafzimmer
+  description: ''
+  use_blueprint:
+    path: shutter_automation.yaml
+    input:
+      cover_entity: cover.ja1_sudseite_rollo_schlafzimmer_hmipw_drbl4_00165d899fbad2_ch6
+      light_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
+      is_enabled_input: input_boolean.autorollo_schlafen
+      min_azimuth: 105
+      max_azimuth: 210
+      position_closed: 20
+      position_shade: 22
+      light_sensor_average: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke

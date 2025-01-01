@@ -1,3 +1,10 @@
+heat_consumption_hourly:
+  unique_id: 3e221abe-19a3-4e92-8d3f-98d84a61e221
+  source: sensor.heat_meter_total
+  name: "Wärmemenge (Stunde)"
+  cycle: hourly
+  periodically_resetting: True
+  always_available: True
 heat_consumption_daily:
   unique_id: 6b92a419-aeab-43a3-a2e9-653a6be1735a
   source: sensor.heat_meter_total

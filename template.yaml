@@ -77,7 +77,25 @@
         {% set current = states('sensor.heat_consumption_current_year') %}
         {% set change = states('sensor.heat_consumption_daily') %}
         {{ current not in ['unknown', 'unavailable'] and is_number(current) and change not in ['unknown', 'unavailable'] and is_number(change) }}
-        {{ current != 'unavailable' and is_number(current) and change != 'unavailable' and is_number(change) }}
+
+- trigger:
+    # - trigger: time_pattern
+    #   minutes: /1
+    - trigger: state
+      entity_id: sensor.heat_consumption_current_year_daily_average
+  sensor:
+    - name: "heat consumption current year (projection)"
+      unique_id: 37423765-879d-421b-854c-63b7ce17edd8
+      icon: "mdi:counter"
+      unit_of_measurement: "kWh"
+      device_class: energy
+      state_class: total
+      state: >
+        {% set average = states('sensor.heat_consumption_current_year_daily_average') | float %}
+        {{ (average * 365) | round(2) }}
+      availability: >
+        {% set average = states('sensor.heat_consumption_current_year_daily_average') %}
+        {{ average not in ['unknown', 'unavailable'] and is_number(average) }}
 
 - sensor:
     - name: "8665 current solar power"

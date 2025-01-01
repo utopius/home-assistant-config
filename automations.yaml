@@ -51,26 +51,6 @@
       metadata: {}
     enabled: true
   mode: single
-- id: '1662396089596'
-  alias: Flur - No motion detected
-  description: Turns off lights 2mins after last detection
-  triggers:
-  - entity_id:
-    - binary_sensor.flur_og_bewegungsmelder
-    to: 'off'
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 15
-    trigger: state
-  conditions: []
-  actions:
-  - action: light.turn_off
-    metadata: {}
-    data: {}
-    target:
-      entity_id: light.flur
-  mode: single
 - id: '1662401124477'
   alias: Wohnzimmer - Fernseher entspannt
   description: ''
@@ -218,38 +198,42 @@
 - id: '1663097343800'
   alias: Arbeitszimmer Licht - Natürlich / aus
   description: ''
-  trigger:
-  - platform: device
-    domain: homematicip_local
+  triggers:
+  - domain: homematicip_local
     device_id: 82c052e8ab2f83607771bd47f37c9746
     event_type: homematic.keypress
     interface_id: ccu.herbel.net-HmIP-RF
     address: 00221F298AC569
     type: press_short
     subtype: 1
-  condition: []
-  action:
+    trigger: device
+  conditions: []
+  actions:
   - type: turn_off
     device_id: bbab2551cc984485834db0a3cfcda4fa
     entity_id: light.arbeitszimmer
     domain: light
+    enabled: false
   - choose:
     - conditions:
-      - condition: device
-        type: is_on
-        device_id: bbab2551cc984485834db0a3cfcda4fa
-        entity_id: light.arbeitszimmer
-        domain: light
+      - condition: or
+        conditions:
+        - condition: device
+          type: is_on
+          device_id: bbab2551cc984485834db0a3cfcda4fa
+          entity_id: light.arbeitszimmer
+          domain: light
       sequence:
       - type: turn_off
         device_id: bbab2551cc984485834db0a3cfcda4fa
         entity_id: light.arbeitszimmer
         domain: light
     default:
-    - service: scene.turn_on
-      target:
+    - target:
         entity_id: scene.arbeitszimmer_naturliches_licht
       metadata: {}
+      action: scene.turn_on
+      data: {}
   mode: single
 - id: '1663347481751'
   alias: Esszimmer Licht - Natürlich / aus
@@ -309,53 +293,66 @@
       metadata: {}
   mode: single
 - id: '1664093162219'
-  alias: Flur - Motion detected
+  alias: Flur - Licht
   description: Turns on lights
   triggers:
   - entity_id:
-    - binary_sensor.flur_og_bewegungsmelder
-    to: 'on'
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 0
+    - binary_sensor.flur_bewegungsmelder
     trigger: state
-  conditions:
-  - condition: or
-    conditions:
+  - trigger: homeassistant
+    event: shutdown
+  - trigger: state
+    entity_id:
+    - switch.melder_flur_bad_hmipw_smi55_fe9a_flur_og_3_hmipw_smi55_fe9a_3_bewegungsmelder_motion_detection_active
+    - switch.melder_flur_kind1_hmipw_smi55_fe9c_flur_og_1_hmipw_smi55_fe9c_3_bewegungsmelder_motion_detection_active
+    - switch.melder_flur_kind2_hmipw_smi55_fb5b_flur_og_2_hmipw_smi55_fb5b_3_bewegungsmelder_motion_detection_active
+  conditions: []
+  actions:
+  - if:
+    - condition: state
+      entity_id: binary_sensor.flur_bewegungsmelder
+      state: 'on'
     - condition: numeric_state
       entity_id: sensor.flur_helligkeit
       below: 50
-  actions:
-  - choose:
-    - conditions:
-      - condition: time
-        after: '22:00:00'
-      sequence:
+    then:
+    - alias: Licht einschalten
+      choose:
+      - conditions:
+        - condition: time
+          after: '22:00:00'
+        sequence:
+        - action: scene.turn_on
+          metadata: {}
+          target:
+            entity_id: scene.flur_gedimmt
+          data:
+            transition: 0.5
+      - conditions:
+        - condition: time
+          after: 07:00:00
+        sequence:
+        - action: scene.turn_on
+          metadata: {}
+          target:
+            entity_id: scene.flur_hell
+          data:
+            transition: 0.5
+      default:
       - action: scene.turn_on
         metadata: {}
         target:
-          entity_id: scene.flur_gedimmt
+          entity_id: scene.flur_nachtlicht
         data:
-          transition: 1.5
-    - conditions:
-      - condition: time
-        after: 07:00:00
-      sequence:
-      - action: scene.turn_on
-        metadata: {}
-        target:
-          entity_id: scene.flur_hell
-        data:
-          transition: 1.5
-    default:
-    - action: scene.turn_on
+          transition: 0.5
+    else:
+    - action: light.turn_off
       metadata: {}
-      target:
-        entity_id: scene.flur_nachtlicht
       data:
-        transition: 0.5
-  mode: single
+        transition: 20
+      target:
+        entity_id: light.flur
+  mode: restart
 - id: '1664261537840'
   alias: Arbeitszimmer Licht - Entspannt
   description: ''
@@ -377,34 +374,65 @@
     metadata: {}
   mode: single
 - id: '1665484723956'
-  alias: EG Flur - Motion detected
+  alias: Treppenhaus - Motion Detection
   description: ''
-  trigger:
-  - platform: device
-    domain: homematicip_local
-    device_id: 6aa61813fe3628b3e12a7cf249ac3e76
-    event_type: homematic.keypress
-    interface_id: ccu.herbel.net-HmIP-RF
-    address: 00171BE9A55D94
-    type: press_long
-    subtype: 31
-    enabled: true
-  condition: []
-  action:
-  - data: {}
-    target:
-      entity_id:
-      - input_boolean.eg_flur_bwm_motion_detected
-    action: input_boolean.turn_on
-  - delay:
-      hours: 0
-      minutes: 1
-      seconds: 0
-      milliseconds: 0
-  - data: {}
-    target:
-      entity_id: input_boolean.eg_flur_bwm_motion_detected
-    action: input_boolean.turn_off
+  triggers:
+  - trigger: homeassistant
+    event: start
+    id: reboot
+  - trigger: state
+    entity_id:
+    - binary_sensor.e3_og_unten_eg_eg_flur_bewegungsmelder_e3_ch31
+    to: 'on'
+    id: motion
+  - trigger: state
+    entity_id:
+    - binary_sensor.e3_og_unten_eg_eg_flur_bewegungsmelder_e3_ch31
+    to: 'off'
+    id: no-motion
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - timer
+        - reboot
+        alias: Reboot
+      sequence:
+      - action: input_boolean.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.stairwell_motion_detected
+      alias: Reboot
+    - conditions:
+      - condition: trigger
+        id:
+        - motion
+      sequence:
+      - action: input_boolean.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - input_boolean.stairwell_motion_detected
+    - conditions:
+      - condition: trigger
+        id:
+        - no-motion
+      sequence:
+      - delay:
+          hours: 0
+          minutes: 2
+          seconds: 0
+          milliseconds: 0
+      - action: input_boolean.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - input_boolean.stairwell_motion_detected
   mode: restart
 - id: '1665863551593'
   alias: Küche - Deckenleuchte
@@ -490,119 +518,55 @@
         entity_id: scene.wohnzimmer_deckenleuchten_naturliches_licht
       metadata: {}
   mode: single
-- id: '1666705800399'
-  alias: EG Flur - Turn off lights
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - input_boolean.eg_flur_bwm_motion_detected
-    to: 'off'
-    for:
-      hours: 0
-      minutes: 2
-      seconds: 0
-    from: 'on'
-  condition:
-  - condition: state
-    entity_id: input_boolean.eg_flur_bwm_is_enabled
-    state: 'on'
-    enabled: false
-  - condition: and
-    conditions:
-    - condition: state
-      entity_id: input_boolean.eg_flur_bwm_is_enabled
-      state: 'on'
-    - condition: state
-      entity_id: input_boolean.eg_flur_bwm_motion_detected
-      state: 'off'
-  action:
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 10
-      milliseconds: 0
-  - condition: state
-    entity_id: input_boolean.eg_flur_bwm_motion_detected
-    state: 'off'
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 10
-  - type: turn_off
-    device_id: 24fade4b6c93cb3df9a582b4bfb32890
-    entity_id: switch.a3_flur_ug_licht_hmipw_drs8_00161d89937c60_ch26
-    domain: switch
-    enabled: true
-  mode: restart
 - id: '1666706812707'
-  alias: EG Flur - Turn on lights
+  alias: Treppenhaus - Licht
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - input_boolean.eg_flur_bwm_motion_detected
-    to: 'on'
+  triggers:
+  - entity_id:
+    - input_boolean.stairwell_motion_detected
     for:
       hours: 0
       minutes: 0
       seconds: 0
-  condition:
-  - condition: state
-    entity_id: input_boolean.eg_flur_bwm_is_enabled
-    state: 'on'
-  - condition: or
-    conditions:
-    - condition: numeric_state
-      entity_id: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
-      below: 18000
-    - condition: sun
-      before: sunrise
-      after: sunset
-      before_offset: -01:00:00
-  action:
-  - type: turn_on
-    device_id: 24fade4b6c93cb3df9a582b4bfb32890
-    entity_id: switch.a3_flur_ug_licht_hmipw_drs8_00161d89937c60_ch26
-    domain: switch
-    enabled: true
-  mode: restart
-- id: '1668797662862'
-  alias: Küche - Motion detected
-  description: ''
-  trigger:
-  - type: motion
-    platform: device
-    device_id: ac49fc1db875487f07217198bcbaa97f
-    entity_id: binary_sensor.hmip_smi55_2_00319d899ed9fa_motion
-    domain: binary_sensor
-    enabled: false
-  - platform: state
+    trigger: state
+  - trigger: state
     entity_id:
-    - binary_sensor.hmip_smi55_2_00319d899ed9fa_motion
-    to: 'on'
-  condition: []
-  action:
-  - condition: device
-    type: is_off
-    device_id: 40bc345c8e04e8e901e31ef6101938cc
-    entity_id: light.kuche
-    domain: light
-    enabled: false
-  - type: turn_on
-    device_id: b4a559faab3bde26ce4c7823d5053777
-    entity_id: light.hue_white_lamp_1
-    domain: light
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 20
-      milliseconds: 0
-  - type: turn_off
-    device_id: b4a559faab3bde26ce4c7823d5053777
-    entity_id: light.hue_white_lamp_1
-    domain: light
-  mode: single
+    - input_boolean.stairwell_motion_detection_enabled
+  conditions:
+  - condition: state
+    entity_id: input_boolean.stairwell_motion_detection_enabled
+    state: 'on'
+  actions:
+  - choose:
+    - conditions:
+      - alias: Lichtverhältnisse passen
+        condition: or
+        conditions:
+        - condition: numeric_state
+          entity_id: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+          below: 30000
+          enabled: true
+        - condition: sun
+          before: sunrise
+          after: sunset
+          before_offset: -01:00:00
+        enabled: false
+      - condition: state
+        entity_id: input_boolean.stairwell_motion_detected
+        state: 'on'
+      sequence:
+      - type: turn_on
+        device_id: 24fade4b6c93cb3df9a582b4bfb32890
+        entity_id: switch.a3_flur_ug_licht_hmipw_drs8_00161d89937c60_ch26
+        domain: switch
+        enabled: true
+      alias: Bewegung erkannt
+    default:
+    - type: turn_off
+      device_id: 24fade4b6c93cb3df9a582b4bfb32890
+      entity_id: bb1008bab2133ab4880e8efeff7e9dc2
+      domain: switch
+  mode: restart
 - id: '1669559663936'
   alias: Wohnzimmer Licht - Entspannen
   description: ''
@@ -642,9 +606,18 @@
     metadata: {}
   mode: single
 - id: '1670859978779'
-  alias: Bad - Fenster schließen
+  alias: Badfenster geöffnet
   description: ''
   triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.hmip_swdo_2_00365f299b20c5
+    - binary_sensor.bad_fenster
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
   - type: temperature
     device_id: b9aa4d3b079f9cfa0b3bbdb536ecb3c4
     entity_id: sensor.bad_raumthermostat_actual_temperature
@@ -655,38 +628,34 @@
       minutes: 1
       seconds: 0
     trigger: device
-  - trigger: state
-    entity_id:
-    - binary_sensor.hmip_swdo_2_00365f299b20c5
-    to: 'on'
-    for:
-      hours: 0
-      minutes: 20
-      seconds: 0
   - type: humidity
     device_id: b9aa4d3b079f9cfa0b3bbdb536ecb3c4
     entity_id: a678b01b210901ebc32b53362d5ea6ea
     domain: sensor
     trigger: device
-    below: 60
+    below: 55
     for:
       hours: 0
-      minutes: 0
-      seconds: 10
+      minutes: 5
+      seconds: 0
   conditions:
-  - condition: time
-    before: '23:00:00'
-    after: 06:00:00
-    enabled: false
-  - condition: state
-    entity_id: binary_sensor.hmip_swdo_2_00365f299b20c5
-    state: 'on'
+  - alias: Fenster geöffnet
+    condition: or
+    conditions:
+    - condition: state
+      entity_id: binary_sensor.bad_fenster
+      state: 'on'
+    - condition: state
+      entity_id: binary_sensor.hmip_swdo_2_00365f299b20c5
+      state: 'on'
   actions:
   - data:
-      message: Das Badfenster ist noch offen ({{ states('sensor.bad_raumthermostat_actual_temperature',
+      message: Im Bad sind noch Fenster geöffnet ({{ states('sensor.bad_raumthermostat_actual_temperature',
         with_unit=True) }} | {{ states('sensor.bad_raumthermostat_humidity', with_unit=True)
         }})
-      title: Badfenster vergessen?
+      title: Badfenster schließen
+      data:
+        tag: bathroom-window-left-open
     enabled: true
     action: notify.mobile_app_all
   mode: single
@@ -782,9 +751,8 @@
 - id: '1701858280574'
   alias: Kind 1 Licht - Natürlich / aus
   description: ''
-  trigger:
-  - platform: device
-    domain: homematicip_local
+  triggers:
+  - domain: homematicip_local
     device_id: fda1b84e07e6fab405566eb2a61be5f4
     event_type: homematic.keypress
     address: 00221F298AC744
@@ -792,8 +760,18 @@
     interface_id: ccu.herbel.net-HmIP-RF
     type: press_short
     subtype: 1
-  condition: []
-  action:
+    trigger: device
+  - domain: homematicip_local
+    device_id: a034d8b89025eaf158544e1e13232a82
+    event_type: homematic.keypress
+    address: 00019D898A851A
+    model: HMIP-WRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 1
+    trigger: device
+  conditions: []
+  actions:
   - choose:
     - conditions:
       - condition: device
@@ -807,17 +785,17 @@
         entity_id: a5246bdb59afb5c573a354a9891d096a
         domain: light
     default:
-    - service: scene.turn_on
-      target:
+    - target:
         entity_id: scene.kind_1_naturliches_licht
       metadata: {}
+      action: scene.turn_on
+      data: {}
   mode: single
 - id: '1701858341643'
   alias: Kind 2 Licht - Natürlich / aus
   description: ''
-  trigger:
-  - platform: device
-    domain: homematicip_local
+  triggers:
+  - domain: homematicip_local
     device_id: f2a330337d10e17c0fc48de364878bca
     event_type: homematic.keypress
     address: 00221F298AC763
@@ -825,8 +803,8 @@
     interface_id: ccu.herbel.net-HmIP-RF
     type: press_short
     subtype: 1
-  - platform: device
-    domain: homematicip_local
+    trigger: device
+  - domain: homematicip_local
     device_id: 5a650573bf7462815f6dcf950e4107d1
     event_type: homematic.keypress
     address: 00019D89977611
@@ -834,8 +812,9 @@
     interface_id: ccu.herbel.net-HmIP-RF
     type: press_short
     subtype: 1
-  condition: []
-  action:
+    trigger: device
+  conditions: []
+  actions:
   - choose:
     - conditions:
       - condition: device
@@ -848,18 +827,22 @@
         device_id: f37611c7c9abeae1daf034bb57b12db6
         entity_id: cb8b1a03b1c71ce8247bdae19df2bf70
         domain: light
+      - type: turn_off
+        device_id: ddf321ef52d7711cb9133c41919288e8
+        entity_id: 315bb7f115f7b955e976cb1e09615587
+        domain: light
     default:
-    - service: scene.turn_on
-      target:
+    - target:
         entity_id: scene.kind_2_naturliches_licht
       metadata: {}
+      action: scene.turn_on
+      data: {}
   mode: single
 - id: '1701858452385'
   alias: Kind 1 Licht - Entspannen
   description: ''
-  trigger:
-  - platform: device
-    domain: homematicip_local
+  triggers:
+  - domain: homematicip_local
     device_id: fda1b84e07e6fab405566eb2a61be5f4
     event_type: homematic.keypress
     address: 00221F298AC744
@@ -867,12 +850,23 @@
     interface_id: ccu.herbel.net-HmIP-RF
     type: press_long_start
     subtype: 2
-  condition: []
-  action:
-  - service: scene.turn_on
-    target:
+    trigger: device
+  - domain: homematicip_local
+    device_id: a034d8b89025eaf158544e1e13232a82
+    event_type: homematic.keypress
+    address: 00019D898A851A
+    model: HMIP-WRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 2
+    trigger: device
+  conditions: []
+  actions:
+  - target:
       entity_id: scene.kind_1_entspannen
     metadata: {}
+    action: scene.turn_on
+    data: {}
   mode: single
 - id: '1701858481299'
   alias: Kind 2 Licht - Entspannen
@@ -906,9 +900,8 @@
 - id: '1701858679561'
   alias: Kind 1 Licht - Lesen
   description: ''
-  trigger:
-  - platform: device
-    domain: homematicip_local
+  triggers:
+  - domain: homematicip_local
     device_id: fda1b84e07e6fab405566eb2a61be5f4
     event_type: homematic.keypress
     address: 00221F298AC744
@@ -916,12 +909,23 @@
     interface_id: ccu.herbel.net-HmIP-RF
     type: press_short
     subtype: 2
-  condition: []
-  action:
-  - service: scene.turn_on
-    target:
+    trigger: device
+  - domain: homematicip_local
+    device_id: a034d8b89025eaf158544e1e13232a82
+    event_type: homematic.keypress
+    address: 00019D898A851A
+    model: HMIP-WRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+    trigger: device
+  conditions: []
+  actions:
+  - target:
       entity_id: scene.kind_1_lesen
     metadata: {}
+    action: scene.turn_on
+    data: {}
   mode: single
 - id: '1701858733015'
   alias: Kind 2 Licht - Lesen
@@ -955,9 +959,8 @@
 - id: '1701858828710'
   alias: Kind 1 Licht - Natürlich
   description: ''
-  trigger:
-  - platform: device
-    domain: homematicip_local
+  triggers:
+  - domain: homematicip_local
     device_id: fda1b84e07e6fab405566eb2a61be5f4
     event_type: homematic.keypress
     address: 00221F298AC744
@@ -965,12 +968,23 @@
     interface_id: ccu.herbel.net-HmIP-RF
     type: press_long_start
     subtype: 1
-  condition: []
-  action:
-  - service: scene.turn_on
-    target:
+    trigger: device
+  - domain: homematicip_local
+    device_id: a034d8b89025eaf158544e1e13232a82
+    event_type: homematic.keypress
+    address: 00019D898A851A
+    model: HMIP-WRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 1
+    trigger: device
+  conditions: []
+  actions:
+  - target:
       entity_id: scene.kind_1_naturliches_licht
     metadata: {}
+    action: scene.turn_on
+    data: {}
   mode: single
 - id: '1701858859297'
   alias: Kind 2 Licht - Natürlich
@@ -1384,18 +1398,18 @@
 - id: '1702664967422'
   alias: Bad Radio an/aus
   description: ''
-  trigger:
-  - platform: device
-    domain: homematicip_local
-    device_id: 46ccc40ff65ad4c3b857f684631a9187
+  triggers:
+  - domain: homematicip_local
+    device_id: da0880de52582f2e639d4b04d20e3566
     event_type: homematic.keypress
-    address: 00221F298AC61C
-    device_type: HmIPW-BRC2
+    address: 002060C9A575E7
+    model: HmIPW-SMI55
     interface_id: ccu.herbel.net-HmIP-RF
     type: press_long_start
     subtype: 1
-  condition: []
-  action:
+    trigger: device
+  conditions: []
+  actions:
   - if:
     - condition: device
       device_id: 9471c553cebd9e0999878b0536156635
@@ -1403,15 +1417,15 @@
       entity_id: 91a04772bccb8bcbeca74744e84984fd
       type: is_playing
     then:
-    - service: media_player.turn_off
-      target:
+    - target:
         device_id: 9471c553cebd9e0999878b0536156635
       data: {}
+      action: media_player.turn_off
     else:
-    - service: media_player.turn_on
-      target:
+    - target:
         device_id: 9471c553cebd9e0999878b0536156635
       data: {}
+      action: media_player.turn_on
   mode: single
 - id: '1702665481107'
   alias: Bad Radio aus wenn Licht aus
@@ -1503,11 +1517,10 @@
     type: open
   mode: single
 - id: '1709462672756'
-  alias: EG WC Fenster geöffnet
+  alias: WC Fenster geöffnet
   description: ''
-  trigger:
+  triggers:
   - type: opened
-    platform: device
     device_id: 0f9b2574d7bf5cd79919579611189d46
     entity_id: ab90893d862ff8bbbc152090552e51cf
     domain: binary_sensor
@@ -1515,28 +1528,28 @@
       hours: 0
       minutes: 0
       seconds: 5
-  condition: []
-  action:
-  - service: notify.mobile_app_floris_pixel_6_pro
-    metadata: {}
+    trigger: device
+  conditions: []
+  actions:
+  - metadata: {}
     data:
       title: EG WC Fenster geöffnet
       message: Das WC Fenster im Erdgeschoss ist geöffnet
       data:
         tag: eg-wc-window-open
-  - service: notify.mobile_app_steffis_pixel_6a
-    data:
+    action: notify.mobile_app_floris_pixel_6_pro
+  - data:
       message: Das WC Fenster im Erdgeschoss ist geöffnet
       title: EG WC Fenster geöffnet
       data:
         tag: eg-wc-window-open
+    action: notify.mobile_app_steffis_pixel_6a
   mode: single
 - id: '1711626026964'
-  alias: EG WC Fenster schließen
+  alias: WC Fenster schließen
   description: ''
-  trigger:
+  triggers:
   - type: opened
-    platform: device
     device_id: 0f9b2574d7bf5cd79919579611189d46
     entity_id: ab90893d862ff8bbbc152090552e51cf
     domain: binary_sensor
@@ -1544,44 +1557,28 @@
       hours: 0
       minutes: 10
       seconds: 0
-  condition: []
-  action:
-  - service: notify.mobile_app_floris_pixel_6_pro
-    metadata: {}
+    trigger: device
+  conditions: []
+  actions:
+  - action: notify.mobile_app_all
     data:
       title: EG WC Fenster schließen
       message: Das WC Fenster im Erdgeschoss bitte wieder schließen
-      data:
-        tag: eg-wc-window-open
-  - service: notify.mobile_app_steffis_pixel_6a
-    data:
-      message: Das WC Fenster im Erdgeschoss bitte wieder schließen
-      title: EG WC Fenster schließen
       data:
         tag: eg-wc-window-open
   mode: single
 - id: '1711627846701'
-  alias: EG WC Fenster geschlossen
+  alias: WC Fenster geschlossen
   description: ''
-  trigger:
-  - type: opened
-    platform: device
+  triggers:
+  - type: not_opened
     device_id: 0f9b2574d7bf5cd79919579611189d46
     entity_id: ab90893d862ff8bbbc152090552e51cf
     domain: binary_sensor
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 5
-  condition: []
-  action:
-  - service: notify.mobile_app_floris_pixel_6_pro
-    metadata: {}
-    data:
-      message: clear_notification
-      data:
-        tag: eg-wc-window-open
-  - service: notify.mobile_app_steffis_pixel_6a
+    trigger: device
+  conditions: []
+  actions:
+  - action: notify.mobile_app_all
     data:
       message: clear_notification
       data:
@@ -1612,35 +1609,62 @@
       metadata: {}
   mode: single
 - id: '1719902588303'
-  alias: EG Windfang - Motion Detected
+  alias: Eingang - Motion Detection
   description: ''
-  trigger:
-  - platform: device
-    domain: homematicip_local
-    device_id: 6aa61813fe3628b3e12a7cf249ac3e76
-    event_type: homematic.keypress
-    address: 00171BE9A55D94
-    device_type: HmIPW-DRI32
-    interface_id: ccu.herbel.net-HmIP-RF
-    type: press_long
-    subtype: 32
-  condition: []
-  action:
-  - data: {}
-    target:
-      entity_id:
-      - input_boolean.eg_windfang_bwm_motion_detected
-    action: input_boolean.turn_on
-  - delay:
-      hours: 0
-      minutes: 1
-      seconds: 0
-      milliseconds: 0
-  - data: {}
-    target:
-      entity_id:
-      - input_boolean.eg_windfang_bwm_motion_detected
-    action: input_boolean.turn_off
+  triggers:
+  - trigger: homeassistant
+    event: start
+    id: reboot
+  - trigger: state
+    entity_id:
+    - binary_sensor.e3_og_unten_eg_eg_windfang_bewegungsmelder_e3_ch32
+    to: 'on'
+    id: motion
+  - trigger: state
+    entity_id:
+    - binary_sensor.e3_og_unten_eg_eg_windfang_bewegungsmelder_e3_ch32
+    to: 'off'
+    id: no-motion
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - reboot
+      sequence:
+      - action: input_boolean.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.eg_windfang_bwm_motion_detected
+    - conditions:
+      - condition: trigger
+        id:
+        - motion
+      sequence:
+      - action: input_boolean.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - input_boolean.entrance_motion_detected
+    - conditions:
+      - condition: trigger
+        id:
+        - no-motion
+      sequence:
+      - delay:
+          hours: 0
+          minutes: 2
+          seconds: 0
+          milliseconds: 0
+      - action: input_boolean.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - input_boolean.entrance_motion_detected
   mode: restart
 - id: '1724526244310'
   alias: Außenbeleuchtung Terrasse Nord
@@ -1754,78 +1778,51 @@
       - fan.arbeitszimmer_ventilator
     data: {}
   mode: single
-- id: '1726395757612'
-  alias: EG Windfang - Turn off lights
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - input_boolean.eg_windfang_bwm_motion_detected
-    to: 'off'
-    for:
-      hours: 0
-      minutes: 2
-      seconds: 0
-    from: 'on'
-  condition:
-  - condition: and
-    conditions:
-    - condition: state
-      entity_id: input_boolean.eg_flur_bwm_is_enabled
-      state: 'on'
-    - condition: state
-      entity_id: input_boolean.eg_windfang_bwm_motion_detected
-      state: 'off'
-      enabled: true
-  action:
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 10
-      milliseconds: 0
-  - condition: state
-    state: 'off'
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 10
-    entity_id: input_boolean.eg_windfang_bwm_motion_detected
-  - type: turn_off
-    device_id: 24fade4b6c93cb3df9a582b4bfb32890
-    entity_id: 5ba6ee0364728dccbdfb7b7b2a5bd577
-    domain: switch
-  mode: restart
 - id: '1726395868651'
-  alias: EG Windfang - Turn on lights
+  alias: Eingang - Licht
   description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - input_boolean.eg_windfang_bwm_motion_detected
-    to: 'on'
+  triggers:
+  - entity_id:
+    - input_boolean.entrance_motion_detected
     for:
       hours: 0
       minutes: 0
       seconds: 0
-  condition:
+    trigger: state
+  - trigger: state
+    entity_id:
+    - input_boolean.entrance_motion_detection_enabled
+  conditions:
   - condition: state
     state: 'on'
-    entity_id: input_boolean.eg_windfang_bwm_is_enabled
-  - condition: or
-    conditions:
-    - condition: numeric_state
-      entity_id: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
-      below: 11000
-    - condition: sun
-      before: sunrise
-      after: sunset
-      before_offset: -01:00:00
-    enabled: true
-  action:
-  - type: turn_on
-    device_id: 24fade4b6c93cb3df9a582b4bfb32890
-    entity_id: 5ba6ee0364728dccbdfb7b7b2a5bd577
-    domain: switch
+    entity_id: input_boolean.entrance_motion_detection_enabled
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.entrance_motion_detected
+        state: 'on'
+      - condition: or
+        conditions:
+        - condition: numeric_state
+          entity_id: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+          below: 11000
+        - condition: sun
+          before: sunrise
+          after: sunset
+          before_offset: -01:00:00
+        enabled: true
+        alias: Lichtverhältnisse passen
+      sequence:
+      - type: turn_on
+        device_id: 24fade4b6c93cb3df9a582b4bfb32890
+        entity_id: 5ba6ee0364728dccbdfb7b7b2a5bd577
+        domain: switch
+    default:
+    - type: turn_off
+      device_id: 24fade4b6c93cb3df9a582b4bfb32890
+      entity_id: 5ba6ee0364728dccbdfb7b7b2a5bd577
+      domain: switch
   mode: restart
 - id: '1727276133480'
   alias: Küche - Spots
@@ -1888,38 +1885,63 @@
 - id: '1727276794961'
   alias: Bad - Spots
   description: ''
-  trigger:
-  - platform: device
-    domain: homematicip_local
+  triggers:
+  - domain: homematicip_local
     device_id: 46ccc40ff65ad4c3b857f684631a9187
     event_type: homematic.keypress
     address: 00221F298AC61C
-    device_type: HmIPW-BRC2
+    model: HmIPW-BRC2
     interface_id: ccu.herbel.net-HmIP-RF
     type: press_short
     subtype: 1
-  condition: []
-  action:
-  - type: toggle
-    device_id: c1ff62b87afce76488931a17d5bb1790
-    entity_id: 795428f22ed15a89440a26b370361ae2
-    domain: light
+    trigger: device
+  conditions: []
+  actions:
+  - if:
+    - condition: state
+      entity_id: light.a1_bad_deckenleuchte_1_a1_ch2
+      state: 'on'
+    then:
+    - action: light.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.a1_bad_deckenleuchte_1_a1_ch2
+    - action: automation.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: automation.bad_licht
+      enabled: false
+    else:
+    - action: light.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.a1_bad_deckenleuchte_1_a1_ch2
+    - action: automation.turn_off
+      metadata: {}
+      data:
+        stop_actions: true
+      target:
+        entity_id: automation.bad_licht
+      enabled: false
   mode: single
 - id: '1727276841236'
   alias: Bad - Dusche
   description: ''
-  trigger:
-  - platform: device
-    domain: homematicip_local
+  triggers:
+  - domain: homematicip_local
     device_id: 46ccc40ff65ad4c3b857f684631a9187
     event_type: homematic.keypress
     address: 00221F298AC61C
-    device_type: HmIPW-BRC2
+    model: HmIPW-BRC2
     interface_id: ccu.herbel.net-HmIP-RF
     type: press_short
     subtype: 2
-  condition: []
-  action:
+    trigger: device
+  conditions: []
+  actions:
   - type: toggle
     device_id: c1ff62b87afce76488931a17d5bb1790
     entity_id: 0b2a1ff6a806321b3ee421028c54970d
@@ -2154,7 +2176,6 @@
       - auto_ventilate_enabled
       - auto_up_enabled
       - auto_down_enabled
-      - auto_shading_enabled
 - id: '1731261097840'
   alias: Rollladen Küche
   description: ''
@@ -2196,37 +2217,227 @@
   alias: Schlafzimmerfenster
   description: ''
   triggers:
-  - type: humidity
+  - type: temperature
     device_id: f2f032388454729b767161a7cef665de
-    entity_id: bda6bd27ff80ce86e19f9d19a78690df
+    entity_id: 3d16edf0aedd68ac3c91b87e36192374
     domain: sensor
     trigger: device
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 10
     below: 18
-  - type: humidity
-    device_id: f2f032388454729b767161a7cef665de
-    entity_id: bda6bd27ff80ce86e19f9d19a78690df
-    domain: sensor
-    trigger: device
-    below: 55
+  - trigger: state
+    entity_id:
+    - binary_sensor.schlafzimmerfenster_offnung
+    to: 'on'
     for:
       hours: 0
-      minutes: 0
-      seconds: 10
-    enabled: false
+      minutes: 15
+      seconds: 0
   conditions:
   - condition: time
-    after: 00:07:00
-    before: 00:22:00
+    after: 07:00:00
+    before: '22:00:00'
   actions:
-  - data:
+  - action: notify.mobile_app_all
+    data:
+      data:
+        tag: bedroom-window-open
       message: Das Schlafzimmerfenster ist noch offen ({{ states('sensor.raumthermostat_schlafzimmer_actual_temperature',
         with_unit=True) }} | {{ states('sensor.raumthermostat_schlafzimmer_humidity',
         with_unit=True) }})
       title: Schlafzimmerfenster vergessen?
     enabled: true
+  mode: single
+- id: '1732897103220'
+  alias: Rollladen Arbeiten West
+  description: ''
+  use_blueprint:
+    path: shutter_automation.yaml
+    input:
+      cover_entity: cover.ja2_nordseite_rollo_arbeiten_west_hmipw_drbl4_00165d899fbab0_ch10
+      light_sensor: sensor.hmip_slo_000d60c9a674e3_beleuchtungsstarke
+      light_sensor_average: sensor.hmip_slo_000d60c9a674e3_durchschnittliche_beleuchtungsstarke
+      is_enabled_input: input_boolean.autorollo_arbeitszimmer_west
+      auto_options:
+      - auto_up_enabled
+      - auto_down_enabled
+- id: '1733486362976'
+  alias: Bad - Licht Bewegungsmelder
+  description: Turns on lights
+  triggers:
+  - entity_id:
+    - binary_sensor.bad_melder_bewegung
+    trigger: state
+    to: 'on'
+  - trigger: homeassistant
+    event: shutdown
+  - trigger: state
+    entity_id:
+    - binary_sensor.bad_bewegungsmelder_presence
+    to: 'off'
+  conditions: []
+  actions:
+  - if:
+    - condition: numeric_state
+      entity_id: sensor.bad_melder_beleuchtungsstarke
+      below: 50
+      enabled: false
+    - condition: or
+      conditions:
+      - condition: state
+        entity_id: binary_sensor.bad_bewegungsmelder_presence
+        state: 'on'
+      - condition: state
+        entity_id: binary_sensor.bad_melder_bewegung
+        state: 'on'
+    then:
+    - action: light.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.a1_bad_deckenleuchte_1_a1_ch2
+    else:
+    - action: light.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - light.a1_bad_deckenleuchte_1_a1_ch2
+  mode: single
+- id: '1733763731290'
+  alias: 'Wohnungstüre öffnen '
+  description: ''
+  triggers:
+  - tag_id: c2818818-6e4f-4fac-b4ee-c3d8832af596
+    trigger: tag
+  conditions: []
+  actions:
+  - device_id: 1316d4c8a44cde8d1f32f8f1b6652c4b
+    domain: lock
+    entity_id: 59c306be90627703bcf1aa652faecbab
+    type: open
+  mode: single
+- id: '1733825475545'
+  alias: Schlafzimmerfenster geschlossen
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.schlafzimmerfenster_offnung
+    to: 'off'
+  conditions: []
+  actions:
+  - data:
+      data:
+        tag: bedroom-window-open
+      message: clear_notification
+    enabled: true
     action: notify.mobile_app_all
+  mode: single
+- id: '1733826078026'
+  alias: Badfenster geschlossen
+  description: ''
+  triggers:
+  - type: not_opened
+    device_id: fd0cc8713ae95eb3baabcdbbd32f8db0
+    entity_id: 369741e0801743b807798adccae7dc7b
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+  - type: opened
+    device_id: d0c55de0d74f72c5331e64a04f01bb99
+    entity_id: c4ee26a66acf31c7ef9f0c7c1ac56967
+    domain: binary_sensor
+    trigger: device
+  conditions:
+  - condition: and
+    conditions:
+    - condition: state
+      entity_id: binary_sensor.bad_fenster
+      state: 'off'
+    - condition: state
+      entity_id: binary_sensor.hmip_swdo_2_00365f299b20c5
+      state: 'off'
+    alias: Beide Fenster geschlossen sind
+  actions:
+  - action: notify.mobile_app_all
+    data:
+      message: clear_notification
+      data:
+        tag: bathroom-window-left-open
+  mode: single
+- id: '1735035680566'
+  alias: Treppenhaus Licht
+  description: ''
+  triggers:
+  - domain: homematicip_local
+    device_id: 6aa61813fe3628b3e12a7cf249ac3e76
+    event_type: homematic.keypress
+    address: 00171BE9A55D94
+    model: HmIPW-DRI32
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 26
+    trigger: device
+    alias: Taster Treppenhaus
+  - domain: homematicip_local
+    device_id: 6aa61813fe3628b3e12a7cf249ac3e76
+    event_type: homematic.keypress
+    address: 00171BE9A55D94
+    model: HmIPW-DRI32
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 21
+    trigger: device
+    alias: Taster Treppenhaus Kellertür
+  - domain: homematicip_local
+    device_id: 6aa61813fe3628b3e12a7cf249ac3e76
+    event_type: homematic.keypress
+    address: 00171BE9A55D94
+    model: HmIPW-DRI32
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 6
+    trigger: device
+    alias: Taster Esszimmer Treppe
+  conditions: []
+  actions:
+  - action: light.toggle
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.a3_eg_flur_licht_a3_ch26
+  mode: single
+- id: '1735035742932'
+  alias: Windfang Licht
+  description: ''
+  triggers:
+  - domain: homematicip_local
+    device_id: 6aa61813fe3628b3e12a7cf249ac3e76
+    event_type: homematic.keypress
+    address: 00171BE9A55D94
+    model: HmIPW-DRI32
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 25
+    trigger: device
+    alias: Taster Treppenhaus WC oben
+  - domain: homematicip_local
+    device_id: 6aa61813fe3628b3e12a7cf249ac3e76
+    event_type: homematic.keypress
+    address: 00171BE9A55D94
+    model: HmIPW-DRI32
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 29
+    trigger: device
+    alias: Taster Windfang
+  conditions: []
+  actions:
+  - action: light.toggle
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.a3_eg_windfang_licht_a3_ch30
   mode: single

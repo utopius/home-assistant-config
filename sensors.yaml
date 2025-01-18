@@ -12,6 +12,57 @@
   community: public
   unit_of_measurement: "minutes"
   value_template: "{{((value | int) / 6000) | int}}"
+
+# # This MIB should be the load, but it always reports 24 like the battery voltage
+# - platform: snmp
+#   name: snmp_ups_battery_voltage_real
+#   host: 192.168.200.64
+#   baseoid: 1.3.6.1.4.1.3808.1.1.1.4.2.3.0
+#   community: public
+#   scan_interval: 300
+#   unit_of_measurement: "%"
+# # If the above is the battery voltage, then what's this?
+# - platform: snmp
+#   host: 192.168.1.7
+#   baseoid: .1.3.6.1.4.1.3808.1.1.1.2.2.2.0
+#   accept_errors: "true"
+#   community: public
+#   port: 161
+#   name: snmp_ups_battery_voltage
+#   value_template: "{{ (value | int / 10 ) }}"
+#   unit_of_measurement: "V"
+
+- platform: snmp
+  host: 192.168.200.64
+  baseoid: .1.3.6.1.4.1.3808.1.1.1.3.2.6.0
+  accept_errors: "true"
+  community: public
+  port: 161
+  name: snmp_ups_status_advanced
+  value_template: >
+    {% set vals = {'1': 'normal', '2':'Over Voltage', '3':'Under Voltage', '4':'Frequency failure', '5':'Blackout'} %}
+    {{vals[value]}}
+
+- platform: snmp
+  host: 192.168.200.64
+  baseoid: .1.3.6.1.4.1.3808.1.1.1.4.1.1.0
+  accept_errors: "true"
+  community: public
+  port: 161
+  name: snmp_ups_status_battery
+  value_template: >
+    {% set vals = {'1': 'unknown', '2':'Normal', '3':'Battery Low'} %}
+    {{vals[value]}}
+
+- platform: snmp
+  host: 192.168.200.64
+  baseoid: .1.3.6.1.4.1.3808.1.1.1.2.2.1.0
+  accept_errors: "true"
+  community: public
+  port: 161
+  name: snmp_ups_battery_capacity
+  value_template: "{{ (value | float) }}"
+  unit_of_measurement: "%"
 # Not necessary if the load in percent is always wrong we cannot calculate anything
 #- platform: snmp
 #  name: snmp_ups_ident_loadpower

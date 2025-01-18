@@ -13,16 +13,32 @@ blueprint:
           filter:
             domain: cover
 
-    contact_sensor:
-      name: "Contact sensor"
-      description: "(Optional) A contact sensor to trigger a ventilate position if opened  (e.g. door or window sensor)."
-      default:
-      selector:
-        entity:
-          filter:
-            domain:
-              - binary_sensor
-              - input_boolean
+    sensor_section:
+      name: "Sensor Configuration"
+      description: "Sensor selection and configuration"
+      collapsed: true
+      icon: mdi:smoke-detector
+      input:
+        contact_sensor:
+          name: "Contact sensor"
+          description: "(Optional) A contact sensor to trigger a ventilate position if opened  (e.g. door or window sensor)."
+          default:
+          selector:
+            entity:
+              filter:
+                domain:
+                  - binary_sensor
+                  - input_boolean
+
+        temperature_sensor:
+          name: "Temperature sensor"
+          description: "(Optional) Temperature sensor used as threshold and ventilation mode."
+          default:
+          selector:
+            entity:
+              filter:
+                domain: sensor
+                device_class: temperature
 
     illuminance_section:
       name: "Illuminance Configuration"
@@ -54,12 +70,21 @@ blueprint:
       input:
         position_closed:
           name: "Closed position"
-          description: "Cover position to use as 'closed'."
+          description: "Cover position to use as 'closed' while ."
           default: 0
           selector:
             number:
               min: 0
               max: 100
+
+        position_closed_temp_threshold:
+          name: "Temperature threshold for 'Closed position'"
+          description: "(Optional) Cover position is used as 'closed' while 'Temperature sensor' is higher than this threshold"
+          default: 0
+          selector:
+            number:
+              min: -30
+              max: 40
 
         position_shade:
           name: "Shade position"
@@ -118,7 +143,6 @@ blueprint:
       icon: mdi:window-shutter-cog
       collapsed: true
       input:
-
         is_enabled_input:
           name: "Auto on/off"
           description: "Input boolean to act as switch to disable cover automation."
@@ -130,12 +154,7 @@ blueprint:
         auto_options:
           name: "Automation Options"
           description: "Stuff"
-          default:
-            [
-              auto_up_enabled,
-              auto_down_enabled,
-              auto_shading_enabled,
-            ]
+          default: [auto_up_enabled, auto_down_enabled, auto_shading_enabled]
           selector:
             select:
               options:
@@ -148,7 +167,6 @@ blueprint:
                 - label: "🥵 - Enable automatic sun protection / sunshade control (helper required)"
                   value: "auto_shading_enabled"
               multiple: true
-              sort: false
               custom_value: false
               mode: list
 
@@ -156,14 +174,17 @@ trigger_variables:
   auto_options: !input auto_options
 
   contact_sensor: !input contact_sensor
+  temperature_sensor: !input temperature_sensor
 
   is_up_enabled: "{{ 'auto_up_enabled' in auto_options }}"
   is_down_enabled: "{{ 'auto_down_enabled' in auto_options }}"
   is_ventilation_enabled: "{{ 'auto_ventilate_enabled' in auto_options }}"
   is_shading_enabled: "{{ 'auto_shading_enabled' in auto_options }}"
 
-triggers:
+  # is_trigger_contact_opened_off_enabled: "{{ is_ventilation_enabled and contact_sensor != [] }}"
+  # is_trigger_contact_opened_on_enabled: "{{ is_ventilation_enabled and contact_sensor != [] }}"
 
+triggers:
   - trigger: time_pattern
     minutes: /5
 
@@ -171,15 +192,13 @@ triggers:
     entity_id:
       - !input is_enabled_input
 
-  - platform: template
-    value_template: "{{ is_state(contact_sensor, ['false', 'off']) }}"
-    enabled: "{{ is_ventilation_enabled and contact_sensor != [] }}"
+  - trigger: template
+    value_template: "{{ 'auto_ventilate_enabled' in auto_options and is_state(contact_sensor, ['false', 'off']) }}"
     id: "tid_contact_opened_off"
     for:
       seconds: 5 #!input contact_delay_trigger
-  - platform: template
-    value_template: "{{ is_state(contact_sensor, ['true', 'on']) }}"
-    enabled: "{{ is_ventilation_enabled and contact_sensor != [] }}"
+  - trigger: template
+    value_template: "{{ 'auto_ventilate_enabled' in auto_options and is_state(contact_sensor, ['true', 'on']) }}"
     id: "tid_contact_opened_on"
     for:
       seconds: 5 #!input contact_delay_trigger
@@ -261,57 +280,57 @@ action:
                     entity_id: !input cover_entity
             - alias: Sonnenschein
               conditions:
-                  # https://openweathermap.org/weather-conditions
-                  # Clear, max 50% clouds
-                  - condition: numeric_state
-                    entity_id: sensor.home_weather_code
-                    above: 799
-                    below: 803
-                  - condition: numeric_state
-                    entity_id: !input light_sensor_average
-                    above: input_number.beschattungsschwelle_durchschnitt
-                  - condition: numeric_state
-                    entity_id: !input light_sensor
-                    above: input_number.beschattungsschwelle
+                # https://openweathermap.org/weather-conditions
+                # Clear, max 50% clouds
+                - condition: numeric_state
+                  entity_id: sensor.home_weather_code
+                  above: 799
+                  below: 803
+                - condition: numeric_state
+                  entity_id: !input light_sensor_average
+                  above: input_number.beschattungsschwelle_durchschnitt
+                - condition: numeric_state
+                  entity_id: !input light_sensor
+                  above: input_number.beschattungsschwelle
               sequence:
-                  alias: Sonnenschein
-                  if:
-                    - alias: Beschattung halb
-                      condition: numeric_state
-                      entity_id: sensor.hmip_stho_000edd89b688b4_actual_temperature
-                      above: input_number.autoshade_lower_bound
-                      below: input_number.autoshade_medium_upper_bound
-                  then:
-                    - action: cover.set_cover_position
-                      metadata: {}
-                      data:
-                        position: !input position_shade_light
-                      target:
-                        entity_id: !input cover_entity
-                  else:
-                    - alias: Beschattung
-                      condition: and
-                      conditions:
+                alias: Sonnenschein
+                if:
+                  - alias: Beschattung halb
+                    condition: numeric_state
+                    entity_id: sensor.hmip_stho_000edd89b688b4_actual_temperature
+                    above: input_number.autoshade_lower_bound
+                    below: input_number.autoshade_medium_upper_bound
+                then:
+                  - action: cover.set_cover_position
+                    metadata: {}
+                    data:
+                      position: !input position_shade_light
+                    target:
+                      entity_id: !input cover_entity
+                else:
+                  - alias: Beschattung
+                    condition: and
+                    conditions:
                       - condition: numeric_state
                         entity_id: sensor.hmip_stho_000edd89b688b4_actual_temperature
                         above: input_number.autoshade_lower_bound
                       - condition: numeric_state
                         entity_id: sensor.hmip_stho_000edd89b688b4_actual_temperature
                         above: input_number.autoshade_medium_upper_bound
-                    - action: cover.set_cover_position
-                      metadata: {}
-                      data:
-                        position: !input position_shade
-                      target:
-                        entity_id: !input cover_entity
+                  - action: cover.set_cover_position
+                    metadata: {}
+                    data:
+                      position: !input position_shade
+                    target:
+                      entity_id: !input cover_entity
           default:
-          - alias: Beschattung aufheben
-            sequence:
-              - action: cover.open_cover
-                metadata: {}
-                data: {}
-                target:
-                  entity_id: !input cover_entity
+            - alias: Beschattung aufheben
+              sequence:
+                - action: cover.open_cover
+                  metadata: {}
+                  data: {}
+                  target:
+                    entity_id: !input cover_entity
       - alias: "Tags öffnen"
         conditions:
           - "{{ is_up_enabled }}"

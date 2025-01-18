@@ -2026,8 +2026,8 @@
       position_shade: 20
       light_sensor_average: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
       auto_options:
-      - auto_up_enabled
       - auto_down_enabled
+      - auto_up_enabled
       - auto_shading_enabled
       - auto_ventilate_enabled
       contact_sensor: binary_sensor.wohnzimmer_sud_offnung
@@ -2148,8 +2148,6 @@
       min_azimuth: 255
       max_azimuth: 300
       contact_sensor: binary_sensor.e4_ch10
-      options:
-      - auto_ventilate_enabled
       auto_options:
       - auto_ventilate_enabled
       - auto_up_enabled
@@ -2170,12 +2168,10 @@
       position_shade: 15
       min_azimuth: 250
       max_azimuth: 300
-      options:
-      - auto_ventilate_enabled
       auto_options:
       - auto_ventilate_enabled
-      - auto_up_enabled
       - auto_down_enabled
+      - auto_up_enabled
 - id: '1731261097840'
   alias: Rollladen Küche
   description: ''

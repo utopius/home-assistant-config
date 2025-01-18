@@ -207,7 +207,7 @@ action:
                 conditions:
                   - "{{ contact_sensor != [] }}"
                   - "{{ is_state(contact_sensor, ['false', 'off']) }}"
-              - "{{ contact_sensor == None }}"
+              - "{{ contact_sensor == [] }}"
         sequence:
           - action: cover.set_cover_position
             data:

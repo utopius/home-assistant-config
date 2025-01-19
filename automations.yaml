@@ -2183,6 +2183,10 @@
       light_sensor_average: sensor.hmip_slo_000d60c9a674e3_durchschnittliche_beleuchtungsstarke
       is_enabled_input: input_boolean.autorollo_kuche
       min_azimuth: 255
+      auto_options:
+      - auto_up_enabled
+      - auto_down_enabled
+      - auto_shading_enabled
 - id: '1731261313962'
   alias: Rollladen HWR
   description: ''

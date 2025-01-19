@@ -113,6 +113,27 @@ blueprint:
               min: 0
               max: 100
 
+    time_section:
+      name: "Time Control Configuration"
+      icon: mdi:clock-time-two-outline
+      collapsed: true
+      input:
+        time_up:
+          name: "🔼 Time For Drive Up"
+          description: >-
+            The time at which the cover may be opened.
+            The cover will be opened if <ins>AFTER</ins> this time the sun is above horizon.
+          default: "07:00:00"
+          selector:
+            time: {}
+        time_down:
+          name: "🔻 Time For Drive Down"
+          description: >-
+            The time at which the cover may be closed.
+            The cover will be closed if <ins>AFTER</ins> this time <ins>OR </ins> the sun is below horizon.
+          default: "19:30:00"
+          selector:
+            time: {}
     sun_section:
       name: "Sun Elevation Settings"
       description: "Sun elevation settings controlling auto-shading"
@@ -181,8 +202,8 @@ trigger_variables:
   is_ventilation_enabled: "{{ 'auto_ventilate_enabled' in auto_options }}"
   is_shading_enabled: "{{ 'auto_shading_enabled' in auto_options }}"
 
-  # is_trigger_contact_opened_off_enabled: "{{ is_ventilation_enabled and contact_sensor != [] }}"
-  # is_trigger_contact_opened_on_enabled: "{{ is_ventilation_enabled and contact_sensor != [] }}"
+  is_trigger_contact_opened_off_enabled: "{{ is_ventilation_enabled and contact_sensor != [] }}"
+  is_trigger_contact_opened_on_enabled: "{{ is_ventilation_enabled and contact_sensor != [] }}"
 
 triggers:
   - trigger: time_pattern
@@ -193,15 +214,20 @@ triggers:
       - !input is_enabled_input
 
   - trigger: template
-    value_template: "{{ 'auto_ventilate_enabled' in auto_options and is_state(contact_sensor, ['false', 'off']) }}"
+    value_template: "{{ is_trigger_contact_opened_off_enabled and is_state(contact_sensor, ['false', 'off']) }}"
     id: "tid_contact_opened_off"
     for:
       seconds: 5 #!input contact_delay_trigger
   - trigger: template
-    value_template: "{{ 'auto_ventilate_enabled' in auto_options and is_state(contact_sensor, ['true', 'on']) }}"
+    value_template: "{{ is_trigger_contact_opened_on_enabled and is_state(contact_sensor, ['true', 'on']) }}"
     id: "tid_contact_opened_on"
     for:
       seconds: 5 #!input contact_delay_trigger
+
+variables:
+  contact_sensor: !input contact_sensor
+  time_up: !input time_up
+  time_down: !input time_down
 
 condition:
   - condition: state
@@ -212,21 +238,14 @@ action:
       - alias: "Nachts schließen"
         conditions:
           - "{{ is_down_enabled }}"
+          - "{{ is_state(contact_sensor, ['false', 'off']) if contact_sensor else True }}"
           - condition: or
             conditions:
-            - condition: time
-              after: "19:30:00"
-              before: "07:00:00"
-            - condition: state
-              entity_id: sun.sun
-              state: below_horizon
-          - condition: or
-            conditions:
-              - condition: and
-                conditions:
-                  - "{{ contact_sensor != [] }}"
-                  - "{{ is_state(contact_sensor, ['false', 'off']) }}"
-              - "{{ contact_sensor == [] }}"
+              - "{{ now() >= today_at(time_down) }}"
+              - "{{ now() < today_at(time_up) }}"
+              - condition: state
+                entity_id: sun.sun
+                state: below_horizon
         sequence:
           - action: cover.set_cover_position
             data:
@@ -242,9 +261,8 @@ action:
               - condition: sun
                 before: sunset
                 after: sunrise
-              - condition: time
-                after: "08:00:00"
-                before: "19:15:00"
+              - "{{ now() >= today_at(time_up) }}"
+              - "{{ now() < today_at(time_down) }}"
           - alias: Sonnenstand und Lichtintensität
             condition: and
             conditions:

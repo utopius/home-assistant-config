@@ -26,3 +26,24 @@ heat_consumption_yearly:
   cycle: yearly
   periodically_resetting: True
   always_available: True
+power_consumption_daily:
+  unique_id: 01948481-7795-7155-8e91-4c85422fa023
+  source: sensor.energy_meter_total_in
+  name: "Stromverbrauch (Tag)"
+  cycle: daily
+  periodically_resetting: True
+  always_available: True
+power_consumption_monthly:
+  unique_id: 01948482-307a-73b9-bd3d-3aeceb7696e1
+  source: sensor.energy_meter_total_in
+  name: "Stromverbrauch (Monat)"
+  cycle: daily
+  periodically_resetting: True
+  always_available: True
+power_consumption_yearly:
+  unique_id: 01948482-91bd-736d-a797-eb8de12f2f06
+  source: sensor.energy_meter_total_in
+  name: "Stromverbrauch (Jahr)"
+  cycle: daily
+  periodically_resetting: True
+  always_available: True

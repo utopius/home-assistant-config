@@ -362,7 +362,8 @@ arbeiten_nord_zu:
 kika_einschalten:
   alias: KiKa einschalten
   sequence:
-  - if:
+  - alias: TV einschalten & warten
+    if:
     - condition: device
       type: is_off
       device_id: b1aad560567ef5fc5950e49338e6f0f6
@@ -376,9 +377,7 @@ kika_einschalten:
     - delay:
         hours: 0
         minutes: 0
-        seconds: 6
-        milliseconds: 0
-    alias: TV einschalten & warten
+        seconds: 7
   - action: media_player.play_media
     metadata: {}
     data:

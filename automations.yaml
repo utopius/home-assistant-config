@@ -2441,3 +2441,69 @@
     target:
       entity_id: light.a3_eg_windfang_licht_a3_ch30
   mode: single
+- id: '1737923480006'
+  alias: Bad - Anti-Kondenswasser
+  description: ''
+  triggers:
+  - trigger: numeric_state
+    entity_id:
+    - sensor.hmip_stho_000edd89b682a2_actual_temperature
+    for:
+      hours: 0
+      minutes: 15
+      seconds: 0
+    below: 5
+    id: baby-its-cold-outside
+    enabled: false
+  - trigger: numeric_state
+    entity_id:
+    - sensor.hmip_stho_000edd89b682a2_actual_temperature
+    for:
+      hours: 0
+      minutes: 15
+      seconds: 0
+    above: 5
+    id: its-warm-again
+    enabled: false
+  - trigger: time_pattern
+    minutes: '20'
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - baby-its-cold-outside
+        enabled: false
+      - type: is_temperature
+        condition: device
+        device_id: 920349d489d8c5696a1739387d062fee
+        entity_id: 2590426dfe21477e85cf923f23fde4ac
+        domain: sensor
+        below: 5
+      sequence:
+      - action: climate.set_preset_mode
+        metadata: {}
+        data:
+          preset_mode: week_program_4
+        target:
+          entity_id: climate.bad_raumthermostat
+    - conditions:
+      - condition: trigger
+        id:
+        - its-warm-again
+        enabled: false
+      - type: is_temperature
+        condition: device
+        device_id: 920349d489d8c5696a1739387d062fee
+        entity_id: 2590426dfe21477e85cf923f23fde4ac
+        domain: sensor
+        above: 5
+      sequence:
+      - action: climate.set_preset_mode
+        metadata: {}
+        data:
+          preset_mode: week_program_3
+        target:
+          entity_id: climate.bad_raumthermostat
+  mode: single

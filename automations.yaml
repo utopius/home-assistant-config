@@ -1637,7 +1637,8 @@
         metadata: {}
         data: {}
         target:
-          entity_id: input_boolean.eg_windfang_bwm_motion_detected
+          entity_id:
+          - input_boolean.entrance_motion_detected
     - conditions:
       - condition: trigger
         id:

@@ -1,0 +1,4 @@
+heat_meter_replacement_date:
+  name: Heat meter replacement date
+  has_date: true
+  has_time: false

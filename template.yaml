@@ -1,12 +1,10 @@
-# Template sensor converting from MWh to kWh
 - trigger:
     # - trigger: time_pattern
     #   minutes: /1
     - trigger: state
       entity_id: sensor.bitshakesmr_lguh50_mwh_count
-#   condition:
-#     - condition: template
-#       value_template: "{{ is_number(states('sensor.bitshakesmr_lguh50_mwh_count')) }}"
+    - trigger: state
+      entity_id: sensor.bitshakesmr_lguh50_mwh_count_year
   sensor:
     - name: "heat meter total"
       unique_id: 0639d954-edef-4598-9a77-aac3c4f5d098
@@ -15,15 +13,18 @@
       device_class: energy
       state_class: total_increasing
       state: >
-        {{ states('sensor.bitshakesmr_lguh50_mwh_count') | float * 1000 }}
+        {% set current = states('sensor.bitshakesmr_lguh50_mwh_count') | float(0) * 1000 %}
+        {{ current }}
       availability: >
-        {% set current = states('sensor.bitshakesmr_lguh50_mwh_count') %}
-        {{ current not in ['unknown', 'unavailable'] and is_number(current) and current | float * 1000 > 2000 }}
+        {{ states('sensor.bitshakesmr_lguh50_mwh_count') | is_number }}
 
-# Template sensor converting from MWh to kWh
 - trigger:
-    # - trigger: time_pattern
-    #   minutes: /1
+    - trigger: time_pattern
+      minutes: /1
+    - trigger: state
+      entity_id: input_number.heat_meter_replacement_date
+    - trigger: state
+      entity_id: input_number.heat_meter_last_year_before_replacement
     - trigger: state
       entity_id: sensor.bitshakesmr_lguh50_mwh_count_year
   sensor:
@@ -34,11 +35,30 @@
       device_class: energy
       state_class: total_increasing
       state: >
-        {{ states('sensor.bitshakesmr_lguh50_mwh_count_year') | float * 1000 }}
+        {% set before_replacement = states('input_number.heat_meter_last_year_before_replacement') | float(0) %}
+        {% set current = states('sensor.bitshakesmr_lguh50_mwh_count_year') | float(0) * 1000 %}
+        {% set replacement = states('input_datetime.heat_meter_replacement_date') | as_datetime %}
+        {% set current_year = now().year %}
+        {% if current_year == replacement.year %}
+          {{ current + before_replacement }}
+        {% else %}
+          {{ current }}
+        {% endif %}
       availability: >
-        {% set current = states('sensor.bitshakesmr_lguh50_mwh_count_year') %}
-        {{ current not in ['unknown', 'unavailable'] and is_number(current) and current | float * 1000 > 2000 }}
+        {{ states('sensor.bitshakesmr_lguh50_mwh_count_year') | is_number }}
 
+# Leftover before having a working utility_meter entity
+- trigger:
+    #- trigger: time_pattern
+    #  minutes: /1
+    - trigger: state
+      entity_id: sensor.heat_meter_total
+    - trigger: state
+      entity_id: sensor.heat_meter_total_last_year
+    - trigger: state
+      entity_id: input_number.heat_meter_value_before_replacement
+    - trigger: state
+      entity_id: input_datetime.heat_meter_replacement_date
 - sensor:
     - name: "heat consumption current year"
       unique_id: 4c3f6a9d-c145-41da-8dc0-e178cc43e287
@@ -49,15 +69,23 @@
       state: >
         {% set current = states('sensor.heat_meter_total') | float %}
         {% set last_year = states('sensor.heat_meter_total_last_year') | float %}
-        {{ current - last_year | float  }}
+        {% set before_replacement = states('input_number.heat_meter_value_before_replacement') | float(0) %}
+        {% set replacement = states('input_datetime.heat_meter_replacement_date') | as_datetime %}
+        {% if now().year == replacement.year %}
+          {{ current + before_replacement - last_year }}
+        {% else %}
+          {{ current - last_year }}
+        {% endif %}
       availability: >
         {% set current = states('sensor.heat_meter_total') %}
         {% set last_year = states('sensor.heat_meter_total_last_year') %}
-        {{ current not in ['unknown', 'unavailable'] and is_number(current) and float(current) > 0 and last_year not in ['unknown', 'unavailable'] and is_number(last_year) and float(last_year) > 0 and (float(current) - float(last_year) > 0) }}
+        {{ is_number(current) and is_number(last_year) }}
 
 - trigger:
-    # - trigger: time_pattern
-    #   minutes: /1
+    - trigger: time_pattern
+      minutes: /1
+    - trigger: state
+      entity_id: sensor.heat_consumption_yearly
     - trigger: state
       entity_id: sensor.heat_consumption_daily
   sensor:
@@ -69,18 +97,18 @@
       state: >
         {% set days = int(now().strftime('%j')) %}
         {% set days_until_yesterday = days - 1 %}
-        {% set heat_since_year_start = states('sensor.heat_consumption_current_year') | float %}
+        {% set heat_since_year_start = states('sensor.heat_consumption_yearly') | float %}
         {% set change_today = states('sensor.heat_consumption_daily') | float %}
         {% set heat_until_yesterday = heat_since_year_start - change_today %}
         {{ heat_until_yesterday / days_until_yesterday }}
       availability: >
-        {% set current = states('sensor.heat_consumption_current_year') %}
+        {% set current = states('sensor.heat_consumption_yearly') %}
         {% set change = states('sensor.heat_consumption_daily') %}
-        {{ current not in ['unknown', 'unavailable'] and is_number(current) and change not in ['unknown', 'unavailable'] and is_number(change) }}
+        {{ is_number(current) and is_number(change) }}
 
 - trigger:
-    # - trigger: time_pattern
-    #   minutes: /1
+    #- trigger: time_pattern
+    #  minutes: /1
     - trigger: state
       entity_id: sensor.heat_consumption_current_year_daily_average
   sensor:

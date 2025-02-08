@@ -22,6 +22,8 @@ adaptive_lighting:
 # includes
 automation: !include automations.yaml
 group: !include groups.yaml
+input_number: !include input_numbers.yaml
+input_datetime: !include input_datetimes.yaml
 light groups: !include light-groups.yaml
 media_player: !include media-player.yaml
 notify: !include notify.yaml

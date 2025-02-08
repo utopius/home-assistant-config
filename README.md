@@ -11,19 +11,32 @@ SELECT m.entity_id, m.metadata_id, s.state_id, datetime(ROUND(s.last_reported_ts
 FROM states s
 LEFT JOIN states_meta m
 ON s.metadata_id = m.metadata_id
-WHERE m.entity_id = "sensor.heat_meter_daily_usage"
+WHERE m.entity_id = "sensor.heat_meter_total_last_year"
+```
+
+```sql
+UPDATE states
+SET state = 96495.0
+WHERE metadata_id = 6420 AND state > 96495.0
 ```
 
 ### Short-term statistics
+
+Some borked statistics values left in the graphs? Then there are leftovers in the short-term statistics table.
 
 ```sql
 SELECT m.statistic_id as entity_id, m.id as meta_id, s.id, datetime(ROUND(s.created_ts), 'unixepoch') as created_date, datetime(ROUND(s.start_ts), 'unixepoch') as start_date, s.min, s.mean, s.max, s.state, s.sum
 FROM statistics_short_term s
 LEFT JOIN statistics_meta m
 ON s.metadata_id = m.id
-WHERE m.statistic_id = "sensor.heat_meter_daily_usage"
-AND strftime('%s', created_date ) BETWEEN strftime('%s', "2024-11-01 00:00:00") AND strftime('%s', "2024-11-02 00:00:00")
+WHERE m.statistic_id = "sensor.heat_meter_total_last_year" AND state > 96495.0
 ORDER BY created_ts ASC
+```
+
+```sql
+UPDATE statistics_short_term
+SET state = 96495.0
+WHERE metadata_id = 428 AND state = 0.0
 ```
 
 ### Long-term statistics
@@ -33,8 +46,14 @@ SELECT m.statistic_id as entity_id, m.id as meta_id, s.id, datetime(ROUND(s.crea
 FROM statistics s
 LEFT JOIN statistics_meta m
 ON s.metadata_id = m.id
-WHERE m.statistic_id = "sensor.heat_meter_daily_usage"
+WHERE m.statistic_id = "sensor.heat_meter_total_last_year" AND state > 96495.0
 ORDER BY created_ts ASC
+```
+
+```sql
+UPDATE statistics
+SET state = 96495.0
+WHERE metadata_id = 428 AND state = 0
 ```
 
 ## License

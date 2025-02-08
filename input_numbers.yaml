@@ -1,0 +1,13 @@
+heat_meter_value_before_replacement:
+  name: Heat meter value before replacement
+  mode: box
+  min: 0
+  max: 10000000
+  unit_of_measurement: kWh
+
+heat_meter_last_year_before_replacement:
+  name: Heat meter last year value before replacement
+  mode: box
+  min: 0
+  max: 10000000
+  unit_of_measurement: kWh

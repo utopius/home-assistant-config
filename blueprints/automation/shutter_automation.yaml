@@ -238,7 +238,7 @@ action:
       - alias: "Nachts schließen"
         conditions:
           - "{{ is_down_enabled }}"
-          - "{{ is_state(contact_sensor, ['false', 'off']) if contact_sensor else True }}"
+          - "{{ is_state(contact_sensor, ['false', 'off', 'unknown', 'unavailable']) if contact_sensor else True }}"
           - condition: or
             conditions:
               - "{{ now() >= today_at(time_down) }}"

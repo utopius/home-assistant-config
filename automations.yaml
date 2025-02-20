@@ -2507,3 +2507,124 @@
         target:
           entity_id: climate.bad_raumthermostat
   mode: single
+- id: '1739649410422'
+  alias: ELW - Geräte nicht erreichbar
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - climate.hmip_wth_b_00265f298ede32
+    - climate.hmip_etrv_c_00119f29943f7c
+    - climate.hmip_etrv_b_2_r4m_00399f29a4cb5c
+    - climate.hmip_etrv_b_2_r4m_00399f29a4c96b
+    - climate.hmip_wth_b_00265f298ede30
+    - binary_sensor.hmip_swdo_0000dd89a3487e_state
+    - binary_sensor.hmip_swdo_0000dd89a34841
+    - binary_sensor.hmip_swdo_2_00365f299b20ac
+    to: unavailable
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+  - trigger: state
+    entity_id:
+    - climate.hmip_wth_b_00265f298ede32
+    - climate.hmip_etrv_c_00119f29943f7c
+    - climate.hmip_etrv_b_2_r4m_00399f29a4cb5c
+    - climate.hmip_etrv_b_2_r4m_00399f29a4c96b
+    - climate.hmip_wth_b_00265f298ede30
+    - binary_sensor.hmip_swdo_0000dd89a3487e_state
+    - binary_sensor.hmip_swdo_0000dd89a34841
+    - binary_sensor.hmip_swdo_2_00365f299b20ac
+    to: unknown
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+  conditions: []
+  actions:
+  - action: notify.mobile_app_floris_pixel_6_pro
+    metadata: {}
+    data:
+      title: ELW Geräte prüfen
+      message: Einige Geräte sind nicht erreichbar
+  mode: single
+- id: '1739866014734'
+  alias: Druckauftrag fertig
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.hp_colorlaserjet_mfp_m278_m281
+    from: printing
+    to: idle
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 2
+  conditions: []
+  actions:
+  - action: notify.mobile_app_floris_pixel_6_pro
+    metadata: {}
+    data:
+      message: Drucker hat fertig gedruckt, Ausdruck liegt bereit.
+      title: Ausdruck liegt bereit
+  mode: single
+- id: '1739866185041'
+  alias: Druckauftrag begonnen
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.hp_colorlaserjet_mfp_m278_m281
+    to: printing
+  conditions: []
+  actions:
+  - action: notify.mobile_app_floris_pixel_6_pro
+    metadata: {}
+    data:
+      title: Druckt...
+      message: Druckauftrag begonnen
+  mode: single
+- id: '1740071338934'
+  alias: SWR1 im Arbeitszimmer
+  description: ''
+  triggers:
+  - trigger: conversation
+    command:
+    - Spiele Radio
+  conditions: []
+  actions:
+  - action: script.play_swr1_office
+    metadata: {}
+    data: {}
+    enabled: true
+  - action: denonavr.get_command
+    metadata: {}
+    data:
+      command: /goform/formiPhoneAppDirect.xml?MSQUICK2
+    target:
+      device_id: d28856530e3446df9497b6a7252beb7c
+    enabled: false
+  mode: single
+- id: '1740071938308'
+  alias: SWR2 im Arbeitszimmer
+  description: ''
+  triggers:
+  - trigger: conversation
+    command:
+    - Spiele SWR2
+    - Spiele Südwestrundfunk Kultur
+  conditions: []
+  actions:
+  - action: script.play_swr_2_buro
+    metadata: {}
+    data: {}
+  - action: denonavr.get_command
+    metadata: {}
+    data:
+      command: /goform/formiPhoneAppDirect.xml?MSQUICK3
+    target:
+      device_id: d28856530e3446df9497b6a7252beb7c
+    enabled: false
+  mode: single

@@ -16,131 +16,26 @@ play_swr1_livingroom:
     data:
       source: CCA
   mode: single
-play_swr3_livingroom:
-  alias: Play SWR 3 (Wohnzimmer)
-  sequence:
-  - service: media_player.turn_on
-    entity_id: media_player.denon_avr_x1600h
-  - service: media_player.play_media
-    entity_id: media_player.chromecast_audio_livingroom
-    data:
-      entity_id: media_player.chromecast_audio_livingroom
-      media_content_id: https://swr-swr3-live.cast.addradio.de/swr/swr3/live/mp3/128/stream.mp3
-      media_content_type: audio/mp4
-  - service: media_player.select_source
-    entity_id: media_player.denon_avr_x1600h
-    data:
-      source: CCA
-  mode: restart
 play_swr1_office:
-  alias: Play SWR 1 (Büro)
+  alias: Arbeitszimmer SWR1
   sequence:
-  - service: media_player.turn_on
-    data: {}
+  - data: {}
     target:
       device_id: d28856530e3446df9497b6a7252beb7c
     enabled: true
-  - wait_template: '{{ is_state(''media_player.denon_avr_x1300w'', ''on'') }}'
-    timeout: 00:02:00
+    action: media_player.turn_on
+  - wait_template: '{{ not is_state(''media_player.denon_avr_x1300w'', [''off'', ''unknown'',
+      ''unavailable'']) }}'
     continue_on_timeout: false
-    enabled: false
-  - service: media_player.select_source
-    data:
-      source: Favorites Station1
-    enabled: false
-    target:
-      entity_id: media_player.denon_avr_x1300w
-  - service: media_player.play_media
-    data:
-      media_content_id: https://liveradio.swr.de/sw282p3/swr1bw/play.mp3
-      media_content_type: audio/mp4
+    timeout: 00:00:10
+  - action: denonavr.get_command
     target:
       device_id: d28856530e3446df9497b6a7252beb7c
-    enabled: false
-  - service: media_player.play_media
-    target:
-      entity_id: media_player.denon_avr_x1300w
     data:
-      media_content_id: Station1
-      media_content_type: ''
-    metadata: {}
-    enabled: false
-  - service: media_player.play_media
-    target:
-      entity_id: media_player.denon_avr_x1300w
-    data:
-      media_content_id: media_player.denon_avr_x1300w
-      media_content_type: /goform/formiPhoneAppDirect.xml?ZMFAVORITES
-    metadata: {}
-    enabled: false
+      command: /goform/formiPhoneAppDirect.xml?MSQUICK2
   mode: restart
-play_swr3_office:
-  alias: Play SWR 3 (Büro)
-  sequence:
-  - service: media_player.turn_on
-    entity_id: media_player.denon_avr_x1300w
-  - service: media_player.play_media
-    entity_id: media_player.chromecast_audio_workspace
-    data:
-      entity_id: media_player.chromecast_audio_workspace
-      media_content_id: https://swr-swr3-live.cast.addradio.de/swr/swr3/live/mp3/128/stream.mp3
-      media_content_type: audio/mp4
-  - service: media_player.select_source
-    entity_id: media_player.denon_avr_x1300w
-    data:
-      source: Cast
-play_swr1_all:
-  alias: Play SWR 1 (Überall)
-  sequence:
-  - service: switch.turn_on
-    entity_id: switch.fritz_dect_200_buro_anlage
-  - wait_template: '{{ is_state(''media_player.denon_avr_x1300w'', ''on'') }}'
-    timeout: 00:01:00
-    continue_on_timeout: false
-  - service: media_player.turn_on
-    entity_id: media_player.denon_avr_x1600h_2
-  - service: media_player.turn_on
-    entity_id: media_player.denon_avr_x1300w
-  - service: media_player.play_media
-    entity_id: media_player.chromecast_audio_all
-    data:
-      entity_id: media_player.chromecast_audio_all
-      media_content_id: http://swr-swr1-bw.cast.addradio.de/swr/swr1/bw/mp3/128/stream.mp3
-      media_content_type: audio/mp4
-  - service: media_player.select_source
-    entity_id: media_player.denon_avr_x1600h_2
-    data:
-      source: CCA
-  - service: media_player.select_source
-    entity_id: media_player.denon_avr_x1300w
-    data:
-      source: Cast
-play_swr3_all:
-  alias: Play SWR 3 (Überall)
-  sequence:
-  - service: switch.turn_on
-    entity_id: switch.fritz_dect_200_buro_anlage
-  - wait_template: '{{ is_state(''media_player.denon_avr_x1300w'', ''on'') }}'
-    timeout: 00:01:00
-    continue_on_timeout: false
-  - service: media_player.turn_on
-    entity_id: media_player.denon_avr_x1600h_2
-  - service: media_player.turn_on
-    entity_id: media_player.denon_avr_x1300w
-  - service: media_player.play_media
-    entity_id: media_player.chromecast_audio_all
-    data:
-      entity_id: media_player.chromecast_audio_all
-      media_content_id: https://swr-swr3-live.cast.addradio.de/swr/swr3/live/mp3/128/stream.mp3
-      media_content_type: audio/mp4
-  - service: media_player.select_source
-    entity_id: media_player.denon_avr_x1600h_2
-    data:
-      source: CCA
-  - service: media_player.select_source
-    entity_id: media_player.denon_avr_x1300w
-    data:
-      source: Cast
+  description: ''
+  icon: mdi:radio
 play_swr_1_wohnzimmer_heos:
   alias: Play SWR 1 (Wohnzimmer) (Heos)
   sequence:
@@ -201,16 +96,6 @@ play_swr_1_wohnzimmer_heos_favorite:
     target:
       entity_id: media_player.denon_avr_x1600h_2
   mode: single
-heizung_profil_1:
-  alias: Heizung - Profil 1
-  sequence:
-  - device_id: 65bc1ba5879bb5f77ee26846de6c7121
-    domain: climate
-    entity_id: climate.raumthermostat_bad
-    type: set_preset_mode
-    preset_mode: Profile 1
-  mode: single
-  icon: mdi:thermostat-auto
 kika_einschalten:
   alias: KiKa einschalten
   sequence:
@@ -240,3 +125,23 @@ kika_einschalten:
     alias: Auf KiKa umschalten
   description: ''
   icon: mdi:youtube-tv
+play_swr_2_buro:
+  sequence:
+  - data: {}
+    target:
+      device_id: d28856530e3446df9497b6a7252beb7c
+    enabled: true
+    action: media_player.turn_on
+  - wait_template: '{{ not is_state(''media_player.denon_avr_x1300w'', [''off'', ''unknown'',
+      ''unavailable'']) }}'
+    continue_on_timeout: false
+    timeout: 00:00:10
+  - action: denonavr.get_command
+    target:
+      device_id: d28856530e3446df9497b6a7252beb7c
+    data:
+      command: /goform/formiPhoneAppDirect.xml?MSQUICK3
+  alias: Arbeitszimmer SWR2
+  mode: restart
+  description: ''
+  icon: mdi:radio

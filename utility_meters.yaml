@@ -40,3 +40,24 @@ power_consumption_yearly:
   cycle: yearly
   periodically_resetting: True
   always_available: True
+power_consumption_bathroom_radiator_daily:
+  unique_id: 0194f163-5c31-73a3-8c83-4a41e7e21260
+  source: sensor.energy_meter_total_in
+  name: "Bad Heizkörper Stromverbrauch (Tag)"
+  cycle: daily
+  periodically_resetting: True
+  always_available: True
+power_consumption_bathroom_radiator_monthly:
+  unique_id: 0194f163-6b5f-70b2-b054-c49f196becaf
+  source: sensor.energy_meter_total_in
+  name: "Bad Heizkörper Stromverbrauch (Monat)"
+  cycle: monthly
+  periodically_resetting: True
+  always_available: True
+power_consumption_bathroom_radiator_yearly:
+  unique_id: 0194f163-798f-7770-ab8f-c4112cc90733
+  source: sensor.energy_meter_total_in
+  name: "Bad Heizkörper Stromverbrauch (Jahr)"
+  cycle: yearly
+  periodically_resetting: True
+  always_available: True

@@ -2153,7 +2153,6 @@
       - auto_ventilate_enabled
       - auto_up_enabled
       - auto_down_enabled
-      - auto_shading_enabled
 - id: '1731253701677'
   alias: Rollladen Arbeiten Nord
   description: ''

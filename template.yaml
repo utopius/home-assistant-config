@@ -16,11 +16,12 @@
         {% set current = states('sensor.bitshakesmr_lguh50_mwh_count') | float(0) * 1000 %}
         {{ current }}
       availability: >
-        {{ states('sensor.bitshakesmr_lguh50_mwh_count') | is_number }}
+        {% set current = states('sensor.bitshakesmr_lguh50_mwh_count') %}
+        {{ is_number(current) and float(current) > 0 }}
 
 - trigger:
-    - trigger: time_pattern
-      minutes: /1
+    #- trigger: time_pattern
+    #  minutes: /1
     - trigger: state
       entity_id: input_number.heat_meter_replacement_date
     - trigger: state
@@ -82,8 +83,8 @@
         {{ is_number(current) and is_number(last_year) }}
 
 - trigger:
-    - trigger: time_pattern
-      minutes: /1
+    #- trigger: time_pattern
+    #  minutes: /1
     - trigger: state
       entity_id: sensor.heat_consumption_yearly
     - trigger: state

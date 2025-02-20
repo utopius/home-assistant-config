@@ -2346,7 +2346,7 @@
       hours: 0
       minutes: 0
       seconds: 5
-  - type: opened
+  - type: not_opened
     device_id: d0c55de0d74f72c5331e64a04f01bb99
     entity_id: c4ee26a66acf31c7ef9f0c7c1ac56967
     domain: binary_sensor

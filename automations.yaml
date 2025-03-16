@@ -2628,3 +2628,61 @@
       device_id: d28856530e3446df9497b6a7252beb7c
     enabled: false
   mode: single
+- id: '1740931315100'
+  alias: Keller - Licht
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.keller_prasenzmelder_presence
+  - trigger: state
+    entity_id:
+    - binary_sensor.keller_prasenzmelder_motion
+  conditions: []
+  actions:
+  - if:
+    - type: is_occupied
+      condition: device
+      device_id: 0ad634fa06b48c10065c324ac031e5ca
+      entity_id: 62c981fe76ca27e95efa39edbd2c4326
+      domain: binary_sensor
+    then:
+    - type: turn_on
+      device_id: 004ba20253da75895390a52691562653
+      entity_id: 88384d43eb80a45279d7446701b5857d
+      domain: light
+    else:
+    - type: turn_off
+      device_id: 004ba20253da75895390a52691562653
+      entity_id: 88384d43eb80a45279d7446701b5857d
+      domain: light
+  mode: single
+- id: '1740934226226'
+  alias: Technikraum - Licht
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.technikraum_prasenzmelder_presence
+  - trigger: state
+    entity_id:
+    - binary_sensor.technikraum_prasenzmelder_motion
+  conditions: []
+  actions:
+  - if:
+    - type: is_occupied
+      condition: device
+      device_id: 358ecb672c8d69e12d054bac2eea3b7a
+      entity_id: c6ea4bd393d6989b6407c89696f9e656
+      domain: binary_sensor
+    then:
+    - type: turn_on
+      device_id: 0b02986e2ed4a11299ada995cee727af
+      entity_id: 0965d18f213cfeb05cadc7b6f6a28d74
+      domain: light
+    else:
+    - type: turn_off
+      device_id: 0b02986e2ed4a11299ada995cee727af
+      entity_id: 0965d18f213cfeb05cadc7b6f6a28d74
+      domain: light
+  mode: single

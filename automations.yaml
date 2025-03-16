@@ -2686,3 +2686,46 @@
       entity_id: 0965d18f213cfeb05cadc7b6f6a28d74
       domain: light
   mode: single
+- id: '1741801059002'
+  alias: Geräte nicht erreichbar
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.fenster_luisa_offnung
+    - binary_sensor.taster_luisa_bett_batterie
+    - binary_sensor.fenster_marius_offnung
+    - binary_sensor.taster_marius_bett_batterie
+    - climate.ug_technikraum_hmip_sthd_000e9be9a452b8
+    - binary_sensor.wohnzimmer_sud_offnung
+    - binary_sensor.bad_fenster
+    - binary_sensor.hmip_swdo_2_00365f299b20c5
+    to: unavailable
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+  - trigger: state
+    entity_id:
+    - binary_sensor.fenster_luisa_offnung
+    - binary_sensor.taster_luisa_bett_batterie
+    - binary_sensor.fenster_marius_offnung
+    - binary_sensor.taster_marius_bett_batterie
+    - binary_sensor.schlafzimmerfenster_offnung
+    - climate.ug_technikraum_hmip_sthd_000e9be9a452b8
+    - binary_sensor.wohnzimmer_sud_offnung
+    - binary_sensor.bad_fenster
+    - binary_sensor.hmip_swdo_2_00365f299b20c5
+    to: unknown
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+  conditions: []
+  actions:
+  - action: notify.mobile_app_floris_pixel_6_pro
+    metadata: {}
+    data:
+      title: Geräte prüfen
+      message: Einige Geräte sind nicht erreichbar
+  mode: single

@@ -62,6 +62,46 @@ blueprint:
                 domain: sensor
                 device_class: illuminance
 
+        light_threshold:
+          name: Illumination Threshold
+          description: "Threshold to trigger shading"
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 100000
+              step: 100
+
+        light_threshold_average:
+          name: Illumination Threshold Ø
+          description: "Threshold average to trigger shading"
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 100000
+              step: 100
+
+        light_threshold_cloudy:
+          name: Illumination Threshold (cloudy weather)
+          description: "Threshold to trigger shading"
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 100000
+              step: 100
+
+        light_threshold_average_cloudy:
+          name: Illumination Threshold Ø (cloudy weather)
+          description: "Threshold average to trigger shading"
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 100000
+              step: 100
+
     position_section:
       name: "Position Configuration"
       description: "Control the various positions of the shutter."
@@ -285,10 +325,12 @@ action:
                       below: 803
                 - condition: numeric_state
                   entity_id: !input light_sensor_average
-                  above: input_number.beschattungsschwelle_bewolkt_durchschnitt
+                  # above: input_number.beschattungsschwelle_bewolkt_durchschnitt
+                  above: !input light_threshold_average_cloudy
                 - condition: numeric_state
                   entity_id: !input light_sensor
-                  above: input_number.beschattungsschwelle_bewolkt
+                  # above: input_number.beschattungsschwelle_bewolkt
+                  above: !input light_threshold_cloudy
               sequence:
                 - action: cover.set_cover_position
                   metadata: {}
@@ -306,10 +348,10 @@ action:
                   below: 803
                 - condition: numeric_state
                   entity_id: !input light_sensor_average
-                  above: input_number.beschattungsschwelle_durchschnitt
+                  above: !input light_threshold_average
                 - condition: numeric_state
                   entity_id: !input light_sensor
-                  above: input_number.beschattungsschwelle
+                  above: !input light_threshold
               sequence:
                 alias: Sonnenschein
                 if:

@@ -1980,9 +1980,15 @@
       position_closed: 0
       position_shade: 24
       shade_light_position: 50
-      min_azimuth: 100
-      max_azimuth: 210
+      min_azimuth: 82
+      max_azimuth: 220
       light_sensor_average: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+      contact_sensor: binary_sensor.fenster_marius_offnung
+      position_ventilation: 15
+      light_threshold: 28000
+      light_threshold_average: 35000
+      light_threshold_cloudy: 26000
+      light_threshold_average_cloudy: 32000
 - id: '1727869150271'
   alias: Rollladen Luisa
   description: ''
@@ -1995,9 +2001,14 @@
       position_closed: 0
       position_shade: 50
       shade_light_position: 20
-      min_azimuth: 90
-      max_azimuth: 215
+      min_azimuth: 80
+      max_azimuth: 214
       light_sensor_average: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+      contact_sensor: binary_sensor.fenster_luisa_offnung
+      light_threshold: 28000
+      light_threshold_average: 35000
+      light_threshold_cloudy: 26000
+      light_threshold_average_cloudy: 32000
 - id: '1728243290605'
   alias: Rollladen Schlafzimmer
   description: ''
@@ -2007,11 +2018,17 @@
       cover_entity: cover.ja1_sudseite_rollo_schlafzimmer_hmipw_drbl4_00165d899fbad2_ch6
       light_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
       is_enabled_input: input_boolean.autorollo_schlafen
-      min_azimuth: 105
-      max_azimuth: 210
+      min_azimuth: 84
+      max_azimuth: 225
       position_closed: 20
       position_shade: 22
       light_sensor_average: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+      contact_sensor: binary_sensor.schlafzimmerfenster_offnung
+      time_up: 08:00:00
+      light_threshold_cloudy: 26000
+      light_threshold_average_cloudy: 32000
+      light_threshold: 28000
+      light_threshold_average: 35000
 - id: '1728244054431'
   alias: Rollladen Wohnzimmer Süd
   description: ''
@@ -2032,6 +2049,11 @@
       - auto_shading_enabled
       - auto_ventilate_enabled
       contact_sensor: binary_sensor.wohnzimmer_sud_offnung
+      time_down: '21:00:00'
+      light_threshold: 28000
+      light_threshold_average: 35000
+      light_threshold_cloudy: 26000
+      light_threshold_average_cloudy: 32000
 - id: '1729020748250'
   alias: Marius Türöffner
   description: ''
@@ -2153,6 +2175,12 @@
       - auto_ventilate_enabled
       - auto_up_enabled
       - auto_down_enabled
+      - auto_shading_enabled
+      time_down: '21:00:00'
+      light_threshold: 20000
+      light_threshold_average: 20000
+      light_threshold_cloudy: 20000
+      light_threshold_average_cloudy: 19800
 - id: '1731253701677'
   alias: Rollladen Arbeiten Nord
   description: ''
@@ -2172,6 +2200,12 @@
       - auto_ventilate_enabled
       - auto_down_enabled
       - auto_up_enabled
+      - auto_shading_enabled
+      time_down: '21:00:00'
+      light_threshold: 20000
+      light_threshold_average: 20000
+      light_threshold_cloudy: 200000
+      light_threshold_average_cloudy: 20000
 - id: '1731261097840'
   alias: Rollladen Küche
   description: ''
@@ -2182,11 +2216,17 @@
       light_sensor: sensor.hmip_slo_000d60c9a674e3_beleuchtungsstarke
       light_sensor_average: sensor.hmip_slo_000d60c9a674e3_durchschnittliche_beleuchtungsstarke
       is_enabled_input: input_boolean.autorollo_kuche
-      min_azimuth: 255
+      min_azimuth: 231
       auto_options:
       - auto_up_enabled
       - auto_down_enabled
       - auto_shading_enabled
+      - auto_ventilate_enabled
+      time_down: '21:00:00'
+      light_threshold: 12000
+      light_threshold_average_cloudy: 17000
+      light_threshold_cloudy: 12000
+      light_threshold_average: 12000
 - id: '1731261313962'
   alias: Rollladen HWR
   description: ''
@@ -2196,8 +2236,9 @@
       cover_entity: cover.ja4_rollo_hwr_hmipw_drbl4_00165d899fba5d_ch10
       light_sensor: sensor.hmip_slo_000d60c9a674e3_beleuchtungsstarke
       light_sensor_average: sensor.hmip_slo_000d60c9a674e3_durchschnittliche_beleuchtungsstarke
-      min_azimuth: 264
+      min_azimuth: 360
       is_enabled_input: input_boolean.autorollo_hwr
+      time_down: '21:00:00'
 - id: '1731261535822'
   alias: Rollladen Bad
   description: ''
@@ -2259,6 +2300,13 @@
       auto_options:
       - auto_up_enabled
       - auto_down_enabled
+      - auto_shading_enabled
+      min_azimuth: 161
+      max_azimuth: 318
+      light_threshold: 3200
+      light_threshold_average: 6100
+      light_threshold_cloudy: 12000
+      light_threshold_average_cloudy: 17000
 - id: '1733486362976'
   alias: Bad - Licht Bewegungsmelder
   description: Turns on lights
@@ -2445,42 +2493,19 @@
   alias: Bad - Anti-Kondenswasser
   description: ''
   triggers:
-  - trigger: numeric_state
-    entity_id:
-    - sensor.hmip_stho_000edd89b682a2_actual_temperature
-    for:
-      hours: 0
-      minutes: 15
-      seconds: 0
-    below: 5
-    id: baby-its-cold-outside
-    enabled: false
-  - trigger: numeric_state
-    entity_id:
-    - sensor.hmip_stho_000edd89b682a2_actual_temperature
-    for:
-      hours: 0
-      minutes: 15
-      seconds: 0
-    above: 5
-    id: its-warm-again
-    enabled: false
   - trigger: time_pattern
     minutes: '20'
   conditions: []
   actions:
   - choose:
     - conditions:
-      - condition: trigger
-        id:
-        - baby-its-cold-outside
-        enabled: false
       - type: is_temperature
         condition: device
         device_id: 920349d489d8c5696a1739387d062fee
         entity_id: 2590426dfe21477e85cf923f23fde4ac
         domain: sensor
         below: 5
+        alias: Unter 5°
       sequence:
       - action: climate.set_preset_mode
         metadata: {}
@@ -2489,21 +2514,36 @@
         target:
           entity_id: climate.bad_raumthermostat
     - conditions:
-      - condition: trigger
-        id:
-        - its-warm-again
-        enabled: false
-      - type: is_temperature
+      - alias: 5-15°
+        type: is_temperature
         condition: device
         device_id: 920349d489d8c5696a1739387d062fee
         entity_id: 2590426dfe21477e85cf923f23fde4ac
         domain: sensor
         above: 5
+        below: 15
       sequence:
       - action: climate.set_preset_mode
         metadata: {}
         data:
           preset_mode: week_program_3
+        target:
+          entity_id: climate.bad_raumthermostat
+    - conditions:
+      - condition: and
+        conditions:
+        - condition: numeric_state
+          entity_id: sensor.hmip_stho_000edd89b682a2_actual_temperature
+          above: 15
+        - condition: numeric_state
+          entity_id: sensor.thermal_comfort_bad_taupunkt
+          above: 15
+          attribute: temperature
+      sequence:
+      - action: climate.set_preset_mode
+        metadata: {}
+        data:
+          preset_mode: week_program_2
         target:
           entity_id: climate.bad_raumthermostat
   mode: single
@@ -2546,8 +2586,8 @@
   - action: notify.mobile_app_floris_pixel_6_pro
     metadata: {}
     data:
-      title: ELW Geräte prüfen
-      message: Einige Geräte sind nicht erreichbar
+      title: Geräte prüfen in ELW
+      message: Einige Geräte in der Einliegerwohnung sind nicht erreichbar
   mode: single
 - id: '1739866014734'
   alias: Druckauftrag fertig

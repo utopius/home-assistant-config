@@ -99,6 +99,9 @@ play_swr_1_wohnzimmer_heos_favorite:
 kika_einschalten:
   alias: KiKa einschalten
   sequence:
+  - action: script.fernseher_einschalten
+    metadata: {}
+    data: {}
   - alias: TV einschalten & warten
     if:
     - condition: device
@@ -115,6 +118,7 @@ kika_einschalten:
         hours: 0
         minutes: 0
         seconds: 7
+    enabled: false
   - action: media_player.play_media
     metadata: {}
     data:
@@ -145,3 +149,72 @@ play_swr_2_buro:
   mode: restart
   description: ''
   icon: mdi:radio
+fernseher_einschalten:
+  sequence:
+  - alias: Steckdose einschalten & warten
+    if:
+    - condition: device
+      type: is_off
+      device_id: 5887db76cb6290f70795d6327aae4c45
+      entity_id: 893f9d318197d704ca6857057ec33721
+      domain: switch
+    then:
+    - type: turn_on
+      device_id: 5887db76cb6290f70795d6327aae4c45
+      entity_id: 893f9d318197d704ca6857057ec33721
+      domain: switch
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 15
+        milliseconds: 0
+  - alias: TV einschalten & warten
+    if:
+    - condition: device
+      type: is_off
+      device_id: b1aad560567ef5fc5950e49338e6f0f6
+      entity_id: 0e9b7ea26efe45a3d2970ccaeaa6f742
+      domain: remote
+    then:
+    - type: turn_on
+      device_id: b1aad560567ef5fc5950e49338e6f0f6
+      entity_id: 0e9b7ea26efe45a3d2970ccaeaa6f742
+      domain: remote
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 15
+        milliseconds: 0
+  alias: Fernseher einschalten
+  description: ''
+  icon: mdi:television
+fernseher_ausschalten:
+  sequence:
+  - alias: TV einschalten & warten
+    if:
+    - condition: device
+      type: is_on
+      device_id: b1aad560567ef5fc5950e49338e6f0f6
+      entity_id: 0e9b7ea26efe45a3d2970ccaeaa6f742
+      domain: remote
+      enabled: false
+    then:
+    - action: media_player.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: media_player.sony_xr_65x90l
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 7
+  - alias: Steckdose einschalten & warten
+    if: []
+    then:
+    - type: turn_off
+      device_id: 5887db76cb6290f70795d6327aae4c45
+      entity_id: 893f9d318197d704ca6857057ec33721
+      domain: switch
+  alias: Fernseher ausschalten
+  description: ''
+  icon: mdi:television

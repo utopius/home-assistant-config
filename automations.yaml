@@ -437,36 +437,36 @@
 - id: '1665863551593'
   alias: Küche - Deckenleuchte
   description: ''
-  trigger:
-  - platform: device
-    domain: homematicip_local
+  triggers:
+  - domain: homematicip_local
     device_id: d073336019f161ff5324cc66a72e7308
     event_type: homematic.keypress
     interface_id: ccu.herbel.net-HmIP-RF
     address: 00221F298AC562
     type: press_short
     subtype: 1
-  - platform: device
-    domain: homematicip_local
+    trigger: device
+  - domain: homematicip_local
     device_id: 77c40b093e6f70c4020d05f0bc923435
     event_type: homematic.keypress
     interface_id: ccu.herbel.net-HmIP-RF
     address: 00221F298AC73E
     type: press_short
     subtype: 1
-  - platform: device
-    domain: homematicip_local
+    trigger: device
+  - domain: homematicip_local
     device_id: 88d1ac514a6d13267243bd902005cd4e
     event_type: homematic.keypress
     interface_id: ccu.herbel.net-HmIP-RF
     address: 00221F298AC602
     type: press_short
     subtype: 1
-  condition: []
-  action:
+    trigger: device
+  conditions: []
+  actions:
   - type: toggle
-    device_id: b4a559faab3bde26ce4c7823d5053777
-    entity_id: light.hue_white_lamp_1
+    device_id: fa501238ffe1263a7a8f875b64d39a75
+    entity_id: 72065f9027d8f9aa65147bd1ec655e5b
     domain: light
   mode: single
 - id: '1665873414546'

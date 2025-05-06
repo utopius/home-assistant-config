@@ -198,6 +198,24 @@ blueprint:
               min: 0
               max: 360
 
+        min_elevation:
+          name: "Minimum elevation"
+          description: "Minimum elevation angle of the sun when shading is necessary."
+          default: 0
+          selector:
+            number:
+              min: -180
+              max: 180
+
+        max_elevation:
+          name: "Maximum elevation"
+          description: "Maximum elevation angle of the sun over which shading becomes unnecessary."
+          default: 180
+          selector:
+            number:
+              min: -180
+              max: 180
+
     feature_section:
       name: "Automation Options"
       description: "Core automation configuration"
@@ -236,6 +254,8 @@ trigger_variables:
 
   contact_sensor: !input contact_sensor
   temperature_sensor: !input temperature_sensor
+  light_sensor: !input light_sensor
+  light_sensor_average: !input light_sensor_average
 
   is_up_enabled: "{{ 'auto_up_enabled' in auto_options }}"
   is_down_enabled: "{{ 'auto_down_enabled' in auto_options }}"
@@ -275,15 +295,19 @@ condition:
     state: "on"
 action:
   - choose:
-      - alias: "Nachts schließen"
+      - alias: "Close for the night"
         conditions:
           - "{{ is_down_enabled }}"
           - "{{ is_state(contact_sensor, ['false', 'off', 'unknown', 'unavailable']) if contact_sensor else True }}"
           - condition: or
             conditions:
-              - "{{ now() >= today_at(time_down) }}"
-              - "{{ now() < today_at(time_up) }}"
-              - condition: state
+              - alias: "After time_down and before time_up"
+                condition: and
+                conditions:
+                - "{{ now() >= today_at(time_down) }}"
+                - "{{ now() < today_at(time_up) }}"
+              - alias: "After sunset"
+                condition: state
                 entity_id: sun.sun
                 state: below_horizon
         sequence:
@@ -292,18 +316,23 @@ action:
               position: !input position_closed
             target:
               entity_id: !input cover_entity
-      - alias: "Tags beschatten"
+
+      - alias: "Daytime shading"
         conditions:
           - "{{ is_shading_enabled }}"
-          - alias: Tagsüber
+          - alias: Daytime
             condition: and
             conditions:
-              - condition: sun
+              - alias: "After sunrise before sunset"
+                condition: sun
                 before: sunset
                 after: sunrise
-              - "{{ now() >= today_at(time_up) }}"
-              - "{{ now() < today_at(time_down) }}"
-          - alias: Sonnenstand und Lichtintensität
+              - alias: "After time_up and before time_down"
+                condition: and
+                conditions:
+                - "{{ now() >= today_at(time_up) }}"
+                - "{{ now() < today_at(time_down) }}"
+          - alias: Sun position
             condition: and
             conditions:
               - condition: numeric_state
@@ -311,9 +340,14 @@ action:
                 attribute: azimuth
                 above: !input min_azimuth
                 below: !input max_azimuth
+              - condition: numeric_state
+                entity_id: sun.sun
+                attribute: elevation
+                above: !input min_elevation
+                below: !input max_elevation
         sequence:
           choose:
-            - alias: Bewölkt oder schlecht
+            - alias: Cloudy or bad weather
               conditions:
                 # https://openweathermap.org/weather-conditions
                 # More than 50% clouds or bad weather
@@ -338,7 +372,7 @@ action:
                     position: !input position_shade_light
                   target:
                     entity_id: !input cover_entity
-            - alias: Sonnenschein
+            - alias: Sunny
               conditions:
                 # https://openweathermap.org/weather-conditions
                 # Clear, max 50% clouds
@@ -384,19 +418,21 @@ action:
                     target:
                       entity_id: !input cover_entity
           default:
-            - alias: Beschattung aufheben
+            - alias: "Lift shading"
               sequence:
                 - action: cover.open_cover
                   metadata: {}
                   data: {}
                   target:
                     entity_id: !input cover_entity
-      - alias: "Tags öffnen"
+
+      - alias: "Daytime opening"
         conditions:
           - "{{ is_up_enabled }}"
           - condition: time
             after: input_datetime.rollladen_nicht_offnen_bevor
-          - condition: state
+          - alias: "After sunrise"
+            condition: state
             entity_id: sun.sun
             state: above_horizon
         sequence:
@@ -406,7 +442,7 @@ action:
             target:
               entity_id: !input cover_entity
 
-      - alias: "Lüften"
+      - alias: "Ventilation"
         conditions:
           - condition: trigger
             id: tid_contact_opened_on

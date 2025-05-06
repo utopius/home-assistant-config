@@ -48,6 +48,7 @@ blueprint:
       input:
         light_sensor:
           name: Illumination
+          default:
           selector:
             entity:
               filter:
@@ -56,6 +57,7 @@ blueprint:
 
         light_sensor_average:
           name: Illumination Ø
+          default:
           selector:
             entity:
               filter:
@@ -174,6 +176,7 @@ blueprint:
           default: "19:30:00"
           selector:
             time: {}
+
     sun_section:
       name: "Sun Elevation Settings"
       description: "Sun elevation settings controlling auto-shading"
@@ -288,8 +291,10 @@ variables:
   contact_sensor: !input contact_sensor
   time_up: !input time_up
   time_down: !input time_down
-  is_nighttime: "{{ now() >= today_at(time_down) and now() < today_at(time_up) }}"
-  is_daytime: "{{ now() >= today_at(time_up) and now() < today_at(time_down) }}"
+  light_threshold: !input light_threshold
+  light_threshold_average: !input light_threshold_average
+  light_threshold_cloudy: !input light_threshold_cloudy
+  light_threshold_average_cloudy: !input light_threshold_average_cloudy
 
 condition:
   - condition: state
@@ -303,10 +308,9 @@ action:
           - "{{ is_state(contact_sensor, ['false', 'off', 'unknown', 'unavailable']) if contact_sensor else True }}"
           - condition: or
             conditions:
-              - alias: "After time_down and before time_up"
-                condition: and
-                conditions:
-                - "{{ is_nighttime }}"
+              - "{{ now() >= today_at(time_down) }}"
+              # This is wrong. Find out how to determine if earlier than tomorrow
+              # - "{{ now() < today_at(time_up) }}"
               - alias: "After sunset"
                 condition: state
                 entity_id: sun.sun
@@ -331,7 +335,11 @@ action:
               - alias: "After time_up and before time_down"
                 condition: and
                 conditions:
-                - "{{ is_daytime }}"
+              - alias: "After time_up and before time_down"
+                condition: and
+                conditions:
+                - "{{ now() >= today_at(time_up) }}"
+                - "{{ now() < today_at(time_down) }}"
           - alias: Sun position
             condition: and
             conditions:
@@ -357,12 +365,10 @@ action:
                       entity_id: sensor.home_weather_code
                       above: 800
                       below: 803
-                - condition: numeric_state
-                  entity_id: !input light_sensor_average
-                  above: !input light_threshold_average_cloudy
-                - condition: numeric_state
-                  entity_id: !input light_sensor
-                  above: !input light_threshold_cloudy
+                - "{{ is_state(light_sensor_average, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
+                - "{{ is_state(light_sensor, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
+                - "{{ states(light_sensor_average) | int >= light_threshold_average_cloudy }}"
+                - "{{ states(light_sensor) | int >= light_threshold_cloudy }}"
               sequence:
                 - action: cover.set_cover_position
                   metadata: {}
@@ -378,20 +384,18 @@ action:
                   entity_id: sensor.home_weather_code
                   above: 799
                   below: 803
-                - condition: numeric_state
-                  entity_id: !input light_sensor_average
-                  above: !input light_threshold_average
-                - condition: numeric_state
-                  entity_id: !input light_sensor
-                  above: !input light_threshold
+                - "{{ is_state(light_sensor_average, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
+                - "{{ is_state(light_sensor, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
+                - "{{ states(light_sensor_average) | int >= light_threshold_average }}"
+                - "{{ states(light_sensor) | int >= light_threshold }}"
               sequence:
                 if:
                   - alias: Beschattung halb
                     condition: and
                     conditions:
                       - "{{ is_state(temperature_sensor, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
-                      - "{{ states(temperature_sensor) > states('input_number.autoshade_lower_bound') }}"
-                      - "{{ states(temperature_sensor) < states('input_number.autoshade_medium_upper_bound') }}"
+                      - "{{ states(temperature_sensor) | int > states('input_number.autoshade_lower_bound') }}"
+                      - "{{ states(temperature_sensor) | int < states('input_number.autoshade_medium_upper_bound') }}"
                 then:
                   - action: cover.set_cover_position
                     metadata: {}
@@ -404,8 +408,8 @@ action:
                     condition: and
                     conditions:
                       - "{{ is_state(temperature_sensor, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
-                      - "{{ states(temperature_sensor) > states('input_number.autoshade_lower_bound') }}"
-                      - "{{ states(temperature_sensor) < states('input_number.autoshade_medium_upper_bound') }}"
+                      - "{{ states(temperature_sensor) | int > states('input_number.autoshade_lower_bound') }}"
+                      - "{{ states(temperature_sensor) | int < states('input_number.autoshade_medium_upper_bound') }}"
                   - action: cover.set_cover_position
                     metadata: {}
                     data:

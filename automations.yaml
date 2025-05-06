@@ -2134,21 +2134,23 @@
   triggers:
   - trigger: numeric_state
     entity_id:
-    - sensor.hmip_psm_0001dd89972f41_leistung
+    - sensor.sony_xr_65x90l_steckdose_leistung
     for:
       hours: 0
-      minutes: 0
-      seconds: 10
+      minutes: 5
+      seconds: 0
     below: 30
   - trigger: state
     entity_id:
     - media_player.fernseher_wohnzimmer
     to: 'off'
     from: 'on'
+    enabled: false
   conditions:
   - condition: time
     after: '23:30:00'
     before: 06:00:00
+    enabled: false
   - condition: device
     type: is_off
     device_id: b2648487dc345c14c32b5b426736ddca
@@ -2159,7 +2161,7 @@
     metadata: {}
     data: {}
     target:
-      entity_id: switch.hmip_psm_0001dd89972f41
+      entity_id: switch.sony_xr_65x90l_steckdose
   mode: single
 - id: '1731249713051'
   alias: Rollladen Esszimmer Nord

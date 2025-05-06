@@ -288,6 +288,8 @@ variables:
   contact_sensor: !input contact_sensor
   time_up: !input time_up
   time_down: !input time_down
+  is_nighttime: "{{ now() >= today_at(time_down) and now() < today_at(time_up) }}"
+  is_daytime: "{{ now() >= today_at(time_up) and now() < today_at(time_down) }}"
 
 condition:
   - condition: state
@@ -304,8 +306,7 @@ action:
               - alias: "After time_down and before time_up"
                 condition: and
                 conditions:
-                - "{{ now() >= today_at(time_down) }}"
-                - "{{ now() < today_at(time_up) }}"
+                - "{{ is_nighttime }}"
               - alias: "After sunset"
                 condition: state
                 entity_id: sun.sun
@@ -330,8 +331,7 @@ action:
               - alias: "After time_up and before time_down"
                 condition: and
                 conditions:
-                - "{{ now() >= today_at(time_up) }}"
-                - "{{ now() < today_at(time_down) }}"
+                - "{{ is_daytime }}"
           - alias: Sun position
             condition: and
             conditions:
@@ -359,11 +359,9 @@ action:
                       below: 803
                 - condition: numeric_state
                   entity_id: !input light_sensor_average
-                  # above: input_number.beschattungsschwelle_bewolkt_durchschnitt
                   above: !input light_threshold_average_cloudy
                 - condition: numeric_state
                   entity_id: !input light_sensor
-                  # above: input_number.beschattungsschwelle_bewolkt
                   above: !input light_threshold_cloudy
               sequence:
                 - action: cover.set_cover_position
@@ -387,13 +385,13 @@ action:
                   entity_id: !input light_sensor
                   above: !input light_threshold
               sequence:
-                alias: Sonnenschein
                 if:
                   - alias: Beschattung halb
-                    condition: numeric_state
-                    entity_id: sensor.hmip_stho_000edd89b688b4_actual_temperature
-                    above: input_number.autoshade_lower_bound
-                    below: input_number.autoshade_medium_upper_bound
+                    condition: and
+                    conditions:
+                      - "{{ is_state(temperature_sensor, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
+                      - "{{ states(temperature_sensor) > states('input_number.autoshade_lower_bound') }}"
+                      - "{{ states(temperature_sensor) < states('input_number.autoshade_medium_upper_bound') }}"
                 then:
                   - action: cover.set_cover_position
                     metadata: {}
@@ -405,12 +403,9 @@ action:
                   - alias: Beschattung
                     condition: and
                     conditions:
-                      - condition: numeric_state
-                        entity_id: sensor.hmip_stho_000edd89b688b4_actual_temperature
-                        above: input_number.autoshade_lower_bound
-                      - condition: numeric_state
-                        entity_id: sensor.hmip_stho_000edd89b688b4_actual_temperature
-                        above: input_number.autoshade_medium_upper_bound
+                      - "{{ is_state(temperature_sensor, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
+                      - "{{ states(temperature_sensor) > states('input_number.autoshade_lower_bound') }}"
+                      - "{{ states(temperature_sensor) < states('input_number.autoshade_medium_upper_bound') }}"
                   - action: cover.set_cover_position
                     metadata: {}
                     data:

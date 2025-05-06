@@ -1989,6 +1989,7 @@
       light_threshold_average: 35000
       light_threshold_cloudy: 26000
       light_threshold_average_cloudy: 32000
+      temperature_sensor: sensor.hmip_stho_000edd89b688b4_actual_temperature
 - id: '1727869150271'
   alias: Rollladen Luisa
   description: ''
@@ -2009,6 +2010,7 @@
       light_threshold_average: 35000
       light_threshold_cloudy: 26000
       light_threshold_average_cloudy: 32000
+      temperature_sensor: sensor.hmip_stho_000edd89b688b4_actual_temperature
 - id: '1728243290605'
   alias: Rollladen Schlafzimmer
   description: ''
@@ -2029,6 +2031,7 @@
       light_threshold_average_cloudy: 32000
       light_threshold: 28000
       light_threshold_average: 35000
+      temperature_sensor: sensor.hmip_stho_000edd89b688b4_actual_temperature
 - id: '1728244054431'
   alias: Rollladen Wohnzimmer Süd
   description: ''
@@ -2054,6 +2057,7 @@
       light_threshold_average: 35000
       light_threshold_cloudy: 26000
       light_threshold_average_cloudy: 32000
+      temperature_sensor: sensor.hmip_stho_000edd89b688b4_actual_temperature
 - id: '1729020748250'
   alias: Marius Türöffner
   description: ''
@@ -2168,19 +2172,19 @@
       light_sensor_average: sensor.hmip_slo_000d60c9a674e3_durchschnittliche_beleuchtungsstarke
       is_enabled_input: input_boolean.autorollo_esszimmer
       position_closed: 0
-      min_azimuth: 255
+      min_azimuth: 260
       max_azimuth: 300
       contact_sensor: binary_sensor.e4_ch10
       auto_options:
-      - auto_ventilate_enabled
       - auto_up_enabled
       - auto_down_enabled
       - auto_shading_enabled
+      - auto_ventilate_enabled
       time_down: '21:00:00'
       light_threshold: 20000
-      light_threshold_average: 20000
-      light_threshold_cloudy: 20000
-      light_threshold_average_cloudy: 19800
+      light_threshold_average: 18000
+      light_threshold_cloudy: 25000
+      light_threshold_average_cloudy: 23000
 - id: '1731253701677'
   alias: Rollladen Arbeiten Nord
   description: ''
@@ -2216,17 +2220,16 @@
       light_sensor: sensor.hmip_slo_000d60c9a674e3_beleuchtungsstarke
       light_sensor_average: sensor.hmip_slo_000d60c9a674e3_durchschnittliche_beleuchtungsstarke
       is_enabled_input: input_boolean.autorollo_kuche
-      min_azimuth: 231
+      min_azimuth: 260
       auto_options:
       - auto_up_enabled
       - auto_down_enabled
       - auto_shading_enabled
-      - auto_ventilate_enabled
       time_down: '21:00:00'
-      light_threshold: 12000
-      light_threshold_average_cloudy: 17000
+      light_threshold: 15000
+      light_threshold_average_cloudy: 9000
       light_threshold_cloudy: 12000
-      light_threshold_average: 12000
+      light_threshold_average: 13000
 - id: '1731261313962'
   alias: Rollladen HWR
   description: ''
@@ -2301,12 +2304,12 @@
       - auto_up_enabled
       - auto_down_enabled
       - auto_shading_enabled
-      min_azimuth: 161
-      max_azimuth: 318
-      light_threshold: 3200
-      light_threshold_average: 6100
-      light_threshold_cloudy: 12000
-      light_threshold_average_cloudy: 17000
+      min_azimuth: 245
+      max_azimuth: 360
+      light_threshold: 15000
+      light_threshold_average: 13000
+      light_threshold_cloudy: 10000
+      light_threshold_average_cloudy: 9000
 - id: '1733486362976'
   alias: Bad - Licht Bewegungsmelder
   description: Turns on lights

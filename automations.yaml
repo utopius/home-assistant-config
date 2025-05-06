@@ -2498,57 +2498,77 @@
   triggers:
   - trigger: time_pattern
     minutes: '20'
-  conditions: []
+  - trigger: state
+    entity_id:
+    - input_boolean.automatisch_bad_thermostat_regeln
+  conditions:
+  - condition: state
+    entity_id: input_boolean.automatisch_bad_thermostat_regeln
+    state: 'on'
+    enabled: false
   actions:
-  - choose:
-    - conditions:
-      - type: is_temperature
-        condition: device
-        device_id: 920349d489d8c5696a1739387d062fee
-        entity_id: 2590426dfe21477e85cf923f23fde4ac
-        domain: sensor
-        below: 5
-        alias: Unter 5°
-      sequence:
-      - action: climate.set_preset_mode
-        metadata: {}
-        data:
-          preset_mode: week_program_4
-        target:
-          entity_id: climate.bad_raumthermostat
-    - conditions:
-      - alias: 5-15°
-        type: is_temperature
-        condition: device
-        device_id: 920349d489d8c5696a1739387d062fee
-        entity_id: 2590426dfe21477e85cf923f23fde4ac
-        domain: sensor
-        above: 5
-        below: 15
-      sequence:
-      - action: climate.set_preset_mode
-        metadata: {}
-        data:
-          preset_mode: week_program_3
-        target:
-          entity_id: climate.bad_raumthermostat
-    - conditions:
-      - condition: and
-        conditions:
-        - condition: numeric_state
-          entity_id: sensor.hmip_stho_000edd89b682a2_actual_temperature
-          above: 15
-        - condition: numeric_state
-          entity_id: sensor.thermal_comfort_bad_taupunkt
-          above: 15
-          attribute: temperature
-      sequence:
-      - action: climate.set_preset_mode
-        metadata: {}
-        data:
-          preset_mode: week_program_2
-        target:
-          entity_id: climate.bad_raumthermostat
+  - if:
+    - condition: state
+      entity_id: input_boolean.automatisch_bad_thermostat_regeln
+      state: 'on'
+      enabled: true
+    then:
+    - choose:
+      - conditions:
+        - type: is_temperature
+          condition: device
+          device_id: 920349d489d8c5696a1739387d062fee
+          entity_id: 2590426dfe21477e85cf923f23fde4ac
+          domain: sensor
+          below: 5
+          alias: Unter 5°
+        sequence:
+        - action: climate.set_preset_mode
+          metadata: {}
+          data:
+            preset_mode: week_program_4
+          target:
+            entity_id: climate.bad_raumthermostat
+      - conditions:
+        - alias: 5-14°
+          type: is_temperature
+          condition: device
+          device_id: 920349d489d8c5696a1739387d062fee
+          entity_id: 2590426dfe21477e85cf923f23fde4ac
+          domain: sensor
+          above: 5
+          below: 14
+        sequence:
+        - action: climate.set_preset_mode
+          metadata: {}
+          data:
+            preset_mode: week_program_3
+          target:
+            entity_id: climate.bad_raumthermostat
+      - conditions:
+        - condition: and
+          conditions:
+          - condition: numeric_state
+            entity_id: sensor.hmip_stho_000edd89b682a2_actual_temperature
+            above: 14
+          - condition: numeric_state
+            entity_id: sensor.thermal_comfort_bad_taupunkt
+            above: 14
+            attribute: temperature
+        sequence:
+        - action: climate.set_preset_mode
+          metadata: {}
+          data:
+            preset_mode: week_program_2
+          target:
+            entity_id: climate.bad_raumthermostat
+    else:
+    - action: climate.set_preset_mode
+      metadata: {}
+      data:
+        preset_mode: week_program_1
+      target:
+        entity_id: climate.bad_raumthermostat
   mode: single
 - id: '1739649410422'
   alias: ELW - Geräte nicht erreichbar

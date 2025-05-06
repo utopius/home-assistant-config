@@ -2794,3 +2794,30 @@
       title: Geräte prüfen
       message: Einige Geräte sind nicht erreichbar
   mode: single
+- id: '1743945560637'
+  alias: Garagentür
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.hmip_swdo_2_003660c9939020
+    to: 'on'
+  conditions:
+  - condition: not
+    conditions:
+    - condition: zone
+      entity_id: person.florian_herbel
+      zone: zone.home
+    - condition: zone
+      entity_id: person.steffi
+      zone: zone.home
+    enabled: false
+  actions:
+  - action: notify.mobile_app_all
+    data:
+      data:
+        tag: garage-door-opened
+      message: Die Garagentür wurde geöffnet
+      title: Garagentür geöffnet
+    enabled: true
+  mode: single

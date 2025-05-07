@@ -335,9 +335,6 @@ action:
               - alias: "After time_up and before time_down"
                 condition: and
                 conditions:
-              - alias: "After time_up and before time_down"
-                condition: and
-                conditions:
                 - "{{ now() >= today_at(time_up) }}"
                 - "{{ now() < today_at(time_down) }}"
           - alias: Sun position
@@ -365,8 +362,8 @@ action:
                       entity_id: sensor.home_weather_code
                       above: 800
                       below: 803
-                - "{{ is_state(light_sensor_average, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
-                - "{{ is_state(light_sensor, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
+                - "{{ not is_state(light_sensor_average, ['false', 'off', 'unknown', 'unavailable']) if light_sensor_average else True }}"
+                - "{{ not is_state(light_sensor, ['false', 'off', 'unknown', 'unavailable']) if light_sensor else True }}"
                 - "{{ states(light_sensor_average) | int >= light_threshold_average_cloudy }}"
                 - "{{ states(light_sensor) | int >= light_threshold_cloudy }}"
               sequence:
@@ -384,8 +381,8 @@ action:
                   entity_id: sensor.home_weather_code
                   above: 799
                   below: 803
-                - "{{ is_state(light_sensor_average, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
-                - "{{ is_state(light_sensor, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
+                - "{{ not is_state(light_sensor_average, ['false', 'off', 'unknown', 'unavailable']) if light_sensor_average else True }}"
+                - "{{ not is_state(light_sensor, ['false', 'off', 'unknown', 'unavailable']) if light_sensor else True }}"
                 - "{{ states(light_sensor_average) | int >= light_threshold_average }}"
                 - "{{ states(light_sensor) | int >= light_threshold }}"
               sequence:
@@ -393,9 +390,9 @@ action:
                   - alias: Beschattung halb
                     condition: and
                     conditions:
-                      - "{{ is_state(temperature_sensor, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
-                      - "{{ states(temperature_sensor) | int > states('input_number.autoshade_lower_bound') }}"
-                      - "{{ states(temperature_sensor) | int < states('input_number.autoshade_medium_upper_bound') }}"
+                      - "{{ not is_state(temperature_sensor, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
+                      - "{{ states(temperature_sensor) | int > int(states('input_number.autoshade_lower_bound')) }}"
+                      - "{{ states(temperature_sensor) | int < int(states('input_number.autoshade_medium_upper_bound')) }}"
                 then:
                   - action: cover.set_cover_position
                     metadata: {}
@@ -407,9 +404,9 @@ action:
                   - alias: Beschattung
                     condition: and
                     conditions:
-                      - "{{ is_state(temperature_sensor, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
-                      - "{{ states(temperature_sensor) | int > states('input_number.autoshade_lower_bound') }}"
-                      - "{{ states(temperature_sensor) | int < states('input_number.autoshade_medium_upper_bound') }}"
+                      - "{{ not is_state(temperature_sensor, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
+                      - "{{ states(temperature_sensor) | int > int(states('input_number.autoshade_lower_bound')) }}"
+                      - "{{ states(temperature_sensor) | int < int(states('input_number.autoshade_medium_upper_bound')) }}"
                   - action: cover.set_cover_position
                     metadata: {}
                     data:

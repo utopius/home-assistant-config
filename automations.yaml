@@ -1769,10 +1769,9 @@
   conditions: []
   actions:
   - action: fan.toggle
-    target:
-      entity_id:
-      - fan.arbeitszimmer_ventilator
     data: {}
+    target:
+      entity_id: fan.arbeiten_ventilator
   mode: single
 - id: '1726395868651'
   alias: Eingang - Licht

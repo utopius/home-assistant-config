@@ -2821,3 +2821,144 @@
       title: Garagentür geöffnet
     enabled: true
   mode: single
+- id: '1747502266616'
+  alias: Garagentore
+  description: ''
+  triggers:
+  - domain: homematicip_local
+    device_id: 5a650573bf7462815f6dcf950e4107d1
+    event_type: homematic.keypress
+    address: 00019D89977611
+    model: HMIP-WRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 1
+    trigger: device
+    id: '2'
+  - domain: homematicip_local
+    device_id: 5a650573bf7462815f6dcf950e4107d1
+    event_type: homematic.keypress
+    address: 00019D89977611
+    model: HMIP-WRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_short
+    subtype: 2
+    trigger: device
+    id: '1'
+  - domain: homematicip_local
+    device_id: 5a650573bf7462815f6dcf950e4107d1
+    event_type: homematic.keypress
+    address: 00019D89977611
+    model: HMIP-WRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 2
+    trigger: device
+    id: 1-identify
+  - domain: homematicip_local
+    device_id: 5a650573bf7462815f6dcf950e4107d1
+    event_type: homematic.keypress
+    address: 00019D89977611
+    model: HMIP-WRC2
+    interface_id: ccu.herbel.net-HmIP-RF
+    type: press_long_start
+    subtype: 1
+    trigger: device
+    id: 2-identify
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - '1'
+      sequence:
+      - if:
+        - condition: or
+          conditions:
+          - condition: device
+            device_id: 9637c28e08478c891836277cb0373b4d
+            domain: cover
+            entity_id: d5a69a6fe8c2ba3d1439fab9fd273784
+            type: is_closing
+          - condition: device
+            device_id: 9637c28e08478c891836277cb0373b4d
+            domain: cover
+            entity_id: d5a69a6fe8c2ba3d1439fab9fd273784
+            type: is_closed
+        then:
+        - device_id: 9637c28e08478c891836277cb0373b4d
+          domain: cover
+          entity_id: d5a69a6fe8c2ba3d1439fab9fd273784
+          type: open
+        else:
+        - device_id: 9637c28e08478c891836277cb0373b4d
+          domain: cover
+          entity_id: d5a69a6fe8c2ba3d1439fab9fd273784
+          type: close
+    - conditions:
+      - condition: trigger
+        id:
+        - '2'
+      sequence:
+      - if:
+        - condition: or
+          conditions:
+          - condition: device
+            device_id: b52a5260875418a200582934839b7fe3
+            domain: cover
+            entity_id: 98a476d6f70ba85620342fd58e8b16c6
+            type: is_closing
+          - condition: device
+            device_id: b52a5260875418a200582934839b7fe3
+            domain: cover
+            entity_id: 98a476d6f70ba85620342fd58e8b16c6
+            type: is_closed
+        then:
+        - device_id: b52a5260875418a200582934839b7fe3
+          domain: cover
+          entity_id: 98a476d6f70ba85620342fd58e8b16c6
+          type: open
+        else:
+        - device_id: b52a5260875418a200582934839b7fe3
+          domain: cover
+          entity_id: 98a476d6f70ba85620342fd58e8b16c6
+          type: close
+    - conditions:
+      - condition: trigger
+        id:
+        - 1-identify
+      sequence:
+      - device_id: 9637c28e08478c891836277cb0373b4d
+        domain: button
+        entity_id: 732a3d527e0c5f2047cf81b1fb9b795b
+        type: press
+    - conditions:
+      - condition: trigger
+        id:
+        - 2-identify
+      sequence:
+      - device_id: b52a5260875418a200582934839b7fe3
+        domain: button
+        entity_id: 4403ce66c762a3ee2896d865064af4b0
+        type: press
+  mode: restart
+- id: '1749223846650'
+  alias: Bewegung Abstellraum
+  description: ''
+  triggers:
+  - type: motion
+    device_id: 9dd37d3bcabd91978eeb7470be5e0953
+    entity_id: d5bb5740b53d63d56d934d8a95643604
+    domain: binary_sensor
+    metadata:
+      secondary: false
+    trigger: device
+  conditions: []
+  actions:
+  - action: notify.mobile_app_floris_pixel_6_pro
+    metadata: {}
+    data:
+      title: Bewegung
+      message: Im Abstellraum wurde Bewegung erkannt
+  mode: single

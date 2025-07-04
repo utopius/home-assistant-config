@@ -246,7 +246,7 @@ blueprint:
                   value: "auto_up_enabled"
                 - label: "🔻 - Enable generic automatic daily closing at the end of the day"
                   value: "auto_down_enabled"
-                - label: "💨 - Enable ventilation mode"
+                - label: "💨 - Enable ventilation mode - Sets to ventilation position when contact opened and shutter is at closed position"
                   value: "auto_ventilate_enabled"
                 - label: "🥵 - Enable automatic sun protection / sunshade control (helper required)"
                   value: "auto_shading_enabled"
@@ -337,8 +337,8 @@ action:
               - alias: "After time_up and before time_down"
                 condition: and
                 conditions:
-                - "{{ now() >= today_at(time_up) }}"
-                - "{{ now() < today_at(time_down) }}"
+                  - "{{ now() >= today_at(time_up) }}"
+                  - "{{ now() < today_at(time_down) }}"
           - alias: Sun position
             condition: and
             conditions:
@@ -429,6 +429,7 @@ action:
           - condition: trigger
             id: tid_contact_opened_on
           - "{{ is_ventilation_enabled }}"
+          - "{{ state_attr(cover_entity, 'current_position') | int >= position_closed }}"
         sequence:
           - action: cover.set_cover_position
             metadata: {}

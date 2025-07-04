@@ -360,8 +360,8 @@ action:
                   conditions:
                     - condition: numeric_state
                       entity_id: sensor.home_weather_code
-                      above: 800
-                      below: 803
+                      above: 803
+                      below: 804
                 - "{{ not is_state(light_sensor_average, ['false', 'off', 'unknown', 'unavailable']) if light_sensor_average else True }}"
                 - "{{ not is_state(light_sensor, ['false', 'off', 'unknown', 'unavailable']) if light_sensor else True }}"
                 - "{{ states(light_sensor_average) | int >= light_threshold_average_cloudy }}"
@@ -376,11 +376,11 @@ action:
             - alias: Sunny
               conditions:
                 # https://openweathermap.org/weather-conditions
-                # Clear, max 50% clouds
+                # Clear, max broken clouds
                 - condition: numeric_state
                   entity_id: sensor.home_weather_code
                   above: 799
-                  below: 803
+                  below: 804
                 - "{{ not is_state(light_sensor_average, ['false', 'off', 'unknown', 'unavailable']) if light_sensor_average else True }}"
                 - "{{ not is_state(light_sensor, ['false', 'off', 'unknown', 'unavailable']) if light_sensor else True }}"
                 - "{{ states(light_sensor_average) | int >= light_threshold_average }}"

@@ -4,6 +4,8 @@ blueprint:
   name: "Cover automation"
   description: "Open, close and shade automatically"
   domain: automation
+  homeassistant:
+    min_version: "2024.6.0"
   input:
     cover_entity:
       name: "Cover"

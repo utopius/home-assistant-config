@@ -166,6 +166,18 @@ fernseher_einschalten:
     - delay:
         hours: 0
         minutes: 0
+        seconds: 20
+        milliseconds: 0
+  - alias: TV einschalten & warten
+    if: []
+    then:
+    - type: turn_on
+      device_id: b1aad560567ef5fc5950e49338e6f0f6
+      entity_id: 0e9b7ea26efe45a3d2970ccaeaa6f742
+      domain: remote
+    - delay:
+        hours: 0
+        minutes: 0
         seconds: 15
         milliseconds: 0
   - alias: TV einschalten & warten

@@ -422,6 +422,19 @@ action:
                   target:
                     entity_id: !input cover_entity
 
+      - alias: "Ventilation"
+        conditions:
+          - condition: trigger
+            id: tid_contact_opened_on
+          - "{{ is_ventilation_enabled }}"
+        sequence:
+          - action: cover.set_cover_position
+            metadata: {}
+            data:
+              position: !input position_ventilation
+            target:
+              entity_id: !input cover_entity
+
       - alias: "Daytime opening"
         conditions:
           - "{{ is_up_enabled }}"
@@ -435,19 +448,6 @@ action:
           - action: cover.open_cover
             metadata: {}
             data: {}
-            target:
-              entity_id: !input cover_entity
-
-      - alias: "Ventilation"
-        conditions:
-          - condition: trigger
-            id: tid_contact_opened_on
-          - "{{ is_ventilation_enabled }}"
-        sequence:
-          - action: cover.set_cover_position
-            metadata: {}
-            data:
-              position: !input position_ventilation
             target:
               entity_id: !input cover_entity
 mode: single

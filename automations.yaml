@@ -2608,42 +2608,48 @@
       title: Geräte prüfen in ELW
       message: Einige Geräte in der Einliegerwohnung sind nicht erreichbar
   mode: single
-- id: '1739866014734'
-  alias: Druckauftrag fertig
+- id: '1739866185041'
+  alias: Drucker
   description: ''
   triggers:
   - trigger: state
     entity_id:
-    - sensor.hp_colorlaserjet_mfp_m278_m281
-    from: printing
-    to: idle
+    - sensor.hp_color_laserjet_mfp_m281fdw_192_168_200_83_status
+    to: processing
+    id: Printing
+  - trigger: state
+    entity_id:
+    - sensor.hp_color_laserjet_mfp_m281fdw_192_168_200_83_status
+    to: inpowersave
+    from: processing
     for:
       hours: 0
       minutes: 0
       seconds: 2
+    id: Finished
   conditions: []
   actions:
-  - action: notify.mobile_app_floris_pixel_6_pro
-    metadata: {}
-    data:
-      message: Drucker hat fertig gedruckt, Ausdruck liegt bereit.
-      title: Ausdruck liegt bereit
-  mode: single
-- id: '1739866185041'
-  alias: Druckauftrag begonnen
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - sensor.hp_colorlaserjet_mfp_m278_m281
-    to: printing
-  conditions: []
-  actions:
-  - action: notify.mobile_app_floris_pixel_6_pro
-    metadata: {}
-    data:
-      title: Druckt...
-      message: Druckauftrag begonnen
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - Printing
+      sequence:
+      - action: notify.mobile_app_floris_pixel_6_pro
+        metadata: {}
+        data:
+          title: Druckt...
+          message: Druckauftrag begonnen
+    - conditions:
+      - condition: trigger
+        id:
+        - Finished
+      sequence:
+      - action: notify.mobile_app_floris_pixel_6_pro
+        metadata: {}
+        data:
+          message: Drucker hat fertig gedruckt, Ausdruck liegt bereit.
+          title: Ausdruck liegt bereit
   mode: single
 - id: '1740071338934'
   alias: SWR1 im Arbeitszimmer

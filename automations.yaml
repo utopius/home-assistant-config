@@ -804,39 +804,43 @@
     type: press_short
     subtype: 1
     trigger: device
-  - domain: homematicip_local
-    device_id: 5a650573bf7462815f6dcf950e4107d1
-    event_type: homematic.keypress
-    address: 00019D89977611
-    device_type: HMIP-WRC2
-    interface_id: ccu.herbel.net-HmIP-RF
-    type: press_short
-    subtype: 1
+    id: on-off
+  - device_id: c9b76d3aef130eac7a626c345211d935
+    domain: zha
+    type: remote_button_short_press
+    subtype: turn_off
     trigger: device
+    id: on-off
   conditions: []
   actions:
   - choose:
     - conditions:
-      - condition: device
-        type: is_on
-        device_id: f37611c7c9abeae1daf034bb57b12db6
-        entity_id: cb8b1a03b1c71ce8247bdae19df2bf70
-        domain: light
+      - condition: trigger
+        id:
+        - on-off
       sequence:
-      - type: turn_off
-        device_id: f37611c7c9abeae1daf034bb57b12db6
-        entity_id: cb8b1a03b1c71ce8247bdae19df2bf70
-        domain: light
-      - type: turn_off
-        device_id: ddf321ef52d7711cb9133c41919288e8
-        entity_id: 315bb7f115f7b955e976cb1e09615587
-        domain: light
-    default:
-    - target:
-        entity_id: scene.kind_2_naturliches_licht
-      metadata: {}
-      action: scene.turn_on
-      data: {}
+      - if:
+        - condition: device
+          type: is_on
+          device_id: f37611c7c9abeae1daf034bb57b12db6
+          entity_id: cb8b1a03b1c71ce8247bdae19df2bf70
+          domain: light
+        then:
+        - type: turn_off
+          device_id: f37611c7c9abeae1daf034bb57b12db6
+          entity_id: cb8b1a03b1c71ce8247bdae19df2bf70
+          domain: light
+        - type: turn_off
+          device_id: ddf321ef52d7711cb9133c41919288e8
+          entity_id: 315bb7f115f7b955e976cb1e09615587
+          domain: light
+        else:
+        - target:
+            entity_id: scene.kind_2_naturliches_licht
+          metadata: {}
+          action: scene.turn_on
+          data: {}
+      alias: Umschalten
   mode: single
 - id: '1701858452385'
   alias: Kind 1 Licht - Entspannen
@@ -871,9 +875,8 @@
 - id: '1701858481299'
   alias: Kind 2 Licht - Entspannen
   description: ''
-  trigger:
-  - platform: device
-    domain: homematicip_local
+  triggers:
+  - domain: homematicip_local
     device_id: f2a330337d10e17c0fc48de364878bca
     event_type: homematic.keypress
     address: 00221F298AC763
@@ -881,21 +884,19 @@
     interface_id: ccu.herbel.net-HmIP-RF
     type: press_long_start
     subtype: 2
-  - platform: device
-    domain: homematicip_local
-    device_id: 5a650573bf7462815f6dcf950e4107d1
-    event_type: homematic.keypress
-    address: 00019D89977611
-    device_type: HMIP-WRC2
-    interface_id: ccu.herbel.net-HmIP-RF
-    type: press_long_start
-    subtype: 2
-  condition: []
-  action:
-  - service: scene.turn_on
-    target:
+    trigger: device
+  - device_id: c9b76d3aef130eac7a626c345211d935
+    domain: zha
+    type: remote_button_short_press
+    subtype: left
+    trigger: device
+  conditions: []
+  actions:
+  - target:
       entity_id: scene.kind_2_entspannen
     metadata: {}
+    action: scene.turn_on
+    data: {}
   mode: single
 - id: '1701858679561'
   alias: Kind 1 Licht - Lesen
@@ -930,9 +931,8 @@
 - id: '1701858733015'
   alias: Kind 2 Licht - Lesen
   description: ''
-  trigger:
-  - platform: device
-    domain: homematicip_local
+  triggers:
+  - domain: homematicip_local
     device_id: f2a330337d10e17c0fc48de364878bca
     event_type: homematic.keypress
     address: 00221F298AC763
@@ -940,21 +940,19 @@
     interface_id: ccu.herbel.net-HmIP-RF
     type: press_short
     subtype: 2
-  - platform: device
-    domain: homematicip_local
-    device_id: 5a650573bf7462815f6dcf950e4107d1
-    event_type: homematic.keypress
-    address: 00019D89977611
-    device_type: HMIP-WRC2
-    interface_id: ccu.herbel.net-HmIP-RF
-    type: press_short
-    subtype: 2
-  condition: []
-  action:
-  - service: scene.turn_on
-    target:
+    trigger: device
+  - device_id: c9b76d3aef130eac7a626c345211d935
+    domain: zha
+    type: remote_button_short_press
+    subtype: right
+    trigger: device
+  conditions: []
+  actions:
+  - target:
       entity_id: scene.kind_2_lesen
     metadata: {}
+    action: scene.turn_on
+    data: {}
   mode: single
 - id: '1701858828710'
   alias: Kind 1 Licht - Natürlich
@@ -989,9 +987,8 @@
 - id: '1701858859297'
   alias: Kind 2 Licht - Natürlich
   description: ''
-  trigger:
-  - platform: device
-    domain: homematicip_local
+  triggers:
+  - domain: homematicip_local
     device_id: f2a330337d10e17c0fc48de364878bca
     event_type: homematic.keypress
     address: 00221F298AC763
@@ -999,21 +996,19 @@
     interface_id: ccu.herbel.net-HmIP-RF
     type: press_long_start
     subtype: 1
-  - platform: device
-    domain: homematicip_local
-    device_id: 5a650573bf7462815f6dcf950e4107d1
-    event_type: homematic.keypress
-    address: 00019D89977611
-    device_type: HMIP-WRC2
-    interface_id: ccu.herbel.net-HmIP-RF
-    type: press_long_start
-    subtype: 1
-  condition: []
-  action:
-  - service: scene.turn_on
-    target:
+    trigger: device
+  - device_id: c9b76d3aef130eac7a626c345211d935
+    domain: zha
+    type: remote_button_long_press
+    subtype: dim_down
+    trigger: device
+  conditions: []
+  actions:
+  - target:
       entity_id: scene.kind_2_naturliches_licht
     metadata: {}
+    action: scene.turn_on
+    data: {}
   mode: single
 - id: '1701859047372'
   alias: Schlafzimmer Licht - Lesen

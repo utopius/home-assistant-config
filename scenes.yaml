@@ -1112,3 +1112,45 @@
       entity_only: true
     cover.ja2_nordseite_rollo_arbeiten_west_hmipw_drbl4_00165d899fbab0_ch10:
       entity_only: true
+- id: '1752050540179'
+  name: Arbeiten - Beschatten
+  entities:
+    input_boolean.autorollo_arbeitszimmer_west:
+      editable: true
+      icon: mdi:window-shutter-auto
+      friendly_name: Arbeitszimmer West Rollladensteuerung
+      state: 'off'
+    input_boolean.autorollo_arbeiten:
+      editable: true
+      icon: mdi:window-shutter-auto
+      friendly_name: Arbeitszimmer Nord Rollladensteuerung
+      state: 'off'
+    cover.ja2_nordseite_rollo_arbeiten_west_hmipw_drbl4_00165d899fbab0_ch10:
+      current_position: 10
+      interface_id: ccu.herbel.net-HmIP-RF
+      address: 00165D899FBAB0:10
+      model: HmIPW-DRBL4
+      value_state: valid
+      device_class: blind
+      friendly_name: Arbeiten West
+      supported_features: 15
+      state: open
+    cover.ja2_nordseite_rollo_arbeiten_nord:
+      current_position: 5
+      interface_id: ccu.herbel.net-HmIP-RF
+      address: 00165D899FBAB0:2
+      model: HmIPW-DRBL4
+      value_state: valid
+      device_class: blind
+      friendly_name: Arbeiten Nord
+      supported_features: 15
+      state: open
+  metadata:
+    input_boolean.autorollo_arbeitszimmer_west:
+      entity_only: true
+    input_boolean.autorollo_arbeiten:
+      entity_only: true
+    cover.ja2_nordseite_rollo_arbeiten_west_hmipw_drbl4_00165d899fbab0_ch10:
+      entity_only: true
+    cover.ja2_nordseite_rollo_arbeiten_nord:
+      entity_only: true

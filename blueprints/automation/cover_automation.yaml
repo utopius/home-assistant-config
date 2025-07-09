@@ -1,0 +1,521 @@
+# Inspired by and parts taken over from [Cover Control Automation (CCA)](https://github.com/hvorragend/ha-blueprints)
+
+blueprint:
+  name: "Cover control automation"
+  description: "Open, close and shade automatically"
+  domain: automation
+  homeassistant:
+    min_version: "2024.6.0"
+  input:
+    cover_entity:
+      name: "Cover"
+      description: "The cover to automate."
+      selector:
+        entity:
+          filter:
+            domain: cover
+
+    sensor_section:
+      name: "Sensor Configuration"
+      description: "Sensor selection and configuration"
+      collapsed: true
+      icon: mdi:smoke-detector
+      input:
+        contact_sensor:
+          name: "Contact sensor"
+          description: "(Optional) A contact sensor to trigger a ventilate position if opened  (e.g. door or window sensor)."
+          default:
+          selector:
+            entity:
+              filter:
+                domain:
+                  - binary_sensor
+                  - input_boolean
+
+        temperature_sensor:
+          name: "Temperature sensor"
+          description: "(Optional) Temperature sensor used as threshold and ventilation mode."
+          default:
+          selector:
+            entity:
+              filter:
+                domain: sensor
+                device_class: temperature
+
+    illuminance_section:
+      name: "Illuminance Configuration"
+      description: "Illuminance sensor selection and configuration"
+      icon: mdi:window-shutter-settings
+      collapsed: true
+      input:
+        light_sensor:
+          name: Illumination
+          default:
+          selector:
+            entity:
+              filter:
+                domain: sensor
+                device_class: illuminance
+
+        light_sensor_average:
+          name: Illumination Ø
+          default:
+          selector:
+            entity:
+              filter:
+                domain: sensor
+                device_class: illuminance
+
+        light_threshold:
+          name: Illumination Threshold
+          description: "Threshold to trigger shading"
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 100000
+              step: 100
+
+        light_threshold_average:
+          name: Illumination Threshold Ø
+          description: "Threshold average to trigger shading"
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 100000
+              step: 100
+
+        light_threshold_cloudy:
+          name: Illumination Threshold (cloudy weather)
+          description: "Threshold to trigger shading"
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 100000
+              step: 100
+
+        light_threshold_average_cloudy:
+          name: Illumination Threshold Ø (cloudy weather)
+          description: "Threshold average to trigger shading"
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 100000
+              step: 100
+
+    position_section:
+      name: "Position Configuration"
+      description: "Control the various positions of the shutter."
+      icon: mdi:window-shutter-settings
+      collapsed: true
+      input:
+        position_closed:
+          name: "Closed position"
+          description: "Cover position to use as 'closed' while ."
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 100
+
+        position_closed_temp_threshold:
+          name: "Temperature threshold for 'Closed position'"
+          description: "(Optional) Cover position is used as 'closed' while 'Temperature sensor' is higher than this threshold"
+          default: 0
+          selector:
+            number:
+              min: -30
+              max: 40
+
+        position_shade:
+          name: "Shade position"
+          description: "Cover position to use for shading."
+          default: 20
+          selector:
+            number:
+              min: 0
+              max: 100
+
+        position_ventilation:
+          name: "Ventilation position"
+          description: "Cover position to use for ventilation."
+          default: 20
+          selector:
+            number:
+              min: 0
+              max: 100
+
+        position_shade_light:
+          name: "Light shade positition"
+          description: "Cover position to use for shading when it's not totally sunny."
+          default: 50
+          selector:
+            number:
+              min: 0
+              max: 100
+
+    time_section:
+      name: "Time Control Configuration"
+      icon: mdi:clock-time-two-outline
+      collapsed: true
+      input:
+        time_up:
+          name: "🔼 Time For Drive Up"
+          description: >-
+            The time at which the cover may be opened.
+            The cover will be opened if <ins>AFTER</ins> this time the sun is above horizon.
+          default: "07:00:00"
+          selector:
+            time: {}
+        time_down:
+          name: "🔻 Time For Drive Down"
+          description: >-
+            The time at which the cover may be closed.
+            The cover will be closed if <ins>AFTER</ins> this time <ins>OR </ins> the sun is below horizon.
+          default: "19:30:00"
+          selector:
+            time: {}
+
+    sun_section:
+      name: "Sun Elevation Settings"
+      description: "Sun elevation settings controlling auto-shading"
+      icon: mdi:weather-sunny
+      collapsed: true
+      input:
+        default_sun_sensor:
+          name: ☀️ Sun Sensor
+          description:
+            Which sensors provides attributes with current azimuth and
+            elevation of sun. I strongly suggest to use sun.sun ([Sun integration](https://www.home-assistant.io/integrations/sun/)).
+            Please make sure that the integration is activated and provides the attributes.
+            This sensor is also used for sun protection / sunshade control. <br /><br
+            /> <ins>A few examples of threshold values:</ins> <ul> <li>+18° Astronomical
+            Dusk</li> <li>+12° Nautical Dusk</li> <li>+6° Dusk</li> <li>0° Sunrise/Sunset
+            (Default)</li> <li>-6° Civil Dawn</li> <li>-12° Nautical Dawn</li> <li>-18°
+            Astronomical Dawn/Night</li> </ul> <br />`Optional` / `Shading`
+          default: sun.sun
+          selector:
+            entity:
+              filter:
+                - domain:
+                    - sun
+              multiple: false
+        sun_time_duration:
+          name: ☀️ Sun Time Duration
+          description:
+            Defines the time to given sun sensor must be stay above/below
+            the thresholds.
+          default: 30
+          selector:
+            number:
+              min: 0.0
+              max: 600.0
+              mode: slider
+              step: 1.0
+              unit_of_measurement: seconds
+
+        min_azimuth:
+          name: "Minimum azimuth"
+          description: "Minimum azimuth of the sun when shading is necessary."
+          default: 0
+          selector:
+            number:
+              min: 0
+              max: 360
+
+        max_azimuth:
+          name: "Maximum azimuth"
+          description: "Maximum azimuth of the sun over which shading becomes unnecessary."
+          default: 360
+          selector:
+            number:
+              min: 0
+              max: 360
+
+        min_elevation:
+          name: "Minimum elevation"
+          description: "Minimum elevation angle of the sun when shading is necessary."
+          default: 0
+          selector:
+            number:
+              min: -180
+              max: 180
+
+        max_elevation:
+          name: "Maximum elevation"
+          description: "Maximum elevation angle of the sun over which shading becomes unnecessary."
+          default: 180
+          selector:
+            number:
+              min: -180
+              max: 180
+
+    feature_section:
+      name: "Automation Options"
+      description: "Core automation configuration"
+      icon: mdi:window-shutter-cog
+      collapsed: true
+      input:
+        is_enabled_input:
+          name: "Auto on/off"
+          description: "Input boolean to act as switch to disable cover automation."
+          selector:
+            entity:
+              filter:
+                domain: input_boolean
+
+        auto_options:
+          name: "Automation Options"
+          description: "Stuff"
+          default: [auto_up_enabled, auto_down_enabled, auto_shading_enabled]
+          selector:
+            select:
+              options:
+                - label: "🔼 - Enable generic automatic opening of the day in the morning"
+                  value: "auto_up_enabled"
+                - label: "🔻 - Enable generic automatic daily closing at the end of the day"
+                  value: "auto_down_enabled"
+                - label: "💨 - Enable ventilation mode - Sets to ventilation position when contact opened and shutter is at closed position"
+                  value: "auto_ventilate_enabled"
+                - label: "🥵 - Enable automatic sun protection / sunshade control (helper required)"
+                  value: "auto_shading_enabled"
+              multiple: true
+              custom_value: false
+              mode: list
+
+trigger_variables:
+  auto_options: !input auto_options
+
+  contact_sensor: !input contact_sensor
+  temperature_sensor: !input temperature_sensor
+  light_sensor: !input light_sensor
+  light_sensor_average: !input light_sensor_average
+
+  is_up_enabled: "{{ 'auto_up_enabled' in auto_options }}"
+  is_down_enabled: "{{ 'auto_down_enabled' in auto_options }}"
+  is_ventilation_enabled: "{{ 'auto_ventilate_enabled' in auto_options }}"
+  is_shading_enabled: "{{ 'auto_shading_enabled' in auto_options }}"
+
+  is_trigger_contact_opened_off_enabled: "{{ is_ventilation_enabled and contact_sensor != [] }}"
+  is_trigger_contact_opened_on_enabled: "{{ is_ventilation_enabled and contact_sensor != [] }}"
+
+  default_sun_sensor: !input default_sun_sensor
+
+  shading_azimuth_start: !input min_azimuth
+  shading_azimuth_end: !input max_azimuth
+  shading_sun_brightness_start: !input light_threshold
+  shading_elevation_min: !input min_elevation
+  shading_elevation_max: !input max_elevation
+  # TODO: Add shading_sun_brightness_end for hysteresis
+  # shading_sun_brightness_end: !input light_threshold
+
+triggers:
+  - trigger: time_pattern
+    minutes: /5
+
+  - trigger: state
+    entity_id:
+      - !input is_enabled_input
+
+  - trigger: template
+    value_template: "{{ is_trigger_contact_opened_off_enabled and is_state(contact_sensor, ['false', 'off']) }}"
+    id: "tid_contact_opened_off"
+    for:
+      seconds: 5 #!input contact_delay_trigger
+  - trigger: template
+    value_template: "{{ is_trigger_contact_opened_on_enabled and is_state(contact_sensor, ['true', 'on']) }}"
+    id: "tid_contact_opened_on"
+    for:
+      seconds: 5 #!input contact_delay_trigger
+  - trigger: template
+    value_template: >-
+      {{
+        state_attr(default_sun_sensor, 'azimuth') | float(default=shading_azimuth_start) > shading_azimuth_start and
+        state_attr(default_sun_sensor, 'azimuth') | float(default=shading_azimuth_end) < shading_azimuth_end and
+        state_attr(default_sun_sensor, 'elevation') | float(default=shading_elevation_min) > shading_elevation_min and
+        state_attr(default_sun_sensor, 'elevation') | float(default=shading_elevation_max) < shading_elevation_max
+      }}
+    enabled: "{{ is_shading_enabled and default_sun_sensor != [] }}"
+    id: t_shading_start_pending_1
+  - platform: template
+    value_template: "{{ states(light_sensor) | float(default=shading_sun_brightness_start) > shading_sun_brightness_start }}"
+    enabled: "{{ is_shading_enabled and light_sensor != [] }}"
+    id: t_shading_start_pending_2
+
+  - trigger: template
+    value_template: "{{ state_attr(default_sun_sensor, 'azimuth') | float(default=shading_azimuth_end) > shading_azimuth_end }}"
+    enabled: "{{ is_shading_enabled and default_sun_sensor != [] }}"
+    id: t_shading_end_pending_5
+
+variables:
+  contact_sensor: !input contact_sensor
+  time_up: !input time_up
+  time_down: !input time_down
+  light_threshold: !input light_threshold
+  light_threshold_average: !input light_threshold_average
+  light_threshold_cloudy: !input light_threshold_cloudy
+  light_threshold_average_cloudy: !input light_threshold_average_cloudy
+
+condition:
+  - condition: state
+    entity_id: !input is_enabled_input
+    state: "on"
+action:
+  - choose:
+      - alias: "Close for the night"
+        conditions:
+          - "{{ is_down_enabled }}"
+          - "{{ is_state(contact_sensor, ['false', 'off', 'unknown', 'unavailable']) if contact_sensor else True }}"
+          - condition: or
+            conditions:
+              - "{{ now() >= today_at(time_down) }}"
+              # This is wrong. Find out how to determine if earlier than tomorrow
+              # - "{{ now() < today_at(time_up) }}"
+              - alias: "After sunset"
+                condition: state
+                entity_id: sun.sun
+                state: below_horizon
+        sequence:
+          - action: cover.set_cover_position
+            data:
+              position: !input position_closed
+            target:
+              entity_id: !input cover_entity
+
+      - alias: "Daytime shading"
+        conditions:
+          - "{{ is_shading_enabled }}"
+          - alias: Daytime
+            condition: and
+            conditions:
+              - alias: "After sunrise before sunset"
+                condition: sun
+                before: sunset
+                after: sunrise
+              - alias: "After time_up and before time_down"
+                condition: and
+                conditions:
+                  - "{{ now() >= today_at(time_up) }}"
+                  - "{{ now() < today_at(time_down) }}"
+          - alias: Sun position
+            condition: and
+            conditions:
+              - condition: numeric_state
+                entity_id: sun.sun
+                attribute: azimuth
+                above: !input min_azimuth
+                below: !input max_azimuth
+              - condition: numeric_state
+                entity_id: sun.sun
+                attribute: elevation
+                above: !input min_elevation
+                below: !input max_elevation
+        sequence:
+          choose:
+            - alias: Cloudy or bad weather
+              conditions:
+                # https://openweathermap.org/weather-conditions
+                # More than 50% clouds or bad weather
+                - condition: not
+                  conditions:
+                    - condition: numeric_state
+                      entity_id: sensor.home_weather_code
+                      above: 803
+                      below: 804
+                - and:
+                    - "{{ light_sensor_average != [] }}"
+                    - "{{ not is_state(light_sensor_average, ['false', 'off', 'unknown', 'unavailable']) if light_sensor_average else True }}"
+                    - "{{ states(light_sensor_average) | int >= light_threshold_average_cloudy }}"
+                - and:
+                    - "{{ light_sensor != [] }}"
+                    - "{{ not is_state(light_sensor, ['false', 'off', 'unknown', 'unavailable']) if light_sensor else True }}"
+                    - "{{ states(light_sensor) | int >= light_threshold_cloudy }}"
+              sequence:
+                - action: cover.set_cover_position
+                  metadata: {}
+                  data:
+                    position: !input position_shade_light
+                  target:
+                    entity_id: !input cover_entity
+            - alias: Sunny
+              conditions:
+                # https://openweathermap.org/weather-conditions
+                # Clear, max broken clouds
+                - condition: numeric_state
+                  entity_id: sensor.home_weather_code
+                  above: 799
+                  below: 804
+                - "{{ not is_state(light_sensor_average, ['false', 'off', 'unknown', 'unavailable']) if light_sensor_average else True }}"
+                - "{{ not is_state(light_sensor, ['false', 'off', 'unknown', 'unavailable']) if light_sensor else True }}"
+                - "{{ states(light_sensor_average) | int >= light_threshold_average }}"
+                - "{{ states(light_sensor) | int >= light_threshold }}"
+              sequence:
+                if:
+                  - alias: Beschattung halb
+                    condition: and
+                    conditions:
+                      - "{{ not is_state(temperature_sensor, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
+                      - "{{ states(temperature_sensor) | int > int(states('input_number.autoshade_lower_bound')) }}"
+                      - "{{ states(temperature_sensor) | int < int(states('input_number.autoshade_medium_upper_bound')) }}"
+                then:
+                  - action: cover.set_cover_position
+                    metadata: {}
+                    data:
+                      position: !input position_shade_light
+                    target:
+                      entity_id: !input cover_entity
+                else:
+                  - alias: Beschattung
+                    condition: and
+                    conditions:
+                      - "{{ not is_state(temperature_sensor, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
+                      - "{{ states(temperature_sensor) | int > int(states('input_number.autoshade_lower_bound')) }}"
+                      - "{{ states(temperature_sensor) | int < int(states('input_number.autoshade_medium_upper_bound')) }}"
+                  - action: cover.set_cover_position
+                    metadata: {}
+                    data:
+                      position: !input position_shade
+                    target:
+                      entity_id: !input cover_entity
+          default:
+            - alias: "Lift shading"
+              sequence:
+                - action: cover.open_cover
+                  metadata: {}
+                  data: {}
+                  target:
+                    entity_id: !input cover_entity
+
+      - alias: "Ventilation"
+        conditions:
+          - condition: trigger
+            id: tid_contact_opened_on
+          - "{{ is_ventilation_enabled }}"
+          - "{{ state_attr(cover_entity, 'current_position') | int < position_ventilation }}"
+        sequence:
+          - action: cover.set_cover_position
+            metadata: {}
+            data:
+              position: !input position_ventilation
+            target:
+              entity_id: !input cover_entity
+
+      - alias: "Daytime opening"
+        conditions:
+          - "{{ is_up_enabled }}"
+          - condition: time
+            after: input_datetime.rollladen_nicht_offnen_bevor
+          - alias: "After sunrise"
+            condition: state
+            entity_id: sun.sun
+            state: above_horizon
+        sequence:
+          - action: cover.open_cover
+            metadata: {}
+            data: {}
+            target:
+              entity_id: !input cover_entity
+mode: single

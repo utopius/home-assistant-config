@@ -468,6 +468,12 @@
     device_id: fa501238ffe1263a7a8f875b64d39a75
     entity_id: 72065f9027d8f9aa65147bd1ec655e5b
     domain: light
+    enabled: false
+  - action: switch.toggle
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.a3_kuche_deckenleuchte_hmipw_drs8_00161d89937c60_ch6
   mode: single
 - id: '1665873414546'
   alias: Wohnzimmer Licht - Natürlich / aus

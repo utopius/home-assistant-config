@@ -2118,7 +2118,7 @@
   conditions: []
   actions:
   - if:
-    - type: is_present
+    - type: is_occupied
       condition: device
       device_id: 078562985dba0ce32fd2e9e428b6cbb9
       entity_id: 317bb2b669b0c5c43ea4e4f66f961404
@@ -2129,12 +2129,14 @@
       data: {}
       target:
         device_id: cb2da313efcea7f2670a416cb17d7a4e
+        entity_id: light.kuche_deckenleuchte
     else:
     - action: light.turn_off
       metadata: {}
       data: {}
       target:
         device_id: cb2da313efcea7f2670a416cb17d7a4e
+        entity_id: light.kuche_deckenleuchte
   mode: single
 - id: '1729541557810'
   alias: Fernseher Strom aus

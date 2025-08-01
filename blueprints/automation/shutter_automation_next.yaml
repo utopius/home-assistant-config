@@ -1,7 +1,7 @@
 # Inspired by and parts taken over from [Cover Control Automation (CCA)](https://github.com/hvorragend/ha-blueprints)
 
 blueprint:
-  name: "Cover automation"
+  name: "Cover control automation"
   description: "Open, close and shade automatically"
   domain: automation
   homeassistant:

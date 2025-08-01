@@ -1154,3 +1154,4 @@
       entity_only: true
     cover.ja2_nordseite_rollo_arbeiten_nord:
       entity_only: true
+  icon: mdi:roller-shade

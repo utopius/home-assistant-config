@@ -2695,7 +2695,7 @@
         id:
         - Printing
       sequence:
-      - action: notify.mobile_app_floris_pixel_6_pro
+      - action: notify.mobile_app_all
         metadata: {}
         data:
           title: Druckt...
@@ -2705,7 +2705,7 @@
         id:
         - Finished
       sequence:
-      - action: notify.mobile_app_floris_pixel_6_pro
+      - action: notify.mobile_app_all
         metadata: {}
         data:
           message: Drucker hat fertig gedruckt, Ausdruck liegt bereit.

@@ -1,7 +1,7 @@
 # Inspired by and parts taken over from [Cover Control Automation (CCA)](https://github.com/hvorragend/ha-blueprints)
 
 blueprint:
-  name: "Cover control automation"
+  name: "Cover automation (next)"
   description: "Open, close and shade automatically"
   domain: automation
   homeassistant:
@@ -64,14 +64,29 @@ blueprint:
       icon: mdi:window-shutter-settings
       collapsed: true
       input:
+        position_open:
+          name: "\U0001F53C Open Position"
+          description: What position should the cover be moved into when opening?
+          default: 100
+          selector:
+            number:
+              min: 0.0
+              max: 100.0
+              unit_of_measurement: "%"
+              step: 1.0
+              mode: slider
+
         position_closed:
           name: "\U0001F53B Closed position"
           description: "Cover position to use as 'closed' while ."
           default: 0
           selector:
             number:
-              min: 0
-              max: 100
+              min: 0.0
+              max: 100.0
+              unit_of_measurement: "%"
+              step: 1.0
+              mode: slider
 
         position_closed_temp_threshold:
           name: "\U0001F53B\U0001F321 Temperature threshold for 'Closed position'"
@@ -88,8 +103,11 @@ blueprint:
           default: 20
           selector:
             number:
-              min: 0
-              max: 100
+              min: 0.0
+              max: 100.0
+              unit_of_measurement: "%"
+              step: 1.0
+              mode: slider
 
         position_shade_light:
           name: "\U0001F975\U0001F324 Light shade positition"
@@ -97,8 +115,11 @@ blueprint:
           default: 50
           selector:
             number:
-              min: 0
-              max: 100
+              min: 0.0
+              max: 100.0
+              unit_of_measurement: "%"
+              step: 1.0
+              mode: slider
 
         position_ventilation:
           name: "\U0001F4A8 Ventilate position"
@@ -106,8 +127,11 @@ blueprint:
           default: 20
           selector:
             number:
-              min: 0
-              max: 100
+              min: 0.0
+              max: 100.0
+              unit_of_measurement: "%"
+              step: 1.0
+              mode: slider
 
         position_ventilation_night_time:
           name: "\U0001F4A8\U0001F303 Ventilate position for nighttime"
@@ -115,31 +139,115 @@ blueprint:
           default: 20
           selector:
             number:
-              min: 0
-              max: 100
-
+              min: 0.0
+              max: 100.0
+              unit_of_measurement: "%"
+              step: 1.0
+              mode: slider
     time_section:
-      name: "Time Control Configuration"
+      name: Time Control Configuration
       icon: mdi:clock-time-two-outline
       collapsed: true
       input:
-        time_up:
-          name: "🔼 Time For Drive Up"
-          description: >-
-            The time at which the cover may be opened.
-            The cover will be opened if <ins>AFTER</ins> this time the sun is above horizon.
-          default: "07:00:00"
+        time_up_early:
+          name: "\U0001F53C Time For Drive Up - Early On Workdays"
+          description:
+            "The earliest time at which the cover may be opened. The cover
+            will be opened if <ins>AFTER</ins> this time the defined brightness or
+            sun-elevation value is high enough. (**NOTE**: A resident must also be
+            awake if one is defined)."
+          default: 08:00:00
           selector:
             time: {}
-        time_down:
-          name: "🔻 Time For Drive Down"
-          description: >-
-            The time at which the cover may be closed.
-            The cover will be closed if <ins>AFTER</ins> this time <ins>OR </ins> the sun is below horizon.
-          default: "19:30:00"
+        time_up_early_non_workday:
+          name: "\U0001F53C Time For Drive Up - Early On Non-Workdays"
+          description: As directly above, but for non-workdays.
+          default: 08:30:00
           selector:
             time: {}
-
+        time_up_late:
+          name: "\U0001F53C Time For Drive Up - Late On Workdays"
+          description:
+            "The latest time at which the cover should be opened. If the
+            required brightness or sun-elevation value has <ins>NOT</ins> yet been
+            reached by this time, the cover will still be opened. (**NOTE**: If a
+            resident has been defined and the resident is still asleep, then the cover
+            will NOT be opened.)"
+          default: 09:00:00
+          selector:
+            time: {}
+        time_up_late_non_workday:
+          name: "\U0001F53C Time For Drive Up - Late On Non-Workdays"
+          description: As directly above, but for non-workdays.
+          default: 09:00:00
+          selector:
+            time: {}
+        time_down_early:
+          name: "\U0001F53B Time For Drive Down - Early On Workdays"
+          description:
+            The earliest time at which the cover may be closed. The cover
+            will be closed if <ins>AFTER</ins> this time the defined brightness or
+            sun-elevation value is low enough.
+          default: "16:00:00"
+          selector:
+            time: {}
+        time_down_early_non_workday:
+          name: "\U0001F53B Time For Drive Down - Early On Non-Workdays"
+          description: As directly above, but for non-workdays.
+          default: "16:00:00"
+          selector:
+            time: {}
+        time_down_late:
+          name: "\U0001F53B Time For Drive Down - Late On Workdays"
+          description:
+            The latest time at which the cover should be closed. If the
+            required brightness or sun-elevation value has <ins>NOT</ins> yet been
+            reached by this time, the cover will still be closed. <br /> Please do
+            not enter 0:00, because that would be the next day!
+          default: "22:00:00"
+          selector:
+            time: {}
+        time_down_late_non_workday:
+          name: "\U0001F53B Time For Drive Down - Late On Non-Workdays"
+          description:
+            As directly above, but for non-workdays. <br /> Please do not
+            enter 0:00, because that would be the next day!
+          default: "22:00:00"
+          selector:
+            time: {}
+        workday_sensor:
+          name: "\U0001F4BC Sensor For Workday Today"
+          description:
+            "It may be desired to open a cover at a different time on work
+            days than on non-work days. The corresponding binary sensor can be defined
+            here. If not set, the cover will open every time at time_up_early. <br
+            /><br /> I recommend using the [Workday integration](https://www.home-assistant.io/integrations/workday/).
+            <br /><br /> Example: `binary_sensor.workday_today` <br /><br />`Optional`"
+          default: []
+          selector:
+            entity:
+              filter:
+                - domain:
+                    - binary_sensor
+              multiple: false
+        workday_sensor_tomorrow:
+          name: "\U0001F4BC Sensor For Workday Tomorrow (only for closing)"
+          description:
+            "When <ins>closing</ins> the blinds, you have the option of
+            checking the times for tomorrow rather than the current day. This has
+            the advantage that you can <ins>close</ins> the blinds earlier if <ins>tomorrow</ins>
+            is a working day. This makes sense if, for example, there is school tomorrow
+            but today is actually still the weekend. But the child has to go to bed
+            earlier.<br /> If this field is not configured here, the normal working
+            day sensor is used. <br /><br /> I recommend using the [Workday integration](https://www.home-assistant.io/integrations/workday/).
+            <br /><br /> Example: `binary_sensor.workday_tomorrow` <br /><br />`Optional`"
+          default: []
+          selector:
+            entity:
+              filter:
+                - domain:
+                    - binary_sensor
+              multiple: false
     sun_section:
       name: "Sun Elevation Settings"
       description: "Sun elevation settings controlling auto-shading"
@@ -455,27 +563,24 @@ blueprint:
                   value: "auto_ventilate_enabled"
                 - label: "🥵 - Enable automatic sun protection / sunshade control"
                   value: "auto_shading_enabled"
+                - label: "\U0001F505 - Enable brightness control (in addition to daily opening and closing)"
+                  value: auto_brightness_enabled
               multiple: true
               custom_value: false
               mode: list
 
 trigger_variables:
+  # Input variables for use in conditions, etc.
   auto_options: !input auto_options
-
   contact_sensor: !input contact_sensor
-  temperature_sensor: !input temperature_sensor
-  light_sensor: !input light_sensor
-
+  default_sun_sensor: !input default_sun_sensor
+  default_brightness_sensor: !input default_brightness_sensor
+  is_brightness_enabled: '{{ ''auto_brightness_enabled'' in auto_options }}'
   is_up_enabled: "{{ 'auto_up_enabled' in auto_options }}"
   is_down_enabled: "{{ 'auto_down_enabled' in auto_options }}"
   is_ventilation_enabled: "{{ 'auto_ventilate_enabled' in auto_options }}"
   is_shading_enabled: "{{ 'auto_shading_enabled' in auto_options }}"
-
-  is_trigger_contact_opened_off_enabled: "{{ is_ventilation_enabled and contact_sensor != [] }}"
-  is_trigger_contact_opened_on_enabled: "{{ is_ventilation_enabled and contact_sensor != [] }}"
-
-  default_sun_sensor: !input default_sun_sensor
-
+  light_sensor: !input light_sensor
   shading_azimuth_start: !input min_azimuth
   shading_azimuth_end: !input max_azimuth
   shading_elevation_min: !input min_elevation
@@ -486,6 +591,22 @@ trigger_variables:
   shading_forecast_sensor: !input shading_forecast_sensor
   shading_forecast_type: !input shading_forecast_type
   shading_weather_conditions: !input shading_weather_conditions
+  temperature_sensor: !input temperature_sensor
+  time_up_early: !input time_up_early
+  time_up_early_non_workday: !input time_up_early_non_workday
+  time_up_late: !input time_up_late
+  time_up_late_non_workday: !input time_up_late_non_workday
+  time_down_early: !input time_down_early
+  time_down_early_non_workday: !input time_down_early_non_workday
+  time_down_late: !input time_down_late
+  time_down_late_non_workday: !input time_down_late_non_workday
+  workday_sensor_today: !input workday_sensor
+  workday_sensor_tomorrow: !input workday_sensor_tomorrow
+
+  # Variables for use in conditions, based on input
+  is_contact_sensor_defined: "{{ contact_sensor != none and contact_sensor != [] }}"
+  is_trigger_contact_opened_off_enabled: "{{ is_ventilation_enabled and is_contact_sensor_defined }}"
+  is_trigger_contact_opened_on_enabled: "{{ is_ventilation_enabled and is_contact_sensor_defined }}"
 
 triggers:
   - trigger: time_pattern
@@ -530,11 +651,18 @@ triggers:
     id: t_shading_end_pending_5
 
 variables:
+  blind: !input cover_entity
+  blind_entities: "{{ expand(blind) | map(attribute='entity_id') | list }}"
   # Input variables for use in conditions, etc.
+  brightness_up: !input brightness_up
+  brightness_down: !input brightness_down
   contact_sensor: !input contact_sensor
+  default_sun_sensor: !input default_sun_sensor
+  default_brightness_sensor: !input default_brightness_sensor
   light_sensor: !input light_sensor
-  time_up: !input time_up
-  time_down: !input time_down
+  lockout_protection_options: !input lockout_protection_options
+  lockout_protection_when_closing: "{{ 'lockout_protection_closing' in lockout_protection_options }}"
+  lockout_protection_when_shading_starts: "{{ 'lockout_protection_shading_start' in lockout_protection_options }}"
   shading_azimuth_start: !input min_azimuth
   shading_azimuth_end: !input max_azimuth
   shading_elevation_min: !input min_elevation
@@ -542,23 +670,39 @@ variables:
   shading_sun_brightness_start: !input light_threshold
   shading_sun_brightness_end: !input shading_sun_brightness_end
   shading_sun_brightness_start_cloudy: !input light_threshold_cloudy
+  temperature_sensor: !input temperature_sensor
+  time_up_early: !input time_up_early
+  time_up_early_non_workday: !input time_up_early_non_workday
+  time_up_late: !input time_up_late
+  time_up_late_non_workday: !input time_up_late_non_workday
+  time_down_early: !input time_down_early
+  time_down_early_non_workday: !input time_down_early_non_workday
+  time_down_late: !input time_down_late
+  time_down_late_non_workday: !input time_down_late_non_workday
+  position_open: !input position_open
   position_closed: !input position_closed
+  position_shade_light: !input position_shade_light
+  position_shade: !input position_shade
   position_ventilation_night_time: !input position_ventilation_night_time
 
-  lockout_protection_options: !input lockout_protection_options
-  lockout_protection_when_closing: "{{ 'lockout_protection_closing' in lockout_protection_options }}"
-  lockout_protection_when_shading_starts: "{{ 'lockout_protection_shading_start' in lockout_protection_options }}"
-  # lockout_tilted_when_shading_ends: '{{ ''lockout_protection_shading_end'' in lockout_tilted_options
-  #   }}'
-
-  # Variables for use in conditions, etc.
-  is_contact_sensor_open: "{{ is_state(contact_sensor, ['on']) if contact_sensor else True }}"
-
+  # Variables for use in conditions, based on input
+  is_contact_sensor_defined: "{{ contact_sensor != none and contact_sensor != [] }}"
+  is_default_brightness_sensor_defined: "{{ default_brightness_sensor != none and default_brightness_sensor != [] }}"
+  is_shading_brightness_sensor_defined: "{{ light_sensor != none and light_sensor != [] }}"
+  is_contact_sensor_open: "{{ is_state(contact_sensor, ['on']) if is_contact_sensor_defined else False }}"
+  is_today_off: "{{ workday_sensor_today != [] and is_state(workday_sensor_today, 'off') }}"
+  is_tomorrow_off: "{{ workday_sensor_tomorrow != [] and is_state(workday_sensor_tomorrow, 'off') }}"
+  is_tomorrow_on: "{{ workday_sensor_tomorrow != [] and is_state(workday_sensor_tomorrow, 'on') }}"
+  time_up_early_today: "{{ time_up_early_non_workday if is_today_off else time_up_early }}"
+  time_up_late_today: "{{ time_up_late_non_workday if is_today_off else time_up_late }}"
+  time_down_early_today: "{{ time_down_early_non_workday if is_tomorrow_off else time_down_early if is_tomorrow_on else time_down_early_non_workday if is_today_off else time_down_early }}"
+  time_down_late_today: "{{ time_down_late_non_workday if is_tomorrow_off else time_down_late if is_tomorrow_on else time_down_late_non_workday if is_today_off else time_down_late }}"
   position_nighttime: "{{ position_ventilation_night_time if is_contact_sensor_open else position_closed}}"
+  shading_position: "{{ position_shade }}"
 
   # Conditions
-  contact_sensor_exists_condition: "{{ contact_sensor != none and contact_sensor != [] }}"
-  shading_brightness_sensor_exists_condition: "{{ light_sensor != none and light_sensor != [] }}"
+  brighness_up_condition: '{{ is_brightness_enabled and is_default_brightness_sensor_defined and (states(default_brightness_sensor) | float(default=brightness_up) > brightness_up) }}'
+  brighness_down_condition: '{{ is_brightness_enabled and is_default_brightness_sensor_defined and (states(default_brightness_sensor) | float(default=brightness_down) < brightness_down) }}'
   sun_azimuth_is_in_range_condition: >-
     {{
       state_attr(default_sun_sensor, 'azimuth') | float(default=shading_azimuth_start) > shading_azimuth_start and
@@ -569,53 +713,75 @@ variables:
       state_attr(default_sun_sensor, 'elevation') | float(default=shading_elevation_min) > shading_elevation_min and
       state_attr(default_sun_sensor, 'elevation') | float(default=shading_elevation_max) < shading_elevation_max
     }}
-  lockout_protection_when_closing_condition: "{{ contact_sensor_exists_condition and not is_contact_sensor_open if lockout_protection_when_closing else True }}"
-  lockout_protection_when_shading_starts_condition: "{{ contact_sensor_exists_condition and not is_contact_sensor_open if lockout_protection_when_shading_starts  else True }}"
-  shading_start_condition: "{{ shading_brightness_sensor_exists_condition and states(light_sensor) | float(default=shading_sun_brightness_start) > shading_sun_brightness_start }}"
-  shading_start_cloudy_condition: "{{ shading_brightness_sensor_exists_condition and states(light_sensor) | float(default=shading_sun_brightness_start_cloudy) > shading_sun_brightness_start_cloudy }}"
-  shading_end_condition: "{{ shading_brightness_sensor_exists_condition and states(light_sensor) | float(default=shading_sun_brightness_end) < shading_sun_brightness_end }}"
-  shading_end_with_brightness_condition: "{{ shading_brightness_sensor_exists_condition and states(light_sensor) | float(default=shading_sun_brightness_end) < shading_sun_brightness_end }}"
-  prevent_forecast_service: "{{ 'weather_attributes' in shading_forecast_type }}"
-  shading_weather_forecast_condition: "{{ shading_forecast_sensor.startswith('weather.') and not prevent_forecast_service and weather_forecast is defined and weather_forecast[shading_forecast_sensor].forecast[0].condition in shading_weather_conditions }}"
+  lockout_protection_when_closing_condition: "{{ is_contact_sensor_defined and not is_contact_sensor_open if lockout_protection_when_closing else True }}"
+  lockout_protection_when_shading_starts_condition: "{{ is_contact_sensor_defined and not is_contact_sensor_open if lockout_protection_when_shading_starts  else True }}"
+  shading_weather_forecast_condition: "{{ shading_forecast_sensor == none or shading_forecast_sensor == [] or states(shading_forecast_sensor) in shading_weather_conditions }}"
+  shading_start_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_start) > shading_sun_brightness_start }}"
+  shading_start_cloudy_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_start_cloudy) > shading_sun_brightness_start_cloudy }}"
+  shading_end_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_end) < shading_sun_brightness_end }}"
+  shading_end_with_brightness_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_end) < shading_sun_brightness_end }}"
 
 condition:
   - condition: state
     entity_id: !input is_enabled_input
     state: "on"
-action:
+actions:
+  - variables:
+      cover_move_action: &id001
+        sequence:
+          - repeat:
+              for_each: "{{ blind_entities | list }}"
+              sequence:
+                - choose:
+                    - conditions:
+                        # - '{{ not prevent_default_cover_actions }}'
+                        - "{{ target_position | default(101)  == 0 }}"
+                      sequence:
+                        - alias: Close Cover
+                          action: cover.close_cover
+                          target:
+                            entity_id: "{{ repeat.item if repeat is defined else '' }}"
+                    - conditions:
+                        # - '{{ not prevent_default_cover_actions }}'
+                        - "{{ target_position | default(101) == 100 }}"
+                      sequence:
+                        - alias: Open Cover
+                          action: cover.open_cover
+                          target:
+                            entity_id: "{{ repeat.item if repeat is defined else '' }}"
+                    - conditions:
+                        # - '{{ not prevent_default_cover_actions }}'
+                        - "{{ target_position | default(101) not in [0, 100] }}"
+                      sequence:
+                        - alias: Moving the cover to target position
+                          action: cover.set_cover_position
+                          data:
+                            position: "{{ target_position | default(101) }}"
+                          target:
+                            entity_id: "{{ repeat.item if repeat is defined else '' }}"
+                - delay:
+                    seconds: "{{ (range(1, 3) | random | int) }}"
   - choose:
       - alias: "Close for the night"
         conditions:
-          - or:
-              - "{{ now() >= today_at(time_down) }}"
-              # This is wrong. Find out how to determine if earlier than tomorrow
-              # - "{{ now() < today_at(time_up) }}"
+          - and:
+            - "{{ is_down_enabled }}"
+            - "{{ lockout_protection_when_closing_condition }}"
+            - or:
+              - and:
+                - '{{ is_brightness_enabled }}'
+                - '{{ is_default_brightness_sensor_defined }}'
+                - "{{ now() >= today_at(time_down_early_today) }}"
+                - '{{ brighness_down_condition }}'
+              - "{{ now() >= today_at(time_down_late_today) }}"
               - alias: "After sunset"
                 condition: state
                 entity_id: sun.sun
                 state: below_horizon
         sequence:
-          choose:
-            - alias: Nightime ventilation
-              conditions:
-                - "{{ is_down_enabled }}"
-                - "{{ is_contact_sensor_open }}"
-              sequence:
-                - action: cover.set_cover_position
-                  data:
-                    position: !input position_ventilation_night_time
-                  target:
-                    entity_id: !input cover_entity
-            - alias: Nightime closed
-              conditions:
-                - "{{ is_down_enabled }}"
-                - "{{ lockout_protection_when_closing_condition }}"
-              sequence:
-                - action: cover.set_cover_position
-                  data:
-                    position: !input position_closed
-                  target:
-                    entity_id: !input cover_entity
+          - variables:
+              target_position: "{{ position_ventilation_night_time if is_contact_sensor_open else position_closed }}"
+          - *id001 # cover_move_action
 
       - alias: "Daytime shading"
         conditions:
@@ -627,11 +793,11 @@ action:
                 condition: sun
                 before: sunset
                 after: sunrise
-              - alias: "After time_up and before time_down"
+              - alias: "After time_up_late_today and before time_down_early_today"
                 condition: and
                 conditions:
-                  - "{{ now() >= today_at(time_up) }}"
-                  - "{{ now() < today_at(time_down) }}"
+                  - "{{ now() >= today_at(time_up_late_today) }}"
+                  - "{{ now() < today_at(time_down_early_today) }}"
           - alias: Sun position
             condition: and
             conditions:
@@ -641,7 +807,7 @@ action:
           choose:
             - alias: Light Sensor configured
               conditions:
-                - "{{ shading_brightness_sensor_exists_condition }}"
+                - "{{ is_shading_brightness_sensor_defined }}"
               sequence:
                 choose:
                   - alias: Cloudy or bad weather
@@ -660,12 +826,9 @@ action:
                       - "{{ shading_start_cloudy_condition }}"
                       - "{{ shading_weather_forecast_condition }}"
                     sequence:
-                      - action: cover.set_cover_position
-                        metadata: {}
-                        data:
-                          position: !input position_shade_light
-                        target:
-                          entity_id: !input cover_entity
+                      - variables:
+                          target_position: !input position_shade_light
+                      - *id001 # cover_move_action
                   - alias: Sunny
                     conditions:
                       # https://openweathermap.org/weather-conditions
@@ -687,69 +850,65 @@ action:
                             - "{{ states(temperature_sensor) | int > int(states('input_number.autoshade_lower_bound')) }}"
                             - "{{ states(temperature_sensor) | int < int(states('input_number.autoshade_medium_upper_bound')) }}"
                           sequence:
-                            - action: cover.set_cover_position
-                              metadata: {}
-                              data:
-                                position: !input position_shade_light
-                              target:
-                                entity_id: !input cover_entity
+                            - variables:
+                                target_position: !input position_shade_light
+                            - *id001 # cover_move_action
                         - alias: "Shade"
                           conditions:
                             - "{{ not is_state(temperature_sensor, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
                             - "{{ states(temperature_sensor) | int > int(states('input_number.autoshade_lower_bound')) }}"
                             - "{{ states(temperature_sensor) | int < int(states('input_number.autoshade_medium_upper_bound')) }}"
                           sequence:
-                            - action: cover.set_cover_position
-                              metadata: {}
-                              data:
-                                position: !input position_shade
-                              target:
-                                entity_id: !input cover_entity
+                            - variables:
+                                target_position: !input position_shade
+                            - *id001 # cover_move_action
                   - alias: "Lift shading"
                     conditions:
                       - "{{ is_shading_enabled }}"
                       - "{{ shading_end_condition }}"
                     sequence:
-                      - action: cover.open_cover
-                        metadata: {}
-                        data: {}
-                        target:
-                          entity_id: !input cover_entity
+                      - variables:
+                          target_position: '{{ position_open }}'
+                      - *id001 # cover_move_action
             - alias: "No light sensor (follow Azimuth)"
               conditions:
                 - "{{ lockout_protection_when_shading_starts_condition }}"
                 - "{{ sun_azimuth_is_in_range_condition }}"
                 - "{{ sun_elevation_is_in_range_condition }}"
+                - "{{ shading_weather_forecast_condition }}"
               sequence:
-                if:
-                  alias: "Weather conditions"
-                  condition: and
-                  conditions:
-                    - "{{ shading_weather_forecast_condition }}"
-                then:
-                  - action: cover.set_cover_position
-                    metadata: {}
-                    data:
-                      position: !input position_shade_light
-                    target:
-                      entity_id: !input cover_entity
-                # else:
-                #   - action: cover.open_cover
-                #     metadata: {}
-                #     data: {}
-                #     target:
-                #       entity_id: !input cover_entity
+                - variables:
+                    target_position: "{{ shading_position }}"
+                - *id001 # cover_move_action
+                  # if:
+                  #   alias: "Weather conditions"
+                  #   condition: and
+                  #   conditions:
+                  #     - "{{ shading_weather_forecast_condition }}"
+                  # then:
+                  #   - action: cover.set_cover_position
+                  #     metadata: {}
+                  #     data:
+                  #       position: !input position_shade_light
+                  #     target:
+                  #       entity_id: !input cover_entity
+                  # else:
+                  #   - action: cover.open_cover
+                  #     metadata: {}
+                  #     data: {}
+                  #     target:
+                  #       entity_id: !input cover_entity
 
       - alias: "Lift shading"
         conditions:
           - "{{ is_shading_enabled }}"
           - "{{ trigger.id | regex_match('^(t_shading_end_pending)') }}"
+          - "{{ now() >= today_at(time_up_late_today) }}"
+          - "{{ now() <= today_at(time_down_late_today) - timedelta(seconds = 5) }}"
         sequence:
-          - action: cover.open_cover
-            metadata: {}
-            data: {}
-            target:
-              entity_id: !input cover_entity
+          - variables:
+              target_position: "{{ position_open }}"
+          - *id001 # cover_move_action
 
       - alias: "Ventilation"
         conditions:
@@ -758,26 +917,30 @@ action:
           - "{{ is_ventilation_enabled }}"
           - "{{ state_attr(cover_entity, 'current_position') | int < position_ventilation }}"
         sequence:
-          - action: cover.set_cover_position
-            metadata: {}
-            data:
-              position: !input position_ventilation
-            target:
-              entity_id: !input cover_entity
+          - variables:
+              target_position: !input position_ventilation
+          - *id001 # cover_move_action
 
       - alias: "Daytime opening"
         conditions:
-          - "{{ is_up_enabled }}"
-          - condition: time
-            after: input_datetime.rollladen_nicht_offnen_bevor
-          - alias: "After sunrise"
-            condition: state
-            entity_id: sun.sun
-            state: above_horizon
+          - and:
+            - "{{ is_up_enabled }}"
+            - or:
+              - and:
+                - '{{ is_brightness_enabled }}'
+                - '{{ is_default_brightness_sensor_defined }}'
+                - '{{ brighness_up_condition }}'
+                - "{{ now() >= today_at(time_up_early_today) }}"
+                - "{{ now() < today_at(time_down_early_today) - timedelta(seconds = 5) }}"
+              - and:
+                - "{{ now() >= today_at(time_up_late_today) }}"
+                - "{{ now() < today_at(time_down_early_today) - timedelta(seconds = 5) }}"
+            - alias: "After sunrise"
+              condition: state
+              entity_id: sun.sun
+              state: above_horizon
         sequence:
-          - action: cover.open_cover
-            metadata: {}
-            data: {}
-            target:
-              entity_id: !input cover_entity
+          - variables:
+              target_position: "{{ position_open }}"
+          - *id001 # cover_move_action
 mode: single

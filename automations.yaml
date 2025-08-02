@@ -2040,7 +2040,7 @@
       light_threshold: 28000
       temperature_sensor: sensor.hmip_stho_000edd89b688b4_actual_temperature
       position_shade_light: 40
-      position_ventilation_night_time: 25
+      position_ventilation_night_time: 22
       auto_options:
       - auto_up_enabled
       - auto_down_enabled

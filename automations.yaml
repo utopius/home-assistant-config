@@ -3058,3 +3058,45 @@
       shading_sun_brightness_start: 20000
       shading_sun_brightness_end: 19000
       shading_forecast_temp: 25
+- id: '1754131028688'
+  alias: Robs - Behälter voll
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.robs_behalter_voll
+    to: 'on'
+  - trigger: time
+    at: '17:30:00'
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.robs_behalter_voll
+    state: 'on'
+  actions:
+  - action: notify.mobile_app_all
+    metadata: {}
+    data:
+      title: Robs ist voll
+      message: Robs Staubbehälter muss geleert werden
+  mode: single
+- id: '1754131069902'
+  alias: Robbie - Behälter voll
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.robbie_behalter_voll
+    to: 'on'
+  - trigger: time
+    at: '17:30:00'
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.robbie_behalter_voll
+    state: 'on'
+  actions:
+  - action: notify.mobile_app_all
+    metadata: {}
+    data:
+      title: Robbie ist voll
+      message: Robbies Staubbehälter muss geleert werden
+  mode: single

@@ -573,6 +573,7 @@ trigger_variables:
   # Input variables for use in conditions, etc.
   auto_options: !input auto_options
   contact_sensor: !input contact_sensor
+  cover_entity: !input cover_entity
   default_sun_sensor: !input default_sun_sensor
   default_brightness_sensor: !input default_brightness_sensor
   is_brightness_enabled: '{{ ''auto_brightness_enabled'' in auto_options }}'
@@ -651,12 +652,12 @@ triggers:
     id: t_shading_end_pending_5
 
 variables:
-  blind: !input cover_entity
-  blind_entities: "{{ expand(blind) | map(attribute='entity_id') | list }}"
   # Input variables for use in conditions, etc.
   brightness_up: !input brightness_up
   brightness_down: !input brightness_down
   contact_sensor: !input contact_sensor
+  cover_entity: !input cover_entity
+  cover_entities: "{{ expand(cover_entity) | map(attribute='entity_id') | list }}"
   default_sun_sensor: !input default_sun_sensor
   default_brightness_sensor: !input default_brightness_sensor
   light_sensor: !input light_sensor
@@ -730,7 +731,7 @@ actions:
       cover_move_action: &id001
         sequence:
           - repeat:
-              for_each: "{{ blind_entities | list }}"
+              for_each: "{{ cover_entities | list }}"
               sequence:
                 - choose:
                     - conditions:

@@ -684,6 +684,7 @@ variables:
   position_closed: !input position_closed
   position_shade_light: !input position_shade_light
   position_shade: !input position_shade
+  position_ventilation: !input position_ventilation
   position_ventilation_night_time: !input position_ventilation_night_time
 
   # Variables for use in conditions, based on input

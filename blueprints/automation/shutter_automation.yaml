@@ -789,24 +789,22 @@ actions:
 
       - alias: "Daytime shading"
         conditions:
-          - "{{ is_shading_enabled }}"
-          - alias: Daytime
-            condition: and
-            conditions:
-              - alias: "After sunrise before sunset"
-                condition: sun
-                before: sunset
-                after: sunrise
-              - alias: "After time_up_late_today and before time_down_early_today"
-                condition: and
-                conditions:
-                  - "{{ now() >= today_at(time_up_late_today) }}"
-                  - "{{ now() < today_at(time_down_early_today) }}"
-          - alias: Sun position
-            condition: and
-            conditions:
-              - "{{ sun_azimuth_is_in_range_condition }}"
-              - "{{ sun_elevation_is_in_range_condition }}"
+          - alias: "Shading enabled"
+            condition: template
+            value_template: "{{ is_shading_enabled }}"
+          - alias: "Sun is up"
+            condition: sun
+            before: sunset
+            after: sunrise
+          - alias: "Before time_down_early_today"
+            condition: template
+            value_template: "{{ now() < today_at(time_down_early_today) }}"
+          - alias: "Sun azimuth in range"
+            condition: template
+            value_template: "{{ sun_azimuth_is_in_range_condition }}"
+          - alias: "Sun elevation in range"
+            condition: template
+            value_template: "{{ sun_elevation_is_in_range_condition }}"
         sequence:
           choose:
             - alias: Light Sensor configured

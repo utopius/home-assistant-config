@@ -3191,3 +3191,43 @@
     target:
       entity_id: media_player.fernseher_elw
   mode: single
+- id: '1754938975836'
+  alias: 'Licht im Wohnbereich bei Dunkelheit '
+  description: ''
+  triggers:
+  - type: illuminance
+    device_id: cef7321c6cfc831d7f46a2e17b5bc400
+    entity_id: c92bd8f02b41826b3a03ca73c8980ff8
+    domain: sensor
+    trigger: device
+    below: 900
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+  conditions: []
+  actions:
+  - if:
+    - condition: state
+      entity_id: light.esszimmer
+      state: 'off'
+    then:
+    - action: scene.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: scene.esszimmer_naturliches_licht
+    alias: Esszimmer natürliches Licht
+  - if:
+    - condition: state
+      state: 'off'
+      entity_id: light.wohnzimmer
+    then:
+    - action: scene.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - scene.wohnzimmer_naturliches_licht
+    alias: Wohnzimmer natürliches Licht
+  mode: single

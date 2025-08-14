@@ -3156,3 +3156,38 @@
       title: Robbie ist voll
       message: Robbies Staubbehälter muss geleert werden
   mode: single
+- id: '1754834611840'
+  alias: Fernseher ELW - Lautstärke begrenzen
+  description: ''
+  triggers:
+  - trigger: numeric_state
+    entity_id:
+    - media_player.fernseher_elw
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+    attribute: volume_level
+    above: 24
+  - device_id: 8e1578ec55f8d2517ed250ca9b680172
+    domain: media_player
+    entity_id: 49f5916d757bc0f18edde53ce9d30961
+    type: turned_on
+    trigger: device
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+  conditions:
+  - condition: numeric_state
+    entity_id: media_player.fernseher_elw
+    attribute: volume_level
+    above: 0.24
+  actions:
+  - action: media_player.volume_set
+    metadata: {}
+    data:
+      volume_level: 0.22
+    target:
+      entity_id: media_player.fernseher_elw
+  mode: single

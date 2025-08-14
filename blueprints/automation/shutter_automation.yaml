@@ -691,6 +691,8 @@ variables:
   is_contact_sensor_defined: "{{ contact_sensor != none and contact_sensor != [] }}"
   is_default_brightness_sensor_defined: "{{ default_brightness_sensor != none and default_brightness_sensor != [] }}"
   is_shading_brightness_sensor_defined: "{{ light_sensor != none and light_sensor != [] }}"
+  is_temperature_sensor_defined: "{{ temperature_sensor!= none and temperature_sensor != [] }}"
+  is_temperature_sensor_available: "{{ is_temperature_sensor_defined and not is_state(temperature_sensor, ['false', 'off', 'unknown', 'unavailable']) }}"
   is_contact_sensor_open: "{{ is_state(contact_sensor, ['on']) if is_contact_sensor_defined else False }}"
   is_today_off: "{{ workday_sensor_today != [] and is_state(workday_sensor_today, 'off') }}"
   is_tomorrow_off: "{{ workday_sensor_tomorrow != [] and is_state(workday_sensor_tomorrow, 'off') }}"
@@ -846,22 +848,19 @@ actions:
                       choose:
                         - alias: "Shade light"
                           conditions:
-                            - "{{ not is_state(temperature_sensor, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
+                            - "{{ is_temperature_sensor_available }}"
                             - "{{ states(temperature_sensor) | int > int(states('input_number.autoshade_lower_bound')) }}"
                             - "{{ states(temperature_sensor) | int < int(states('input_number.autoshade_medium_upper_bound')) }}"
                           sequence:
                             - variables:
                                 target_position: !input position_shade_light
                             - *id001 # cover_move_action
-                        - alias: "Shade"
-                          conditions:
-                            - "{{ not is_state(temperature_sensor, ['false', 'off', 'unknown', 'unavailable']) if temperature_sensor else True }}"
-                            - "{{ states(temperature_sensor) | int > int(states('input_number.autoshade_lower_bound')) }}"
-                            - "{{ states(temperature_sensor) | int < int(states('input_number.autoshade_medium_upper_bound')) }}"
-                          sequence:
-                            - variables:
-                                target_position: !input position_shade
-                            - *id001 # cover_move_action
+                      default:
+                        alias: "Shade"
+                        sequence:
+                          - variables:
+                              target_position: !input position_shade
+                          - *id001 # cover_move_action
                   - alias: "Lift shading"
                     conditions:
                       - "{{ is_shading_enabled }}"

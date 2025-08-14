@@ -876,25 +876,7 @@ actions:
               sequence:
                 - variables:
                     target_position: "{{ shading_position }}"
-                - *id001 # cover_move_action
-                  # if:
-                  #   alias: "Weather conditions"
-                  #   condition: and
-                  #   conditions:
-                  #     - "{{ shading_weather_forecast_condition }}"
-                  # then:
-                  #   - action: cover.set_cover_position
-                  #     metadata: {}
-                  #     data:
-                  #       position: !input position_shade_light
-                  #     target:
-                  #       entity_id: !input cover_entity
-                  # else:
-                  #   - action: cover.open_cover
-                  #     metadata: {}
-                  #     data: {}
-                  #     target:
-                  #       entity_id: !input cover_entity
+                - *id001
 
       - alias: "Lift shading"
         conditions:

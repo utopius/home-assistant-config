@@ -819,7 +819,7 @@ actions:
                       - condition: numeric_state
                         entity_id: sensor.home_weather_code
                         above: 803
-                        below: 804
+                        below: 805
                       - "{{ lockout_protection_when_shading_starts_condition }}"
                       - "{{ sun_azimuth_is_in_range_condition }}"
                       - "{{ sun_elevation_is_in_range_condition }}"

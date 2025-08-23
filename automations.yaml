@@ -1999,15 +1999,14 @@
       position_closed: 25
       position_shade: 25
       shade_light_position: 50
-      min_azimuth: 79
+      min_azimuth: 95
       max_azimuth: 220
       contact_sensor: binary_sensor.fenster_marius_offnung
       position_ventilation: 25
       position_ventilation_night_time: 25
-      light_threshold: 27000
-      light_threshold_cloudy: 29000
-      shading_sun_brightness_end: 24000
-      temperature_sensor: sensor.hmip_stho_000edd89b688b4_actual_temperature
+      light_threshold: 28000
+      light_threshold_cloudy: 28000
+      shading_sun_brightness_end: 19000
       position_shade_light: 40
       auto_options:
       - auto_up_enabled
@@ -2020,9 +2019,15 @@
       shading_forecast_sensor: weather.forecast_home
       default_brightness_sensor: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
       brightness_up: 1500
-      brightness_down: 1000
+      brightness_down: 1100
       workday_sensor: binary_sensor.workday_today
       workday_sensor_tomorrow: binary_sensor.workday_tomorrow
+      time_up_early: 07:30:00
+      time_up_early_non_workday: 08:00:00
+      time_up_late: 08:30:00
+      time_down_late: '20:00:00'
+      time_down_late_non_workday: '20:15:00'
+      temperature_sensor: sensor.hmip_stho_000edd89b682a2_actual_temperature
 - id: '1727869150271'
   alias: Rollladen Luisa
   description: ''
@@ -2038,10 +2043,9 @@
       min_azimuth: 78
       max_azimuth: 214
       contact_sensor: binary_sensor.fenster_luisa_offnung
-      light_threshold: 27000
+      light_threshold: 28000
       light_threshold_cloudy: 29000
-      shading_sun_brightness_end: 24000
-      temperature_sensor: sensor.hmip_stho_000edd89b688b4_actual_temperature
+      shading_sun_brightness_end: 19000
       position_shade_light: 40
       position_ventilation: 25
       position_ventilation_night_time: 20
@@ -2061,6 +2065,10 @@
       - auto_shading_enabled
       - auto_ventilate_enabled
       - auto_brightness_enabled
+      time_up_early: 07:30:00
+      time_up_early_non_workday: 08:00:00
+      time_up_late: 08:30:00
+      temperature_sensor: sensor.hmip_stho_000edd89b682a2_actual_temperature
 - id: '1728243290605'
   alias: Rollladen Schlafzimmer
   description: ''
@@ -2070,7 +2078,7 @@
       cover_entity: cover.ja1_sudseite_rollo_schlafzimmer_hmipw_drbl4_00165d899fbad2_ch6
       light_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
       is_enabled_input: input_boolean.autorollo_schlafen
-      min_azimuth: 80
+      min_azimuth: 105
       max_azimuth: 225
       position_closed: 22
       position_shade: 22
@@ -2078,7 +2086,6 @@
       time_up: 08:00:00
       light_threshold_cloudy: 26000
       light_threshold: 28000
-      temperature_sensor: sensor.hmip_stho_000edd89b688b4_actual_temperature
       position_shade_light: 40
       position_ventilation_night_time: 22
       auto_options:
@@ -2087,25 +2094,30 @@
       - auto_shading_enabled
       - auto_ventilate_enabled
       - auto_brightness_enabled
-      shading_sun_brightness_end: 24000
+      shading_sun_brightness_end: 19000
       min_elevation: 15
       max_elevation: 90
       shading_forecast_sensor: weather.forecast_home
       workday_sensor: binary_sensor.workday_today
       workday_sensor_tomorrow: binary_sensor.workday_tomorrow
+      default_brightness_sensor: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+      brightness_up: 1500
+      brightness_down: 500
+      time_up_late: 08:30:00
+      temperature_sensor: sensor.hmip_stho_000edd89b682a2_actual_temperature
 - id: '1728244054431'
   alias: Rollladen Wohnzimmer Süd
   description: ''
   use_blueprint:
     path: shutter_automation.yaml
     input:
-      min_azimuth: 78
+      min_azimuth: 106
       max_azimuth: 230
       cover_entity: cover.ja1_sudseite_rollo_wohnzimmer_sud_hmipw_drbl4_00165d899fbad2_ch2
       light_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
       is_enabled_input: input_boolean.autorollo_wohnzimmer
-      position_closed: 20
-      position_shade: 20
+      position_closed: 15
+      position_shade: 15
       auto_options:
       - auto_down_enabled
       - auto_up_enabled
@@ -2114,14 +2126,19 @@
       - auto_brightness_enabled
       contact_sensor: binary_sensor.wohnzimmer_sud_offnung
       time_down: '21:00:00'
-      light_threshold: 27000
+      light_threshold: 28000
       light_threshold_cloudy: 28000
-      temperature_sensor: sensor.hmip_stho_000edd89b688b4_actual_temperature
       position_shade_light: 40
       min_elevation: 20
       max_elevation: 90
       shading_forecast_sensor: weather.forecast_home
       default_brightness_sensor: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+      brightness_down: 900
+      brightness_up: 1500
+      shading_sun_brightness_end: 19000
+      position_ventilation_night_time: 15
+      lockout_protection_options: []
+      temperature_sensor: sensor.hmip_stho_000edd89b682a2_actual_temperature
 - id: '1729020748250'
   alias: Marius Türöffner
   description: ''
@@ -2266,15 +2283,18 @@
       - auto_shading_enabled
       - auto_brightness_enabled
       time_down: '21:00:00'
-      light_threshold: 20000
+      light_threshold: 25000
       light_threshold_cloudy: 25000
       position_ventilation: 18
       position_shade_light: 80
       min_elevation: 15
       default_brightness_sensor: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
       brightness_up: 1500
-      brightness_down: 1100
+      brightness_down: 500
       shading_forecast_sensor: weather.forecast_home
+      shading_sun_brightness_end: 20000
+      lockout_protection_options:
+      - lockout_protection_closing
 - id: '1731253701677'
   alias: Rollladen Arbeiten Nord
   description: ''
@@ -2288,7 +2308,7 @@
       light_threshold_average: 13000
       light_threshold_cloudy: 10000
       light_threshold_average_cloudy: 9000
-      position_shade: 15
+      position_shade: 10
       position_ventilation: 20
       min_azimuth: 265
       min_elevation: 15
@@ -2300,16 +2320,16 @@
       - auto_shading_enabled
       - auto_ventilate_enabled
       - auto_brightness_enabled
-      position_ventilation_night_time: 8
-      lockout_protection_options:
-      - lockout_protection_closing
+      position_ventilation_night_time: 10
+      lockout_protection_options: []
       shading_forecast_sensor: weather.forecast_home
       workday_sensor: binary_sensor.workday_today
       workday_sensor_tomorrow: binary_sensor.workday_tomorrow
       shading_forecast_type: weather_attributes
       default_brightness_sensor: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
       brightness_down: 1100
-      brightness_up: 1500
+      brightness_up: 1650
+      position_closed: 0
 - id: '1731261097840'
   alias: Rollladen Küche
   description: ''
@@ -2335,8 +2355,10 @@
       max_azimuth: 300
       default_brightness_sensor: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
       brightness_up: 1500
-      brightness_down: 1100
+      brightness_down: 500
       shading_forecast_sensor: weather.forecast_home
+      workday_sensor: binary_sensor.workday_today
+      workday_sensor_tomorrow: binary_sensor.workday_tomorrow
 - id: '1731261313962'
   alias: Rollladen HWR
   description: ''
@@ -2360,7 +2382,7 @@
       max_elevation: 90
       default_brightness_sensor: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
       brightness_up: 1500
-      brightness_down: 1100
+      brightness_down: 500
       shading_forecast_sensor: weather.forecast_home
 - id: '1731261535822'
   alias: Rollladen Bad
@@ -2385,7 +2407,7 @@
       position_ventilation: 30
       default_brightness_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
       brightness_up: 1500
-      brightness_down: 1100
+      brightness_down: 500
       shading_forecast_sensor: weather.forecast_home
 - id: '1731847289123'
   alias: Schlafzimmerfenster
@@ -2428,10 +2450,10 @@
     input:
       cover_entity: cover.ja2_nordseite_rollo_arbeiten_west_hmipw_drbl4_00165d899fbab0_ch10
       light_threshold: 15000
-      light_threshold_cloudy: 10000
+      light_threshold_cloudy: 16000
       position_shade: 15
       position_shade_light: 15
-      min_azimuth: 230
+      min_azimuth: 225
       is_enabled_input: input_boolean.autorollo_arbeitszimmer_west
       time_down: '20:00:00'
       min_elevation: 28
@@ -2440,6 +2462,15 @@
       position_ventilation_night_time: 10
       max_elevation: 90
       shading_forecast_sensor: weather.forecast_home
+      default_brightness_sensor: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
+      brightness_up: 1500
+      brightness_down: 500
+      shading_sun_brightness_end: 12000
+      auto_options:
+      - auto_up_enabled
+      - auto_down_enabled
+      - auto_shading_enabled
+      - auto_brightness_enabled
 - id: '1733486362976'
   alias: Bad - Licht Bewegungsmelder
   description: Turns on lights

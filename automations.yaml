@@ -3078,7 +3078,7 @@
         type: press
   mode: restart
 - id: '1749223846650'
-  alias: Bewegung Abstellraum
+  alias: Pixel 6a Bewegung erkannt
   description: ''
   triggers:
   - type: motion

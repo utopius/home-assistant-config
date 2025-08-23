@@ -3236,7 +3236,8 @@
       target:
         entity_id: scene.esszimmer_naturliches_licht
     alias: Esszimmer natürliches Licht
-  - if:
+  - alias: Wohnzimmer natürliches Licht
+    if:
     - condition: state
       state: 'off'
       entity_id: light.wohnzimmer
@@ -3246,6 +3247,7 @@
       data: {}
       target:
         entity_id:
+        - scene.wohnzimmer_deckenleuchten_naturliches_licht
   mode: single
 - id: '1755371266194'
   alias: Roberta - Behälter voll

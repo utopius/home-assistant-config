@@ -3247,6 +3247,46 @@
       data: {}
       target:
         entity_id:
-        - scene.wohnzimmer_naturliches_licht
-    alias: Wohnzimmer natürliches Licht
+  mode: single
+- id: '1755371266194'
+  alias: Roberta - Behälter voll
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.roberta_behalter_voll
+    to: 'on'
+  - trigger: time
+    at: '17:30:00'
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.roberta_behalter_voll
+    state: 'on'
+  actions:
+  - action: notify.mobile_app_all
+    metadata: {}
+    data:
+      title: Roberta ist voll
+      message: Robertas Staubbehälter muss geleert werden
+  mode: single
+- id: '1755371392960'
+  alias: Robba - Behälter voll
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.robba_behalter_voll
+    to: 'on'
+  - trigger: time
+    at: '17:30:00'
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.robba_behalter_voll
+    state: 'on'
+  actions:
+  - action: notify.mobile_app_all
+    metadata: {}
+    data:
+      title: Robba ist voll
+      message: Robbas Staubbehälter muss geleert werden
   mode: single

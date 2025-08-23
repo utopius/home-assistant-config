@@ -1155,3 +1155,88 @@
     cover.ja2_nordseite_rollo_arbeiten_nord:
       entity_only: true
   icon: mdi:roller-shade
+- id: '1755329380227'
+  name: Lüften Südseite
+  entities:
+    cover.ja1_sudseite_rollo_wohnzimmer_sud_hmipw_drbl4_00165d899fbad2_ch2:
+      current_position: 100
+      interface_id: ccu.herbel.net-HmIP-RF
+      address: 00165D899FBAD2:2
+      model: HmIPW-DRBL4
+      value_state: valid
+      channel_position: 100
+      device_class: blind
+      friendly_name: Wohnzimmer Süd
+      supported_features: 15
+      state: open
+    cover.ja1_sudseite_rollo_kind_1_hmipw_drbl4_00165d899fbad2_ch14:
+      current_position: 100
+      interface_id: ccu.herbel.net-HmIP-RF
+      address: 00165D899FBAD2:14
+      model: HmIPW-DRBL4
+      value_state: valid
+      channel_position: 100
+      device_class: blind
+      friendly_name: Kind 1
+      supported_features: 15
+      state: open
+    cover.ja1_sudseite_rollo_kind_2_hmipw_drbl4_00165d899fbad2_ch10:
+      current_position: 100
+      interface_id: ccu.herbel.net-HmIP-RF
+      address: 00165D899FBAD2:10
+      model: HmIPW-DRBL4
+      value_state: valid
+      channel_position: 100
+      device_class: blind
+      friendly_name: Kind 2
+      supported_features: 15
+      state: open
+    cover.ja1_sudseite_rollo_schlafzimmer_hmipw_drbl4_00165d899fbad2_ch6:
+      current_position: 100
+      interface_id: ccu.herbel.net-HmIP-RF
+      address: 00165D899FBAD2:6
+      model: HmIPW-DRBL4
+      value_state: valid
+      channel_position: 100
+      device_class: blind
+      friendly_name: Schlafzimmer
+      supported_features: 15
+      state: open
+    input_boolean.autorollo_wohnzimmer:
+      editable: true
+      icon: mdi:window-shutter-auto
+      friendly_name: Wohnzimmer Süd Rollladensteuerung
+      state: 'off'
+    input_boolean.autorollo_schlafen:
+      editable: true
+      icon: mdi:window-shutter-auto
+      friendly_name: Schlafzimmer Rollladensteuerung
+      state: 'off'
+    input_boolean.autorollo_kind1:
+      editable: true
+      icon: mdi:window-shutter-auto
+      friendly_name: Kind 1 Rollladensteuerung
+      state: 'off'
+    input_boolean.autorollo_kind2:
+      editable: true
+      icon: mdi:window-shutter-auto
+      friendly_name: Kind 2 Rollladensteuerung
+      state: 'off'
+  icon: mdi:window-shutter-open
+  metadata:
+    cover.ja1_sudseite_rollo_wohnzimmer_sud_hmipw_drbl4_00165d899fbad2_ch2:
+      entity_only: true
+    cover.ja1_sudseite_rollo_kind_1_hmipw_drbl4_00165d899fbad2_ch14:
+      entity_only: true
+    cover.ja1_sudseite_rollo_kind_2_hmipw_drbl4_00165d899fbad2_ch10:
+      entity_only: true
+    cover.ja1_sudseite_rollo_schlafzimmer_hmipw_drbl4_00165d899fbad2_ch6:
+      entity_only: true
+    input_boolean.autorollo_wohnzimmer:
+      entity_only: true
+    input_boolean.autorollo_schlafen:
+      entity_only: true
+    input_boolean.autorollo_kind1:
+      entity_only: true
+    input_boolean.autorollo_kind2:
+      entity_only: true

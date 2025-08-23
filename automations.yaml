@@ -1463,15 +1463,34 @@
 - id: '1702935502624'
   alias: Haustür verriegeln
   description: ''
-  trigger:
+  triggers:
   - trigger: time
     at: '23:00:00'
-  condition: []
-  action:
+  conditions: []
+  actions:
   - device_id: 50cf2105fe9b900f7b0c6ecf6818cbcf
     domain: lock
     entity_id: 806b329c6b57dc53cd85c092d5bea544
     type: lock
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 30
+      milliseconds: 0
+  - if:
+    - condition: not
+      conditions:
+      - condition: device
+        device_id: 50cf2105fe9b900f7b0c6ecf6818cbcf
+        domain: lock
+        entity_id: 806b329c6b57dc53cd85c092d5bea544
+        type: is_locked
+    then:
+    - action: notify.mobile_app_all
+      metadata: {}
+      data:
+        message: Haustür konnte nicht verriegelt werden, bitte prüfen
+        title: Haustür nicht verriegelt
   mode: single
 - id: '1702935541728'
   alias: Haustür entriegeln

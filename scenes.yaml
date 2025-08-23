@@ -1240,3 +1240,36 @@
       entity_only: true
     input_boolean.autorollo_kind2:
       entity_only: true
+- id: '1755329438740'
+  name: Automatik Südseite
+  entities:
+    input_boolean.autorollo_wohnzimmer:
+      editable: true
+      icon: mdi:window-shutter-auto
+      friendly_name: Wohnzimmer Süd Rollladensteuerung
+      state: 'on'
+    input_boolean.autorollo_schlafen:
+      editable: true
+      icon: mdi:window-shutter-auto
+      friendly_name: Schlafzimmer Rollladensteuerung
+      state: 'on'
+    input_boolean.autorollo_kind1:
+      editable: true
+      icon: mdi:window-shutter-auto
+      friendly_name: Kind 1 Rollladensteuerung
+      state: 'on'
+    input_boolean.autorollo_kind2:
+      editable: true
+      icon: mdi:window-shutter-auto
+      friendly_name: Kind 2 Rollladensteuerung
+      state: 'on'
+  icon: mdi:window-shutter-auto
+  metadata:
+    input_boolean.autorollo_wohnzimmer:
+      entity_only: true
+    input_boolean.autorollo_schlafen:
+      entity_only: true
+    input_boolean.autorollo_kind1:
+      entity_only: true
+    input_boolean.autorollo_kind2:
+      entity_only: true

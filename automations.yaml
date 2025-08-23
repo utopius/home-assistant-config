@@ -2184,15 +2184,14 @@
       metadata: {}
       data: {}
       target:
-        device_id: cb2da313efcea7f2670a416cb17d7a4e
-        entity_id: light.kuche_deckenleuchte
+        entity_id:
+        - light.abstellraum
     else:
     - action: light.turn_off
       metadata: {}
       data: {}
       target:
-        device_id: cb2da313efcea7f2670a416cb17d7a4e
-        entity_id: light.kuche_deckenleuchte
+        entity_id: light.abstellraum
   mode: single
 - id: '1729541557810'
   alias: Fernseher Strom aus

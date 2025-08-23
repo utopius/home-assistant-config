@@ -429,16 +429,39 @@ blueprint:
               min: 0
               max: 360
         temperature_sensor:
-          name: "\U0001F975 Sun Shading Temperature Sensor 1 (eg. indoor)"
+          name: "\U0001F975 Sun Shading Temperature Sensor"
           description:
-            This is the main temperature sensor. (Here, for example, the
-            current indoor temperature can be used as a condition).
+            This is the outdoor temperature sensor.
           default: []
           selector:
             entity:
               filter:
                 domain: sensor
                 device_class: temperature
+        shading_min_temperature:
+          name: "\U0001F975 Sun Shading Temperature Sensor Minimum Value"
+          description: Minimum temperature for sensor above over which shading should
+            occur.
+          default: 20
+          selector:
+            number:
+              min: 0.0
+              max: 50.0
+              step: 0.1
+              mode: slider
+              unit_of_measurement: °C
+        shading_full_min_temperature:
+          name: "\U0001F975 Full Sun Shading Temperature Sensor Minimum Value"
+          description: Minimum temperature for sensor above over which full shading should
+            occur.
+          default: 24
+          selector:
+            number:
+              min: 0.0
+              max: 50.0
+              step: 0.1
+              mode: slider
+              unit_of_measurement: °C
         shading_forecast_sensor:
           name: "\U0001F975 Sun Shading (Forecast) Weather Sensor"
           description:
@@ -593,6 +616,8 @@ trigger_variables:
   shading_forecast_type: !input shading_forecast_type
   shading_weather_conditions: !input shading_weather_conditions
   temperature_sensor: !input temperature_sensor
+  shading_min_temperature: !input shading_min_temperature
+  shading_full_min_temperature: !input shading_full_min_temperature
   time_up_early: !input time_up_early
   time_up_early_non_workday: !input time_up_early_non_workday
   time_up_late: !input time_up_late
@@ -672,6 +697,8 @@ variables:
   shading_sun_brightness_end: !input shading_sun_brightness_end
   shading_sun_brightness_start_cloudy: !input light_threshold_cloudy
   temperature_sensor: !input temperature_sensor
+  shading_min_temperature: !input shading_min_temperature
+  shading_full_min_temperature: !input shading_full_min_temperature
   time_up_early: !input time_up_early
   time_up_early_non_workday: !input time_up_early_non_workday
   time_up_late: !input time_up_late
@@ -691,7 +718,7 @@ variables:
   is_contact_sensor_defined: "{{ contact_sensor != none and contact_sensor != [] }}"
   is_default_brightness_sensor_defined: "{{ default_brightness_sensor != none and default_brightness_sensor != [] }}"
   is_shading_brightness_sensor_defined: "{{ light_sensor != none and light_sensor != [] }}"
-  is_temperature_sensor_defined: "{{ temperature_sensor!= none and temperature_sensor != [] }}"
+  is_temperature_sensor_defined: "{{ temperature_sensor != none and temperature_sensor != [] }}"
   is_temperature_sensor_available: "{{ is_temperature_sensor_defined and not is_state(temperature_sensor, ['false', 'off', 'unknown', 'unavailable']) }}"
   is_contact_sensor_open: "{{ is_state(contact_sensor, ['on']) if is_contact_sensor_defined else False }}"
   is_today_off: "{{ workday_sensor_today != [] and is_state(workday_sensor_today, 'off') }}"
@@ -724,6 +751,8 @@ variables:
   shading_start_cloudy_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_start_cloudy) > shading_sun_brightness_start_cloudy }}"
   shading_end_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_end) < shading_sun_brightness_end }}"
   shading_end_with_brightness_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_end) < shading_sun_brightness_end }}"
+  shading_start_temperature_condition: "{{ is_temperature_sensor_defined and states(temperature_sensor) | float(default=shading_min_temperature) > shading_min_temperature }}"
+  shading_full_start_temperature_condition: "{{ is_temperature_sensor_defined and states(temperature_sensor) | float(default=shading_full_min_temperature) > shading_full_min_temperature }}"
 
 condition:
   - condition: state
@@ -823,8 +852,9 @@ actions:
                       - "{{ lockout_protection_when_shading_starts_condition }}"
                       - "{{ sun_azimuth_is_in_range_condition }}"
                       - "{{ sun_elevation_is_in_range_condition }}"
-                      - "{{ shading_start_cloudy_condition }}"
                       - "{{ shading_weather_forecast_condition }}"
+                      - "{{ shading_start_temperature_condition }}"
+                      - "{{ shading_start_cloudy_condition }}"
                     sequence:
                       - variables:
                           target_position: !input position_shade_light
@@ -840,24 +870,24 @@ actions:
                       - "{{ lockout_protection_when_shading_starts_condition }}"
                       - "{{ sun_azimuth_is_in_range_condition }}"
                       - "{{ sun_elevation_is_in_range_condition }}"
-                      - "{{ shading_start_condition }}"
                       - "{{ shading_weather_forecast_condition }}"
+                      - "{{ shading_start_temperature_condition }}"
+                      - "{{ shading_start_condition }}"
                     sequence:
                       choose:
-                        - alias: "Shade light"
+                        - alias: "Shade full"
                           conditions:
                             - "{{ is_temperature_sensor_available }}"
-                            - "{{ states(temperature_sensor) | int > int(states('input_number.autoshade_lower_bound')) }}"
-                            - "{{ states(temperature_sensor) | int < int(states('input_number.autoshade_medium_upper_bound')) }}"
+                            - "{{ shading_full_start_temperature_condition }}"
                           sequence:
                             - variables:
-                                target_position: !input position_shade_light
+                                target_position: !input position_shade
                             - *id001 # cover_move_action
                       default:
-                        alias: "Shade"
+                        alias: "Shade light"
                         sequence:
                           - variables:
-                              target_position: !input position_shade
+                              target_position: !input position_shade_light
                           - *id001 # cover_move_action
                   - alias: "Lift shading"
                     conditions:
@@ -873,6 +903,7 @@ actions:
                 - "{{ sun_azimuth_is_in_range_condition }}"
                 - "{{ sun_elevation_is_in_range_condition }}"
                 - "{{ shading_weather_forecast_condition }}"
+                - "{{ shading_start_temperature_condition }}"
               sequence:
                 - variables:
                     target_position: "{{ shading_position }}"

@@ -100,7 +100,7 @@ blueprint:
         position_shade:
           name: "\U0001F975 Shade position"
           description: "Cover position to use for shading."
-          default: 20
+          default: 18
           selector:
             number:
               min: 0.0

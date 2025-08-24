@@ -442,7 +442,7 @@ blueprint:
           name: "\U0001F975 Sun Shading Temperature Sensor Minimum Value"
           description: Minimum temperature for sensor above over which shading should
             occur.
-          default: 20
+          default: 18
           selector:
             number:
               min: 0.0

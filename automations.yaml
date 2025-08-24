@@ -1998,7 +1998,6 @@
       is_enabled_input: input_boolean.autorollo_kind2
       position_closed: 25
       position_shade: 25
-      shade_light_position: 50
       min_azimuth: 95
       max_azimuth: 220
       contact_sensor: binary_sensor.fenster_marius_offnung
@@ -2007,7 +2006,6 @@
       light_threshold: 28000
       light_threshold_cloudy: 28000
       shading_sun_brightness_end: 19000
-      position_shade_light: 40
       auto_options:
       - auto_up_enabled
       - auto_down_enabled
@@ -2039,14 +2037,12 @@
       is_enabled_input: input_boolean.autorollo_kind1
       position_closed: 20
       position_shade: 25
-      shade_light_position: 20
       min_azimuth: 78
       max_azimuth: 214
       contact_sensor: binary_sensor.fenster_luisa_offnung
       light_threshold: 28000
       light_threshold_cloudy: 29000
       shading_sun_brightness_end: 19000
-      position_shade_light: 40
       position_ventilation: 25
       position_ventilation_night_time: 20
       min_elevation: 15
@@ -2086,7 +2082,6 @@
       time_up: 08:00:00
       light_threshold_cloudy: 26000
       light_threshold: 28000
-      position_shade_light: 40
       position_ventilation_night_time: 22
       auto_options:
       - auto_up_enabled
@@ -2128,7 +2123,6 @@
       time_down: '21:00:00'
       light_threshold: 28000
       light_threshold_cloudy: 28000
-      position_shade_light: 40
       min_elevation: 20
       max_elevation: 90
       shading_forecast_sensor: weather.forecast_home
@@ -2350,7 +2344,6 @@
       light_threshold_cloudy: 25000
       contact_sensor: binary_sensor.kuchenfenster
       position_ventilation: 25
-      position_shade_light: 50
       min_elevation: 16
       max_azimuth: 300
       default_brightness_sensor: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke

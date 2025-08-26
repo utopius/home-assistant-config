@@ -100,7 +100,7 @@ blueprint:
         position_shade:
           name: "\U0001F975 Shade position"
           description: "Cover position to use for shading."
-          default: 20
+          default: 18
           selector:
             number:
               min: 0.0
@@ -442,7 +442,7 @@ blueprint:
           name: "\U0001F975 Sun Shading Temperature Sensor Minimum Value"
           description: Minimum temperature for sensor above over which shading should
             occur.
-          default: 18
+          default: 20
           selector:
             number:
               min: 0.0
@@ -713,7 +713,9 @@ variables:
   position_shade: !input position_shade
   position_ventilation: !input position_ventilation
   position_ventilation_night_time: !input position_ventilation_night_time
-
+  current_position: "{{ state_attr(cover_entity, 'current_position') | float }}"
+  position_tolerance: "{{ 2 }}"
+  in_closed_position: "{% set min = position_closed - position_tolerance %} {% set max = position_closed + position_tolerance %} {{ (current_position >= min and current_position <= max) }}"
   # Variables for use in conditions, based on input
   is_contact_sensor_defined: "{{ contact_sensor != none and contact_sensor != [] }}"
   is_default_brightness_sensor_defined: "{{ default_brightness_sensor != none and default_brightness_sensor != [] }}"
@@ -749,11 +751,10 @@ variables:
   shading_weather_forecast_condition: "{{ shading_forecast_sensor == none or shading_forecast_sensor == [] or states(shading_forecast_sensor) in shading_weather_conditions }}"
   shading_start_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_start) > shading_sun_brightness_start }}"
   shading_start_cloudy_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_start_cloudy) > shading_sun_brightness_start_cloudy }}"
-  shading_end_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_end) < shading_sun_brightness_end }}"
-  shading_end_with_brightness_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_end) < shading_sun_brightness_end }}"
   shading_start_temperature_condition: "{{ is_temperature_sensor_defined and states(temperature_sensor) | float(default=shading_min_temperature) > shading_min_temperature }}"
   shading_full_start_temperature_condition: "{{ is_temperature_sensor_defined and states(temperature_sensor) | float(default=shading_full_min_temperature) > shading_full_min_temperature }}"
-
+  shading_brightness_end_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_end) < shading_sun_brightness_end }}"
+  weather_cloudy: "{{ state_attr(shading_forecast_sensor, 'cloud_coverage') | float > 50}}"
 condition:
   - condition: state
     entity_id: !input is_enabled_input
@@ -816,105 +817,73 @@ actions:
               target_position: "{{ position_ventilation_night_time if is_contact_sensor_open else position_closed }}"
           - *id001 # cover_move_action
 
-      - alias: "Daytime shading"
+      - alias: "Start shading"
         conditions:
-          - alias: "Shading enabled"
-            condition: template
-            value_template: "{{ is_shading_enabled }}"
-          - alias: "Sun is up"
-            condition: sun
-            before: sunset
-            after: sunrise
-          - alias: "Before time_down_early_today"
-            condition: template
-            value_template: "{{ now() < today_at(time_down_early_today) }}"
-          - alias: "Sun azimuth in range"
-            condition: template
-            value_template: "{{ sun_azimuth_is_in_range_condition }}"
-          - alias: "Sun elevation in range"
-            condition: template
-            value_template: "{{ sun_elevation_is_in_range_condition }}"
+          - alias: "Preconditions"
+            and:
+            - value_template: "{{ is_shading_enabled }}"
+              condition: template
+              alias: "Auto-shading is enabled"
+            - condition: sun
+              before: sunset
+              after: sunrise
+              alias: "Sun is up"
+            # - value_template: "{{ now() < today_at(time_down_early_today) }}"
+            #   condition: template
+            #   alias: "Before time_down_early_today"
+            - value_template: "{{ sun_elevation_is_in_range_condition }}"
+              condition: template
+              alias: "Sun elevation in range" 
+            - value_template: "{{ sun_azimuth_is_in_range_condition }}"
+              condition: template
+              alias: "Sun azimuth in range"
+            - value_template: "{{ shading_weather_forecast_condition }}"
+              condition: template
+              alias: "Weather conditions met"
+            - value_template: "{{ lockout_protection_when_shading_starts_condition }}"
+              condition: template
+              alias: "Lockout protection"
+            - value_template: "{{ shading_start_temperature_condition }}"
+              condition: template
+              alias: "Min temperature met"
+          - alias: "Not closed already"
+            and:
+              - "{{ not in_closed_position }}"
+          - alias: "Are brightness conditions met"
+            or:
+            - alias: "No brightness sensor"
+              condition: template
+              value_template: "{{ not is_shading_brightness_sensor_defined }}"
+            - alias: "Sunny brightness conditions"
+              and:
+              - "{{ is_shading_brightness_sensor_defined }}"
+              - "{{ states(shading_forecast_sensor) in ['sunny', 'partlycloudy'] }}"
+              - "{{ is_shading_brightness_sensor_defined }}"
+              - "{{ shading_start_condition }}"
+            - alias: "Cloudy brightness conditions"
+              and:
+              - "{{ is_shading_brightness_sensor_defined }}"
+              - "{{ states(shading_forecast_sensor) in ['cloudy'] }}"
+              - "{{ weather_cloudy }}"
+              - "{{ is_shading_brightness_sensor_defined }}"
+              - "{{ shading_start_cloudy_condition }}"
         sequence:
-          choose:
-            - alias: Light Sensor configured
-              conditions:
-                - "{{ is_shading_brightness_sensor_defined }}"
-              sequence:
-                choose:
-                  - alias: Cloudy or bad weather
-                    conditions:
-                      # https://openweathermap.org/weather-conditions
-                      # More than 50% clouds or bad weather
-                      - condition: numeric_state
-                        entity_id: sensor.home_weather_code
-                        above: 803
-                        below: 805
-                      - "{{ lockout_protection_when_shading_starts_condition }}"
-                      - "{{ sun_azimuth_is_in_range_condition }}"
-                      - "{{ sun_elevation_is_in_range_condition }}"
-                      - "{{ shading_weather_forecast_condition }}"
-                      - "{{ shading_start_temperature_condition }}"
-                      - "{{ shading_start_cloudy_condition }}"
-                    sequence:
-                      - variables:
-                          target_position: !input position_shade_light
-                      - *id001 # cover_move_action
-                  - alias: Sunny
-                    conditions:
-                      # https://openweathermap.org/weather-conditions
-                      # Clear, max broken clouds
-                      - condition: numeric_state
-                        entity_id: sensor.home_weather_code
-                        above: 799
-                        below: 804
-                      - "{{ lockout_protection_when_shading_starts_condition }}"
-                      - "{{ sun_azimuth_is_in_range_condition }}"
-                      - "{{ sun_elevation_is_in_range_condition }}"
-                      - "{{ shading_weather_forecast_condition }}"
-                      - "{{ shading_start_temperature_condition }}"
-                      - "{{ shading_start_condition }}"
-                    sequence:
-                      choose:
-                        - alias: "Shade full"
-                          conditions:
-                            - "{{ is_temperature_sensor_available }}"
-                            - "{{ shading_full_start_temperature_condition }}"
-                          sequence:
-                            - variables:
-                                target_position: !input position_shade
-                            - *id001 # cover_move_action
-                      default:
-                        alias: "Shade light"
-                        sequence:
-                          - variables:
-                              target_position: !input position_shade_light
-                          - *id001 # cover_move_action
-                  - alias: "Lift shading"
-                    conditions:
-                      - "{{ is_shading_enabled }}"
-                      - "{{ shading_end_condition }}"
-                    sequence:
-                      - variables:
-                          target_position: '{{ position_open }}'
-                      - *id001 # cover_move_action
-            - alias: "No light sensor (follow Azimuth)"
-              conditions:
-                - "{{ lockout_protection_when_shading_starts_condition }}"
-                - "{{ sun_azimuth_is_in_range_condition }}"
-                - "{{ sun_elevation_is_in_range_condition }}"
-                - "{{ shading_weather_forecast_condition }}"
-                - "{{ shading_start_temperature_condition }}"
-              sequence:
-                - variables:
-                    target_position: "{{ shading_position }}"
-                - *id001
+          - variables:
+              target_position: "{{ position_shade if is_temperature_sensor_available and shading_full_start_temperature_condition else position_shade_light }}"
+          - *id001 # cover_move_action
 
       - alias: "Lift shading"
         conditions:
-          - "{{ is_shading_enabled }}"
-          - "{{ trigger.id | regex_match('^(t_shading_end_pending)') }}"
-          - "{{ now() >= today_at(time_up_late_today) }}"
-          - "{{ now() <= today_at(time_down_late_today) - timedelta(seconds = 5) }}"
+          - value_template: "{{ is_shading_enabled }}"
+            condition: template
+            alias: "Auto-shading is enabled"
+          - alias: "Are shading conditions lifted"
+            or:
+            - "{{ trigger.id | regex_match('^(t_shading_end_pending)') }}"
+            - "{{ shading_brightness_end_condition }}"
+            - "{{ not sun_azimuth_is_in_range_condition }}"
+            - "{{ not sun_elevation_is_in_range_condition }}"
+            - "{{ not shading_weather_forecast_condition }}"
         sequence:
           - variables:
               target_position: "{{ position_open }}"

@@ -1991,7 +1991,7 @@
   alias: Rollladen Marius
   description: ''
   use_blueprint:
-    path: shutter_automation.yaml
+    path: shutter_automation_next.yaml
     input:
       cover_entity: cover.ja1_sudseite_rollo_kind_2_hmipw_drbl4_00165d899fbad2_ch10
       light_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
@@ -2030,7 +2030,7 @@
   alias: Rollladen Luisa
   description: ''
   use_blueprint:
-    path: shutter_automation.yaml
+    path: shutter_automation_next.yaml
     input:
       cover_entity: cover.ja1_sudseite_rollo_kind_1_hmipw_drbl4_00165d899fbad2_ch14
       light_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
@@ -2069,7 +2069,7 @@
   alias: Rollladen Schlafzimmer
   description: ''
   use_blueprint:
-    path: shutter_automation.yaml
+    path: shutter_automation_next.yaml
     input:
       cover_entity: cover.ja1_sudseite_rollo_schlafzimmer_hmipw_drbl4_00165d899fbad2_ch6
       light_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
@@ -2104,7 +2104,7 @@
   alias: Rollladen Wohnzimmer Süd
   description: ''
   use_blueprint:
-    path: shutter_automation.yaml
+    path: shutter_automation_next.yaml
     input:
       min_azimuth: 106
       max_azimuth: 230

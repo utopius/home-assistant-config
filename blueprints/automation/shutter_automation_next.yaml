@@ -365,6 +365,18 @@ blueprint:
       icon: mdi:shield-sun-outline
       collapsed: true
       input:
+        minimum_brightness_for_shading:
+          name: "\U0001F975 Minimum Brightness To Consider Shading"
+          description:
+            "The minimum brightness value from the default brightness sensor to at least consider shading."
+          default: 9000
+          selector:
+            number:
+              min: 0.0
+              max: 100000.0
+              unit_of_measurement: lx
+              step: 1.0
+              mode: slider
         light_sensor:
           name: Brightness Sensor For Sun Shading
           default:
@@ -631,6 +643,7 @@ trigger_variables:
   shading_azimuth_end: !input max_azimuth
   shading_elevation_min: !input min_elevation
   shading_elevation_max: !input max_elevation
+  minimum_brightness_for_shading: !input minimum_brightness_for_shading
   shading_sun_brightness_start: !input light_threshold
   shading_sun_brightness_end: !input shading_sun_brightness_end
   shading_sun_brightness_start_cloudy: !input light_threshold_cloudy
@@ -717,6 +730,7 @@ variables:
   shading_azimuth_end: !input max_azimuth
   shading_elevation_min: !input min_elevation
   shading_elevation_max: !input max_elevation
+  minimum_brightness_for_shading: !input minimum_brightness_for_shading
   shading_sun_brightness_start: !input light_threshold
   shading_sun_brightness_end: !input shading_sun_brightness_end
   shading_sun_brightness_start_cloudy: !input light_threshold_cloudy
@@ -745,6 +759,7 @@ variables:
   # Variables for use in conditions, based on input
   is_contact_sensor_defined: "{{ contact_sensor != none and contact_sensor != [] }}"
   is_default_brightness_sensor_defined: "{{ default_brightness_sensor != none and default_brightness_sensor != [] }}"
+  is_default_brightness_sensor_available: "{{ is_default_brightness_sensor_defined != none and not is_state(default_brightness_sensor, ['false', 'off', 'unknown', 'unavailable']) }}"
   is_shading_brightness_sensor_defined: "{{ light_sensor != none and light_sensor != [] }}"
   is_temperature_sensor_inside_defined: "{{ temperature_sensor_inside != none and temperature_sensor_inside != [] }}"
   is_temperature_sensor_inside_available: "{{ is_temperature_sensor_inside_defined and not is_state(temperature_sensor_inside, ['false', 'off', 'unknown', 'unavailable']) }}"
@@ -779,6 +794,7 @@ variables:
   lockout_protection_when_closing_condition: "{{ is_contact_sensor_defined and not is_contact_sensor_open if lockout_protection_when_closing else True }}"
   lockout_protection_when_shading_starts_condition: "{{ is_contact_sensor_defined and not is_contact_sensor_open if lockout_protection_when_shading_starts  else True }}"
   shading_weather_forecast_condition: "{{ shading_forecast_sensor == none or shading_forecast_sensor == [] or states(shading_forecast_sensor) in shading_weather_conditions }}"
+  shading_minimum_brightness_condition: "{{ is_default_brightness_sensor_available and states(default_brightness_sensor) | float(default=minimum_brightness_for_shading) > minimum_brightness_for_shading }}"
   shading_start_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_start) > shading_sun_brightness_start }}"
   shading_start_cloudy_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_start_cloudy) > shading_sun_brightness_start_cloudy }}"
   shading_start_temperature_condition: "{{ is_temperature_sensor_outside_defined and states(temperature_sensor_outside) | float(default=shading_min_temperature_outside) > shading_min_temperature_outside }}"
@@ -870,6 +886,12 @@ actions:
             - value_template: "{{ shading_weather_forecast_condition }}"
               condition: template
               alias: "Weather conditions met"
+            - alias: "Minimum brightness from default brightness sensor"
+              or:
+                - value_template: "{{ not is_default_brightness_sensor_available }}"
+                  condition: template
+                - value_template: "{{ shading_minimum_brightness_condition }}"
+                  condition: template
             - value_template: "{{ lockout_protection_when_shading_starts_condition }}"
               condition: template
               alias: "Lockout protection"

@@ -428,8 +428,8 @@ blueprint:
             number:
               min: 0
               max: 360
-        temperature_sensor:
-          name: "\U0001F975 Sun Shading Temperature Sensor"
+        temperature_sensor_inside:
+          name: "\U0001F975 Sun Shading Temperature Sensor (inside)"
           description:
             This is the outdoor temperature sensor.
           default: []
@@ -438,7 +438,29 @@ blueprint:
               filter:
                 domain: sensor
                 device_class: temperature
-        shading_min_temperature:
+        shading_min_temperature_inside:
+          name: "\U0001F975 Sun Shading Temperature Sensor Minimum Value (Inside)"
+          description: Minimum temperature for sensor above over which shading should
+            occur. Overrides outside min temperature.
+          default: 22
+          selector:
+            number:
+              min: 0.0
+              max: 50.0
+              step: 0.1
+              mode: slider
+              unit_of_measurement: °C
+        temperature_sensor_outside:
+          name: "\U0001F975 Sun Shading Temperature Sensor (outdoor)"
+          description:
+            This is the outdoor temperature sensor.
+          default: []
+          selector:
+            entity:
+              filter:
+                domain: sensor
+                device_class: temperature
+        shading_min_temperature_outside:
           name: "\U0001F975 Sun Shading Temperature Sensor Minimum Value"
           description: Minimum temperature for sensor above over which shading should
             occur.
@@ -450,7 +472,7 @@ blueprint:
               step: 0.1
               mode: slider
               unit_of_measurement: °C
-        shading_full_min_temperature:
+        shading_full_min_temperature_outside:
           name: "\U0001F975 Full Sun Shading Temperature Sensor Minimum Value"
           description: Minimum temperature for sensor above over which full shading should
             occur.
@@ -615,9 +637,11 @@ trigger_variables:
   shading_forecast_sensor: !input shading_forecast_sensor
   shading_forecast_type: !input shading_forecast_type
   shading_weather_conditions: !input shading_weather_conditions
-  temperature_sensor: !input temperature_sensor
-  shading_min_temperature: !input shading_min_temperature
-  shading_full_min_temperature: !input shading_full_min_temperature
+  temperature_sensor_inside: !input temperature_sensor_inside
+  shading_min_temperature_inside: !input shading_min_temperature_inside
+  temperature_sensor_outside: !input temperature_sensor_outside
+  shading_min_temperature_outside: !input shading_min_temperature_outside
+  shading_full_min_temperature_outside: !input shading_full_min_temperature_outside
   time_up_early: !input time_up_early
   time_up_early_non_workday: !input time_up_early_non_workday
   time_up_late: !input time_up_late
@@ -696,9 +720,11 @@ variables:
   shading_sun_brightness_start: !input light_threshold
   shading_sun_brightness_end: !input shading_sun_brightness_end
   shading_sun_brightness_start_cloudy: !input light_threshold_cloudy
-  temperature_sensor: !input temperature_sensor
-  shading_min_temperature: !input shading_min_temperature
-  shading_full_min_temperature: !input shading_full_min_temperature
+  temperature_sensor_inside: !input temperature_sensor_inside
+  shading_min_temperature_inside: !input shading_min_temperature_inside
+  temperature_sensor_outside: !input temperature_sensor_outside
+  shading_min_temperature_outside: !input shading_min_temperature_outside
+  shading_full_min_temperature_outside: !input shading_full_min_temperature_outside
   time_up_early: !input time_up_early
   time_up_early_non_workday: !input time_up_early_non_workday
   time_up_late: !input time_up_late
@@ -720,8 +746,10 @@ variables:
   is_contact_sensor_defined: "{{ contact_sensor != none and contact_sensor != [] }}"
   is_default_brightness_sensor_defined: "{{ default_brightness_sensor != none and default_brightness_sensor != [] }}"
   is_shading_brightness_sensor_defined: "{{ light_sensor != none and light_sensor != [] }}"
-  is_temperature_sensor_defined: "{{ temperature_sensor != none and temperature_sensor != [] }}"
-  is_temperature_sensor_available: "{{ is_temperature_sensor_defined and not is_state(temperature_sensor, ['false', 'off', 'unknown', 'unavailable']) }}"
+  is_temperature_sensor_inside_defined: "{{ temperature_sensor_inside != none and temperature_sensor_inside != [] }}"
+  is_temperature_sensor_inside_available: "{{ is_temperature_sensor_inside_defined and not is_state(temperature_sensor_inside, ['false', 'off', 'unknown', 'unavailable']) }}"
+  is_temperature_sensor_outside_defined: "{{ temperature_sensor_outside != none and temperature_sensor_outside != [] }}"
+  is_temperature_sensor_outside_available: "{{ is_temperature_sensor_outside_defined and not is_state(temperature_sensor_outside, ['false', 'off', 'unknown', 'unavailable']) }}"
   is_contact_sensor_open: "{{ is_state(contact_sensor, ['on']) if is_contact_sensor_defined else False }}"
   is_today_off: "{{ workday_sensor_today != [] and is_state(workday_sensor_today, 'off') }}"
   is_tomorrow_off: "{{ workday_sensor_tomorrow != [] and is_state(workday_sensor_tomorrow, 'off') }}"
@@ -732,6 +760,8 @@ variables:
   time_down_late_today: "{{ time_down_late_non_workday if is_tomorrow_off else time_down_late if is_tomorrow_on else time_down_late_non_workday if is_today_off else time_down_late }}"
   position_nighttime: "{{ position_ventilation_night_time if is_contact_sensor_open else position_closed}}"
   shading_position: "{{ position_shade }}"
+  shading_start_inside_temp_high_enough: "{{ is_temperature_sensor_inside_available and states(temperature_sensor_inside) | float(default=shading_min_temperature_inside) > shading_min_temperature_inside }}"
+  shading_start_outside_temp_high_enough: "{{ is_temperature_sensor_outside_available and states(temperature_sensor_outside) | float(default=shading_min_temperature_outside) > shading_min_temperature_outside }}"
 
   # Conditions
   brighness_up_condition: '{{ is_brightness_enabled and is_default_brightness_sensor_defined and (states(default_brightness_sensor) | float(default=brightness_up) > brightness_up) }}'
@@ -751,8 +781,8 @@ variables:
   shading_weather_forecast_condition: "{{ shading_forecast_sensor == none or shading_forecast_sensor == [] or states(shading_forecast_sensor) in shading_weather_conditions }}"
   shading_start_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_start) > shading_sun_brightness_start }}"
   shading_start_cloudy_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_start_cloudy) > shading_sun_brightness_start_cloudy }}"
-  shading_start_temperature_condition: "{{ is_temperature_sensor_defined and states(temperature_sensor) | float(default=shading_min_temperature) > shading_min_temperature }}"
-  shading_full_start_temperature_condition: "{{ is_temperature_sensor_defined and states(temperature_sensor) | float(default=shading_full_min_temperature) > shading_full_min_temperature }}"
+  shading_start_temperature_condition: "{{ is_temperature_sensor_outside_defined and states(temperature_sensor_outside) | float(default=shading_min_temperature_outside) > shading_min_temperature_outside }}"
+  shading_full_start_temperature_condition: "{{ is_temperature_sensor_outside_defined and states(temperature_sensor_outside) | float(default=shading_full_min_temperature_outside) > shading_full_min_temperature_outside }}"
   shading_brightness_end_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_end) < shading_sun_brightness_end }}"
   weather_cloudy: "{{ state_attr(shading_forecast_sensor, 'cloud_coverage') | float > 50}}"
 condition:
@@ -843,9 +873,20 @@ actions:
             - value_template: "{{ lockout_protection_when_shading_starts_condition }}"
               condition: template
               alias: "Lockout protection"
-            - value_template: "{{ shading_start_temperature_condition }}"
-              condition: template
-              alias: "Min temperature met"
+          - alias: "Temperature conditions"
+            or:
+              - and:
+                - "{{ is_temperature_sensor_inside_defined }}"
+                - "{{ is_temperature_sensor_outside_defined }}"
+                - or:
+                  - "{{ shading_start_inside_temp_high_enough }}"
+                  - "{{ shading_start_outside_temp_high_enough }}"
+              - and:
+                - "{{ is_temperature_sensor_inside_defined and not is_temperature_sensor_outside_defined }}"
+                - "{{ shading_start_inside_temp_high_enough }}"
+              - and:
+                - "{{ is_temperature_sensor_outside_defined and not is_temperature_sensor_inside_defined }}"
+                - "{{ shading_start_outside_temp_high_enough }}"
           - alias: "Not closed already"
             and:
               - "{{ not in_closed_position }}"
@@ -869,7 +910,7 @@ actions:
               - "{{ shading_start_cloudy_condition }}"
         sequence:
           - variables:
-              target_position: "{{ position_shade if is_temperature_sensor_available and shading_full_start_temperature_condition else position_shade_light }}"
+              target_position: "{{ position_shade if is_temperature_sensor_outside_available and shading_full_start_temperature_condition else position_shade_light }}"
           - *id001 # cover_move_action
 
       - alias: "Lift shading"

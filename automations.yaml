@@ -2025,7 +2025,8 @@
       time_up_late: 08:30:00
       time_down_late: '20:00:00'
       time_down_late_non_workday: '20:15:00'
-      temperature_sensor: sensor.hmip_stho_000edd89b682a2_actual_temperature
+      temperature_sensor_outside: sensor.hmip_stho_000edd89b682a2_actual_temperature
+      temperature_sensor_inside: sensor.raumthermostat_kind_2_actual_temperature
 - id: '1727869150271'
   alias: Rollladen Luisa
   description: ''
@@ -2064,7 +2065,8 @@
       time_up_early: 07:30:00
       time_up_early_non_workday: 08:00:00
       time_up_late: 08:30:00
-      temperature_sensor: sensor.hmip_stho_000edd89b682a2_actual_temperature
+      temperature_sensor_inside: sensor.raumthermostat_kind_1_actual_temperature
+      temperature_sensor_outside: sensor.hmip_stho_000edd89b682a2_actual_temperature
 - id: '1728243290605'
   alias: Rollladen Schlafzimmer
   description: ''
@@ -2100,6 +2102,8 @@
       brightness_down: 500
       time_up_late: 08:30:00
       temperature_sensor: sensor.hmip_stho_000edd89b682a2_actual_temperature
+      temperature_sensor_inside: sensor.raumthermostat_schlafzimmer_actual_temperature
+      temperature_sensor_outside: sensor.hmip_stho_000edd89b682a2_actual_temperature
 - id: '1728244054431'
   alias: Rollladen Wohnzimmer Süd
   description: ''
@@ -2133,6 +2137,8 @@
       position_ventilation_night_time: 15
       lockout_protection_options: []
       temperature_sensor: sensor.hmip_stho_000edd89b682a2_actual_temperature
+      temperature_sensor_outside: sensor.hmip_stho_000edd89b682a2_actual_temperature
+      temperature_sensor_inside: sensor.ug_technikraum_hmip_sthd_000e9be9a452b8_actual_temperature
 - id: '1729020748250'
   alias: Marius Türöffner
   description: ''
@@ -2289,6 +2295,8 @@
       shading_sun_brightness_end: 20000
       lockout_protection_options:
       - lockout_protection_closing
+      temperature_sensor_outside: sensor.hmip_stho_000edd89b682a2_actual_temperature
+      temperature_sensor_inside: sensor.raumthermostat_esszimmer_actual_temperature
 - id: '1731253701677'
   alias: Rollladen Arbeiten Nord
   description: ''
@@ -2324,6 +2332,8 @@
       brightness_down: 1100
       brightness_up: 1650
       position_closed: 0
+      temperature_sensor_outside: sensor.hmip_stho_000edd89b682a2_actual_temperature
+      temperature_sensor_inside: sensor.arbeitszimmer_raumthermostat_actual_temperature
 - id: '1731261097840'
   alias: Rollladen Küche
   description: ''
@@ -2352,6 +2362,8 @@
       shading_forecast_sensor: weather.forecast_home
       workday_sensor: binary_sensor.workday_today
       workday_sensor_tomorrow: binary_sensor.workday_tomorrow
+      temperature_sensor_inside: sensor.raumthermostat_kuche_actual_temperature
+      temperature_sensor_outside: sensor.hmip_stho_000edd89b682a2_actual_temperature
 - id: '1731261313962'
   alias: Rollladen HWR
   description: ''
@@ -2377,6 +2389,8 @@
       brightness_up: 1500
       brightness_down: 500
       shading_forecast_sensor: weather.forecast_home
+      temperature_sensor_inside: sensor.raumthermostat_hwr_actual_temperature
+      temperature_sensor_outside: sensor.hmip_stho_000edd89b682a2_actual_temperature
 - id: '1731261535822'
   alias: Rollladen Bad
   description: ''
@@ -2402,6 +2416,8 @@
       brightness_up: 1500
       brightness_down: 500
       shading_forecast_sensor: weather.forecast_home
+      temperature_sensor_inside: sensor.bad_raumthermostat_actual_temperature
+      temperature_sensor_outside: sensor.hmip_stho_000edd89b682a2_actual_temperature
 - id: '1731847289123'
   alias: Schlafzimmerfenster
   description: ''
@@ -2464,6 +2480,8 @@
       - auto_down_enabled
       - auto_shading_enabled
       - auto_brightness_enabled
+      temperature_sensor_inside: sensor.arbeitszimmer_raumthermostat_actual_temperature
+      temperature_sensor_outside: sensor.hmip_stho_000edd89b682a2_actual_temperature
 - id: '1733486362976'
   alias: Bad - Licht Bewegungsmelder
   description: Turns on lights

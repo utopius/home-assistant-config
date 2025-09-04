@@ -948,6 +948,10 @@ actions:
           - value_template: "{{ now() >= today_at(time_up_late_today) }}"
             condition: template
             alias: "After drive-up period"
+          - alias: "Not triggered by contact open"
+            not:
+            - condition: trigger
+              id: tid_contact_opened_on
           - alias: "Are shading conditions lifted"
             or:
             - "{{ trigger.id | regex_match('^(t_shading_end_pending)') }}"

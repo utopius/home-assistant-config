@@ -1465,7 +1465,7 @@
   description: ''
   triggers:
   - trigger: time
-    at: '23:00:00'
+    at: '23:45:00'
   conditions: []
   actions:
   - device_id: 50cf2105fe9b900f7b0c6ecf6818cbcf
@@ -1478,19 +1478,26 @@
       seconds: 30
       milliseconds: 0
   - if:
-    - condition: not
+    - condition: or
       conditions:
-      - condition: device
-        device_id: 50cf2105fe9b900f7b0c6ecf6818cbcf
-        domain: lock
-        entity_id: 806b329c6b57dc53cd85c092d5bea544
-        type: is_locked
+      - condition: not
+        conditions:
+        - condition: device
+          device_id: 50cf2105fe9b900f7b0c6ecf6818cbcf
+          domain: lock
+          entity_id: 806b329c6b57dc53cd85c092d5bea544
+          type: is_locked
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.e4_ch18
+          state: 'on'
     then:
     - action: notify.mobile_app_all
       metadata: {}
       data:
-        message: Haustür konnte nicht verriegelt werden, bitte prüfen
-        title: Haustür nicht verriegelt
+        message: Haustür konnte nicht korrekt verriegelt werden, bitte prüfen
+        title: Haustür nicht korrekt verriegelt
   mode: single
 - id: '1702935541728'
   alias: Haustür entriegeln

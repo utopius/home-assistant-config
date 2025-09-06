@@ -646,7 +646,7 @@ trigger_variables:
   cover_entity: !input cover_entity
   default_sun_sensor: !input default_sun_sensor
   default_brightness_sensor: !input default_brightness_sensor
-  is_brightness_enabled: '{{ ''auto_brightness_enabled'' in auto_options }}'
+  is_brightness_enabled: "{{ 'auto_brightness_enabled' in auto_options }}"
   is_up_enabled: "{{ 'auto_up_enabled' in auto_options }}"
   is_down_enabled: "{{ 'auto_down_enabled' in auto_options }}"
   is_ventilation_enabled: "{{ 'auto_ventilate_enabled' in auto_options }}"
@@ -683,6 +683,11 @@ trigger_variables:
   is_contact_sensor_defined: "{{ contact_sensor != none and contact_sensor != [] }}"
   is_trigger_contact_opened_off_enabled: "{{ is_ventilation_enabled and is_contact_sensor_defined }}"
   is_trigger_contact_opened_on_enabled: "{{ is_ventilation_enabled and is_contact_sensor_defined }}"
+  # is_contact_sensor_defined: "{{ contact_sensor != none and contact_sensor != [] }}"
+  is_default_brightness_sensor_defined: "{{ default_brightness_sensor != none and default_brightness_sensor != [] }}"
+  is_shading_brightness_sensor_defined: "{{ light_sensor != none and light_sensor != [] }}"
+  is_temperature_sensor_inside_defined: "{{ temperature_sensor_inside != none and temperature_sensor_inside != [] }}"
+  is_temperature_sensor_outside_defined: "{{ temperature_sensor_outside != none and temperature_sensor_outside != [] }}"
 
 triggers:
   - trigger: time_pattern
@@ -702,27 +707,66 @@ triggers:
     id: "tid_contact_opened_on"
     for:
       seconds: !input contact_delay_trigger
+  # Shading start triggers
   - trigger: template
     value_template: >-
       {{
+        is_shading_enabled and default_sun_sensor != none and default_sun_sensor != [] and
         state_attr(default_sun_sensor, 'azimuth') | float(default=shading_azimuth_start) > shading_azimuth_start and
         state_attr(default_sun_sensor, 'azimuth') | float(default=shading_azimuth_end) < shading_azimuth_end and
         state_attr(default_sun_sensor, 'elevation') | float(default=shading_elevation_min) > shading_elevation_min and
         state_attr(default_sun_sensor, 'elevation') | float(default=shading_elevation_max) < shading_elevation_max
       }}
-    enabled: "{{ is_shading_enabled and default_sun_sensor != [] }}"
+    enabled: True
     id: t_shading_start_pending_1
   - trigger: template
-    value_template: "{{ light_sensor != none and light_sensor != [] and states(light_sensor) | float(default=shading_sun_brightness_start) > shading_sun_brightness_start }}"
-    enabled: "{{ is_shading_enabled and light_sensor != [] }}"
+    value_template: >-
+      {{ 
+        is_shading_enabled and light_sensor != none and light_sensor != [] and
+        states(light_sensor) | float(default=shading_sun_brightness_start) > shading_sun_brightness_start 
+      }}
+    enabled: True
     id: t_shading_start_pending_2
-
   - trigger: template
-    value_template: "{{ light_sensor != none and light_sensor != [] and states(light_sensor) | float(default=shading_sun_brightness_end) < shading_sun_brightness_end }}"
+    value_template: >-
+      {{
+        is_shading_enabled and temperature_sensor_inside != none and temperature_sensor_inside != [] and
+        states(temperature_sensor_inside) | float(default=shading_min_temperature_inside) > shading_min_temperature_inside 
+      }}
+    enabled: True
+    id: t_shading_start_pending_3
+  - trigger: template
+    value_template: >-
+      {{
+        is_shading_enabled and temperature_sensor_outside != none and temperature_sensor_outside != [] and
+        states(temperature_sensor_outside) | float(default=shading_min_temperature_outside) > shading_min_temperature_outside 
+      }}
+    enabled: True
+    id: t_shading_start_pending_4
+  - trigger: template
+    value_template: >-
+      {{
+        is_shading_enabled and shading_forecast_sensor != none and shading_forecast_sensor != [] and
+        states(shading_forecast_sensor) in shading_weather_conditions
+      }}
+    enabled: True
+    id: t_shading_start_pending_5
+
+  # Shading end triggers
+  - trigger: template
+    value_template: >-
+      {{
+        is_shading_enabled and light_sensor != none and light_sensor != [] and
+        states(light_sensor) | float(default=shading_sun_brightness_end) < shading_sun_brightness_end 
+      }}
     enabled: "{{ is_shading_enabled and light_sensor != [] }}"
     id: t_shading_end_pending_2
   - trigger: template
-    value_template: "{{ state_attr(default_sun_sensor, 'azimuth') | float(default=shading_azimuth_end) > shading_azimuth_end }}"
+    value_template: >-
+      {{ 
+        is_shading_enabled and default_sun_sensor != none and default_sun_sensor != [] and
+        state_attr(default_sun_sensor, 'azimuth') | float(default=shading_azimuth_end) > shading_azimuth_end
+      }}
     enabled: "{{ is_shading_enabled and default_sun_sensor != [] }}"
     id: t_shading_end_pending_5
 
@@ -771,14 +815,9 @@ variables:
   position_tolerance: "{{ 2 }}"
   in_closed_position: "{% set min = position_closed - position_tolerance %} {% set max = position_closed + position_tolerance %} {{ (current_position >= min and current_position <= max) }}"
   # Variables for use in conditions, based on input
-  is_contact_sensor_defined: "{{ contact_sensor != none and contact_sensor != [] }}"
-  is_default_brightness_sensor_defined: "{{ default_brightness_sensor != none and default_brightness_sensor != [] }}"
   is_default_brightness_sensor_available: "{{ is_default_brightness_sensor_defined != none and not is_state(default_brightness_sensor, ['false', 'off', 'unknown', 'unavailable']) }}"
-  is_shading_brightness_sensor_defined: "{{ light_sensor != none and light_sensor != [] }}"
   is_shading_brightness_sensor_available: "{{ is_shading_brightness_sensor_defined and not is_state(light_sensor, ['false', 'off', 'unknown', 'unavailable']) }}"
-  is_temperature_sensor_inside_defined: "{{ temperature_sensor_inside != none and temperature_sensor_inside != [] }}"
   is_temperature_sensor_inside_available: "{{ is_temperature_sensor_inside_defined and not is_state(temperature_sensor_inside, ['false', 'off', 'unknown', 'unavailable']) }}"
-  is_temperature_sensor_outside_defined: "{{ temperature_sensor_outside != none and temperature_sensor_outside != [] }}"
   is_temperature_sensor_outside_available: "{{ is_temperature_sensor_outside_defined and not is_state(temperature_sensor_outside, ['false', 'off', 'unknown', 'unavailable']) }}"
   is_contact_sensor_open: "{{ is_state(contact_sensor, ['on']) if is_contact_sensor_defined else False }}"
   is_today_off: "{{ workday_sensor_today != [] and is_state(workday_sensor_today, 'off') }}"
@@ -792,11 +831,23 @@ variables:
   shading_position: "{{ position_shade }}"
   shading_start_inside_temp_high_enough: "{{ is_temperature_sensor_inside_available and states(temperature_sensor_inside) | float(default=shading_min_temperature_inside) > shading_min_temperature_inside }}"
   shading_start_outside_temp_high_enough: "{{ is_temperature_sensor_outside_available and states(temperature_sensor_outside) | float(default=shading_min_temperature_outside) > shading_min_temperature_outside }}"
-  time_for_drive_up: "{% set min = today_at(time_up_late_today) - timedelta(minutes = 5) %} {% set max = today_at(time_up_late_today) + timedelta(minutes = 5) %} {% set now = now() %}{{ (now >= min and now <= max) }}"
 
   # Conditions
-  brightness_up_condition: '{{ is_brightness_enabled and is_default_brightness_sensor_defined and (states(default_brightness_sensor) | float(default=brightness_up) > brightness_up) }}'
-  brightness_down_condition: '{{ is_brightness_enabled and is_default_brightness_sensor_defined and (states(default_brightness_sensor) | float(default=brightness_down) < brightness_down) }}'
+  brightness_up_condition: >-
+    {{
+      is_brightness_enabled and is_default_brightness_sensor_available and
+      (states(default_brightness_sensor) | float(default=brightness_up) > brightness_up)
+    }}
+  brightness_up_in_time_range_condition: >-
+    {{
+      now() >= today_at(time_up_early_today) and
+      now() <= today_at(time_up_late_today)
+    }}
+  brightness_down_condition: >- 
+    {{
+      is_brightness_enabled and is_default_brightness_sensor_available and
+      (states(default_brightness_sensor) | float(default=brightness_down) < brightness_down)
+    }}
   sun_azimuth_is_in_range_condition: >-
     {{
       state_attr(default_sun_sensor, 'azimuth') | float(default=shading_azimuth_start) > shading_azimuth_start and
@@ -817,12 +868,23 @@ variables:
   shading_full_start_brightness_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_start_full_shading) > shading_sun_brightness_start_full_shading }}"
   shading_full_start_temperature_condition: "{{ is_temperature_sensor_outside_available and states(temperature_sensor_outside) | float(default=shading_full_min_temperature_outside) > shading_full_min_temperature_outside }}"
   shading_brightness_end_condition: "{{ is_shading_brightness_sensor_defined and states(light_sensor) | float(default=shading_sun_brightness_end) < shading_sun_brightness_end }}"
-  weather_cloudy: "{{ state_attr(shading_forecast_sensor, 'cloud_coverage') | float > 50}}"
-  target_shading_position: "{{ position_shade if ((is_temperature_sensor_outside_available and shading_full_start_temperature_condition) or (is_shading_brightness_sensor_available and shading_full_start_brightness_condition)) else position_shade_light }}"
+  cloud_coverage: "{{ state_attr(shading_forecast_sensor, 'cloud_coverage') | float > 50}}"
+  cloud_coverage_in_range: "{{ cloud_coverage > 50 and cloud_coverage < 85}}"
+  weather_cloudy: "{{ states(shading_forecast_sensor) in ['cloudy'] }}"
+  use_full_shading: >-
+    {{
+      (is_temperature_sensor_outside_available and shading_full_start_temperature_condition) or 
+      (is_shading_brightness_sensor_available and shading_full_start_brightness_condition)
+    }}
+  target_shading_position: >-
+    {{
+      position_shade if use_full_shading else position_shade_light
+    }}
 
   brightness_below_threshold_condition: "{{ not is_default_brightness_sensor_available or (is_brightness_enabled and now() >= today_at(time_down_early_today) and brightness_down_condition) }}"
   drive_down_condition: "{{ brightness_below_threshold_condition or now() >= today_at(time_down_late_today)}}"
   minimum_brightness_condition: "{{ not is_default_brightness_sensor_available or is_minimum_brightness_satisfied}}"
+  time_up_condition: "{% set min = today_at(time_up_late_today) - timedelta(minutes = 5) %} {% set max = today_at(time_up_late_today) + timedelta(minutes = 5) %} {% set now = now() %}{{ (now >= min and now <= max) }}"
 condition:
   - condition: state
     entity_id: !input is_enabled_input
@@ -920,20 +982,18 @@ actions:
           - alias: "Are brightness conditions met"
             or:
             - alias: "No brightness sensor"
-              condition: template
-              value_template: "{{ not is_shading_brightness_sensor_defined }}"
+              and:
+              - "{{ not is_shading_brightness_sensor_defined }}"
             - alias: "Sunny brightness conditions"
               and:
               - "{{ is_shading_brightness_sensor_defined }}"
               - "{{ states(shading_forecast_sensor) in ['sunny', 'partlycloudy'] }}"
-              - "{{ is_shading_brightness_sensor_defined }}"
               - "{{ shading_start_condition }}"
             - alias: "Cloudy brightness conditions"
               and:
               - "{{ is_shading_brightness_sensor_defined }}"
-              - "{{ states(shading_forecast_sensor) in ['cloudy'] }}"
               - "{{ weather_cloudy }}"
-              - "{{ is_shading_brightness_sensor_defined }}"
+              - "{{ cloud_coverage_in_range }}"
               - "{{ shading_start_cloudy_condition }}"
         sequence:
           - variables:
@@ -978,19 +1038,18 @@ actions:
       - alias: "Daytime opening"
         conditions:
           - and:
-            - "{{ is_up_enabled }}"
-            - or:
-              - and:
-                - '{{ is_brightness_enabled }}'
-                - '{{ is_default_brightness_sensor_defined }}'
-                - '{{ brightness_up_condition }}'
-                - "{{ now() >= today_at(time_up_early_today) }}"
-                - "{{ now() < today_at(time_down_early_today) - timedelta(seconds = 5) }}"
-              - "{{ time_for_drive_up }}"
-            - alias: "After sunrise"
-              condition: state
-              entity_id: sun.sun
-              state: above_horizon
+              - "{{ is_up_enabled }}"
+              - or:
+                  - and:
+                      - "{{ is_brightness_enabled }}"
+                      - "{{ is_default_brightness_sensor_available }}"
+                      - "{{ brightness_up_condition }}"
+                      - "{{ brightness_up_in_time_range_condition }}"
+                  - "{{ time_up_condition }}"
+              - alias: "After sunrise"
+                condition: state
+                entity_id: sun.sun
+                state: above_horizon
         sequence:
           - variables:
               target_position: "{{ position_open }}"

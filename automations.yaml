@@ -2038,7 +2038,7 @@
   alias: Rollladen Luisa
   description: ''
   use_blueprint:
-    path: shutter_automation_next.yaml
+    path: utopius/cover_automation.yaml
     input:
       cover_entity: cover.ja1_sudseite_rollo_kind_1_hmipw_drbl4_00165d899fbad2_ch14
       light_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
@@ -2078,7 +2078,7 @@
   alias: Rollladen Schlafzimmer
   description: ''
   use_blueprint:
-    path: shutter_automation_next.yaml
+    path: utopius/cover_automation.yaml
     input:
       cover_entity: cover.ja1_sudseite_rollo_schlafzimmer_hmipw_drbl4_00165d899fbad2_ch6
       light_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
@@ -2115,7 +2115,7 @@
   alias: Rollladen Wohnzimmer Süd
   description: ''
   use_blueprint:
-    path: shutter_automation_next.yaml
+    path: utopius/cover_automation.yaml
     input:
       min_azimuth: 75
       max_azimuth: 230
@@ -2275,7 +2275,7 @@
   alias: Rollladen Esszimmer Nord
   description: ''
   use_blueprint:
-    path: shutter_automation_next.yaml
+    path: utopius/cover_automation.yaml
     input:
       cover_entity: cover.ja4_rollo_esszimmer_nord_hmipw_drbl4_00165d899fba5d_ch2
       is_enabled_input: input_boolean.autorollo_esszimmer
@@ -2308,7 +2308,7 @@
   alias: Rollladen Arbeiten Nord
   description: ''
   use_blueprint:
-    path: shutter_automation_next.yaml
+    path: utopius/cover_automation.yaml
     input:
       cover_entity: cover.ja2_nordseite_rollo_arbeiten_nord
       contact_sensor: binary_sensor.arbeitszimmer_nord_offnung
@@ -2345,7 +2345,7 @@
   alias: Rollladen Küche
   description: ''
   use_blueprint:
-    path: shutter_automation_next.yaml
+    path: utopius/cover_automation.yaml
     input:
       cover_entity: cover.ja4_rollo_kuche_hmipw_drbl4_00165d899fba5d_ch6
       is_enabled_input: input_boolean.autorollo_kuche
@@ -2375,7 +2375,7 @@
   alias: Rollladen HWR
   description: ''
   use_blueprint:
-    path: shutter_automation_next.yaml
+    path: utopius/cover_automation.yaml
     input:
       cover_entity: cover.ja4_rollo_hwr_hmipw_drbl4_00165d899fba5d_ch10
       light_sensor: sensor.hmip_slo_000d60c9a674e3_beleuchtungsstarke
@@ -2402,7 +2402,7 @@
   alias: Rollladen Bad
   description: ''
   use_blueprint:
-    path: shutter_automation_next.yaml
+    path: utopius/cover_automation.yaml
     input:
       cover_entity: cover.ja2_nordseite_rollo_bad_hmipw_drbl4_00165d899fbab0_ch14
       contact_sensor: binary_sensor.bad_fenster
@@ -2464,7 +2464,7 @@
   alias: Rollladen Arbeiten West
   description: ''
   use_blueprint:
-    path: shutter_automation_next.yaml
+    path: utopius/cover_automation.yaml
     input:
       cover_entity: cover.ja2_nordseite_rollo_arbeiten_west_hmipw_drbl4_00165d899fbab0_ch10
       light_threshold: 15000

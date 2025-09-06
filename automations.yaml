@@ -1998,7 +1998,7 @@
   alias: Rollladen Marius
   description: ''
   use_blueprint:
-    path: shutter_automation_next.yaml
+    path: utopius/cover_automation.yaml
     input:
       cover_entity: cover.ja1_sudseite_rollo_kind_2_hmipw_drbl4_00165d899fbad2_ch10
       light_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
@@ -2010,9 +2010,9 @@
       contact_sensor: binary_sensor.fenster_marius_offnung
       position_ventilation: 25
       position_ventilation_night_time: 25
-      light_threshold: 28000
-      light_threshold_cloudy: 28000
-      shading_sun_brightness_end: 19000
+      light_threshold: 24000
+      light_threshold_cloudy: 24000
+      shading_sun_brightness_end: 18000
       auto_options:
       - auto_up_enabled
       - auto_down_enabled
@@ -2048,9 +2048,9 @@
       min_azimuth: 78
       max_azimuth: 214
       contact_sensor: binary_sensor.fenster_luisa_offnung
-      light_threshold: 28000
-      light_threshold_cloudy: 29000
-      shading_sun_brightness_end: 19000
+      light_threshold: 24000
+      light_threshold_cloudy: 24000
+      shading_sun_brightness_end: 17000
       position_ventilation: 25
       position_ventilation_night_time: 20
       min_elevation: 15
@@ -2089,8 +2089,8 @@
       position_shade: 22
       contact_sensor: binary_sensor.schlafzimmerfenster_offnung
       time_up: 08:00:00
-      light_threshold_cloudy: 26000
-      light_threshold: 28000
+      light_threshold_cloudy: 24000
+      light_threshold: 24000
       position_ventilation_night_time: 22
       auto_options:
       - auto_up_enabled
@@ -2098,7 +2098,7 @@
       - auto_shading_enabled
       - auto_ventilate_enabled
       - auto_brightness_enabled
-      shading_sun_brightness_end: 19000
+      shading_sun_brightness_end: 18000
       min_elevation: 15
       max_elevation: 90
       shading_forecast_sensor: weather.forecast_home
@@ -2117,7 +2117,7 @@
   use_blueprint:
     path: shutter_automation_next.yaml
     input:
-      min_azimuth: 106
+      min_azimuth: 75
       max_azimuth: 230
       cover_entity: cover.ja1_sudseite_rollo_wohnzimmer_sud_hmipw_drbl4_00165d899fbad2_ch2
       light_sensor: sensor.hmip_slo_000d5d89b9f5a7_beleuchtungsstarke
@@ -2132,15 +2132,15 @@
       - auto_brightness_enabled
       contact_sensor: binary_sensor.wohnzimmer_sud_offnung
       time_down: '21:00:00'
-      light_threshold: 28000
-      light_threshold_cloudy: 28000
+      light_threshold: 24000
+      light_threshold_cloudy: 24000
       min_elevation: 20
       max_elevation: 90
       shading_forecast_sensor: weather.forecast_home
       default_brightness_sensor: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
       brightness_down: 900
       brightness_up: 1500
-      shading_sun_brightness_end: 19000
+      shading_sun_brightness_end: 17000
       position_ventilation_night_time: 15
       lockout_protection_options: []
       temperature_sensor: sensor.hmip_stho_000edd89b682a2_actual_temperature
@@ -2329,7 +2329,7 @@
       - auto_shading_enabled
       - auto_ventilate_enabled
       - auto_brightness_enabled
-      position_ventilation_night_time: 10
+      position_ventilation_night_time: 5
       lockout_protection_options: []
       shading_forecast_sensor: weather.forecast_home
       workday_sensor: binary_sensor.workday_today
@@ -2425,6 +2425,8 @@
       shading_forecast_sensor: weather.forecast_home
       temperature_sensor_inside: sensor.bad_raumthermostat_actual_temperature
       temperature_sensor_outside: sensor.hmip_stho_000edd89b682a2_actual_temperature
+      lockout_protection_options:
+      - lockout_protection_closing
 - id: '1731847289123'
   alias: Schlafzimmerfenster
   description: ''
@@ -2472,12 +2474,12 @@
       min_azimuth: 225
       is_enabled_input: input_boolean.autorollo_arbeitszimmer_west
       time_down: '20:00:00'
-      min_elevation: 24
+      min_elevation: 20
       position_closed: 10
       position_ventilation: 10
       position_ventilation_night_time: 10
       max_elevation: 90
-      shading_forecast_sensor: weather.forecast_home
+      shading_forecast_sensor: weather.home
       default_brightness_sensor: sensor.hmip_slo_000d5d89b9f5a7_durchschnittliche_beleuchtungsstarke
       brightness_up: 1650
       brightness_down: 1100
@@ -2489,6 +2491,7 @@
       - auto_brightness_enabled
       temperature_sensor_inside: sensor.arbeitszimmer_raumthermostat_actual_temperature
       temperature_sensor_outside: sensor.hmip_stho_000edd89b682a2_actual_temperature
+      minimum_brightness_for_shading: 3000
 - id: '1733486362976'
   alias: Bad - Licht Bewegungsmelder
   description: Turns on lights

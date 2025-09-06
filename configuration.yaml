@@ -45,3 +45,9 @@ logger:
 # Text to speech
 tts:
   - platform: google_translate
+
+# ZHA IKEA OTA update
+zha:
+  zigpy_config:
+    ota:
+      extra_providers: [{'type': 'ikea'}]
